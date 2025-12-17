@@ -1,5 +1,6 @@
 use crate::domain::verse::Verse;
 
+#[allow(dead_code)]
 pub trait ChronologicalValidation {
     fn is_chronologically_valid(&self, other: &Self) -> bool;
 }

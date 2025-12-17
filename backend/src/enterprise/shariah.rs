@@ -50,6 +50,7 @@ pub fn analyze_contract(contract: &Contract) -> AnalysisResult {
 }
 
 #[derive(Serialize, Debug)]
+#[allow(dead_code)]
 pub enum StandardizationLevel {
     Gold,
     Silver,

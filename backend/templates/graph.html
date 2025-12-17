@@ -88,6 +88,9 @@
             <button onclick="setMode('hierarchical')" class="px-3 py-1.5 text-xs font-bold rounded-md bg-mizan-dark text-white hover:bg-slate-800 transition shadow-sm border border-transparent">
                 <i class="fas fa-sitemap mr-1 text-mizan-gold"></i> Epistemic Order
             </button>
+            <button onclick="startTour()" class="px-3 py-1.5 text-xs font-bold rounded-md bg-mizan-gold text-white hover:bg-yellow-600 transition shadow-sm border border-transparent">
+                <i class="fas fa-play-circle mr-1"></i> Tour
+            </button>
         </div>
     </nav>
 
@@ -614,6 +617,37 @@
                 }
             });
             network.startSimulation();
+        }
+
+        function startTour() {
+            const steps = [
+                { id: 0, scale: 1.5, delay: 2000, msg: "The Divine Source (Allah)" },
+                { id: 1, scale: 1.3, delay: 3000, msg: "The Revelation (Quran)" },
+                { id: 3, scale: 1.3, delay: 3000, msg: "The Methodology (Usul)" },
+                { id: 8, scale: 1.5, delay: 3000, msg: "The Ruling (Riba/Usury)" },
+                { id: null, scale: 1.0, delay: 3000, msg: "The Full Unity of Knowledge" }
+            ];
+
+            let cumulativeDelay = 0;
+
+            steps.forEach((step, index) => {
+                setTimeout(() => {
+                    if (step.id !== null) {
+                        network.focus(step.id, {
+                            scale: step.scale,
+                            animation: { duration: 1500, easingFunction: 'easeInOutQuad' }
+                        });
+                        network.selectNodes([step.id]);
+                    } else {
+                        network.fit({
+                            animation: { duration: 1500, easingFunction: 'easeInOutQuad' }
+                        });
+                        network.unselectAll();
+                    }
+                    console.log(`Tour Step ${index + 1}: ${step.msg}`);
+                }, cumulativeDelay);
+                cumulativeDelay += step.delay;
+            });
         }
 
         // Initialize

@@ -25,11 +25,13 @@ impl ExecutiveAuthority {
         if signature == Self::GSE_SIGNATURE {
             // Naskh al-Zaman: Temporal Abrogation
             // The Executive Decree overrides Democratic Consensus
-            if ruling.signatures.contains(&"GSE_SIGNATURE".to_string()) {
-                ruling.weight = f32::INFINITY;
-                ruling.status = "Active".to_string(); // Force Activation
-                ruling.required_reputation = 0.0; // Bypass consensus
+            if !ruling.signatures.contains(&"GSE_SIGNATURE".to_string()) {
+                ruling.signatures.push("GSE_SIGNATURE".to_string());
             }
+
+            ruling.weight = f32::INFINITY;
+            ruling.status = "Active".to_string(); // Force Activation
+            ruling.required_reputation = 0.0; // Bypass consensus
         }
     }
 }

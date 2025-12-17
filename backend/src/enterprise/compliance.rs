@@ -9,6 +9,7 @@ pub struct ComplianceReport {
 }
 
 #[derive(Serialize, Debug)]
+#[allow(dead_code)]
 pub enum EthicalStatus {
     GoodStanding,
     Probation,

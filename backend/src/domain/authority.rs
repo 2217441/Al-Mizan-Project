@@ -50,6 +50,7 @@ impl GlobalRuling {
         }
     }
 
+    #[allow(dead_code)]
     pub fn finalize_probation(&mut self) {
         if self.status == "Probationary" {
             // In real logic, check if now > probation_end
