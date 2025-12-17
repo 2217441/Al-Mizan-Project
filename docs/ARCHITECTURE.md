@@ -1,117 +1,130 @@
-# System Architecture
+# Al-Mizan System Architecture
 
-The Al-Mizan Project is built upon the principles of **Clean Architecture** (also known as Onion or Hexagonal Architecture). This ensures that the core business logic (Domain) is independent of external frameworks, databases, and user interfaces.
+## 1. Architectural Overview
 
-## High-Level Overview
+* **Pattern**: Service-Oriented Architecture (SOA) with a unified Graph Persistency Layer.
+* **Philosophy**: "Immutable Core, Mutable Periphery."
+* **Primary Constraint**: The system is designed for **Read-Heavy workloads** (99% Reads, 1% Writes) to serve as a high-performance Reference API.
+
+### 1.1 High-Level Context (C4 Level 1)
+
+The system functions as a "Semantic Middleware" between Raw Islamic Text Sources and End-User Applications (EdTech, Researchers).
 
 ```mermaid
 graph TD
-    User[User] -->|HTTPS| PublicApp[Certainty Engine (Public App)]
-    Scholar[Scholar] -->|HTTPS| AdminApp[Verification Console (Admin)]
+    User[End User / Scholar] -->|Queries| UI[Web Dashboard]
+    UI -->|JSON/REST| API[Al-Mizan API Gateway]
     
-    PublicApp -->|REST API| Backend[Backend (Rust/Axum)]
-    AdminApp -->|REST API| Backend
+    subgraph "Core Infrastructure (Dockerized)"
+        API -->|SurQL| DB[(SurrealDB Graph)]
+    end
     
-    Backend -->|SurrealQL| DB[(SurrealDB)]
-    
-    subgraph "Backend Layer"
-        API[API Layer]
-        Service[Service Layer]
-        Domain[Domain Layer]
-        Repo[Repository Layer]
-        
-        API --> Service
-        Service --> Domain
-        Service --> Repo
-        Repo --> DB
+    subgraph "Ingestion Pipeline (Offline/Local)"
+        Sources[Tanzil / Sunnah.com] -->|Raw Text| Scraper[Python ETL]
+        Scraper -->|NLP & Cleaning| Staging[JSON Staging]
+        Staging -->|Verified Edges| API
     end
 ```
 
-## Core Components
+## 2. Tech Stack & Components (C4 Level 2)
 
-### 1. Frontend (Presentation Layer)
+### 2.1 Backend Core (`almizan-core`)
 
- The frontend adopts a **No-Build** philosophy for simplicity and performance:
+* **Language**: Rust (2021 Edition).
+* **Framework**: Axum (Tokio-based).
+* **Responsibility**:
+  * Exposing OpenAPI 3.0 REST endpoints.
+  * Handling Graph Traversal Logic ($O(1)$ adjacency lookups).
+  * Enforcing Epistemological Constraints (e.g., preventing a Zanni node from overwriting a Thabit node).
+* **Key Modules**:
+  * `crate::routes`: Endpoint definitions.
+  * `crate::models`: Strong-typed Structs for Verse, Hadith, Ruling.
+  * `crate::graph`: The traversal engine logic.
 
-* **Tech Stack**:
-  * **HTML/CSS**: Server-rendered templates using **Askama**.
-  * **Interactivity**: **HTMX** for dynamic partial updates.
-  * **Visualization**: **Cytoscape.js** for the Knowledge Graph.
-  * **Styling**: Vanilla CSS with Glassmorphism design system.
+### 2.2 Database Layer (`almizan-db`)
 
-* **Key Features**:
-  * **Knowledge Graph**: Interactive visualization of Islamic concepts.
-  * **AI Expansion**: Double-tap nodes to generate new connections via Gemini AI.
+* **Engine**: SurrealDB (v2.x).
+* **Mode**: Single-Node (Development) / Distributed (Production).
+* **Schema Logic**:
+  * **Nodes (Vertices)**: `verse`, `hadith`, `scholar`, `book`, `topic`.
+  * **Edges (Relations)**: `explains`, `narrates`, `derived_from`, `abrogates`, `condition_for`.
+* **Security**:
+  * `DEFINE SCOPE public_read`: Allows anonymous read-only access.
+  * `DEFINE SCOPE admin_write`: Restricted to internal API calls only.
 
-### 2. AI Integration (Intelligence Layer)
+### 2.3 Data Pipeline (`almizan-etl`)
 
-* **Role**: **Search & Syntax Helper ONLY**.
-* **Restriction**: **NO GENERATIVE AI** for defining truth-relationships.
+* **Language**: Python 3.11+.
+* **Libraries**: `pandas` (Dataframe manipulation), `langchain` (NLP Drafting), `beautifulsoup4` (Scraping).
+* **Workflow**:
+  * **Extract**: Pull raw text from tanzil.net XML files.
+  * **Transform**:
+    * Normalize Arabic text (remove/standardize diacritics for search).
+    * **NLP Draft**: Use LLM (e.g., Llama-3-8b via local Ollama) to suggest relations (e.g., "Extract all narrators from this Hadith text").
+  * **Load**: Generate `.surql` scripts for bulk ingestion into SurrealDB.
 
-### 3. The "Cyborg" Ingestion Pipeline (AI-Human Hybrid)
+### 2.4 Frontend (`almizan-web`)
 
-To solve the "Ingestion Bottleneck" (6,000+ verses, 500k+ Hadith), we employ a strict **Human-in-the-Loop** pipeline:
+* **Tech**: HTML5, CSS3, JavaScript (ES6+).
+* **Visualization**: D3.js (Force Directed Graph).
+* **Features**:
+  * **RTL Support**: Natively handles Arabic text direction.
+  * **Interactive Explorer**: Click-to-expand node navigation.
 
-1. **OCR Scraper (AI)**:
-    * **Input**: PDF/Scanned Classical Texts (e.g., *Al-Majmu'*).
-    * **Action**: AI extracts entities and relationships (Scholar -> Opinion -> Topic).
-    * **Output**: `UNVERIFIED_DRAFT` nodes.
+## 3. Data Model (Ontology)
 
-2. **Micro-Waqf (Gamification)**:
-    * **Input**: `UNVERIFIED_DRAFT` nodes.
-    * **Action**: Students/Researchers verify AI output against the source image via the "Verification Console".
-    * **Incentive**: Earn "Hasana Tokens" (Reputation) for correct verifications.
-    * **Output**: `PEER_REVIEWED` nodes.
+### 3.1 Node Types (Entities)
 
-3. **Mizan Stamp (Cryptographic Commit)**:
-    * **Input**: `PEER_REVIEWED` nodes.
-    * **Action**: Senior Scholars sign the node with their DID Private Key.
-    * **Output**: `IMMUTABLE_TRUTH` (Canon).
+| Node Type | Description | Epistemological Tier |
+| :--- | :--- | :--- |
+| `quran_verse` | A single Ayah (e.g., 2:255). | **Tier 1 (Thabit)** |
+| `hadith` | A narration text (Matn + Sanad). | **Tier 1 (Thabit)** |
+| `fiqh_ruling` | A legal derivation (e.g., "Wudu is Fard"). | **Tier 2 (Zanni)** |
+| `scholar` | A person (Narrator or Jurist). | **Tier 3 (Context)** |
 
-### 1. The Citadel Node (Backend)
+### 3.2 Edge Types (Relationships)
 
-* **Runtime**: Rust (Axum).
+| Edge Type | Direction | Description |
+| :--- | :--- | :--- |
+| `EXPLAINS` | `hadith` -> `verse` | A Hadith provides Tafsir for a Verse. |
+| `NARRATED_BY` | `hadith` -> `scholar` | Connects a text to its transmitter. |
+| `DERIVED_FROM` | `fiqh_ruling` -> `[verse/hadith]` | The "Dalil" (Evidence) link. |
+| `PREREQUISITE_FOR` | `concept` -> `concept` | Logic flow (e.g., Wudu -> Salah). |
 
-* **Database**: SurrealDB (Embedded/Local).
-* **Role**: Manages the local graph, handles queries, and generates/ingests snapshots.
+## 4. Operational Security (OpSec)
 
-### 2. The Interface (Frontend)
+### 4.1 "The Sandbox Protocol"
 
-* **Tech**: HTML/HTMX (Server-Side Rendered).
+To prevent "Data Poisoning" (injection of false hadith):
 
-* **Philosophy**: "No-Build" - simple, lightweight, and modifiable.
+1. **No Public Write Access**: The API exposes ZERO POST/PUT endpoints to the public internet.
+2. **Air-Gapped Ingestion**: Database writes happen only via the `almizan-etl` pipeline running on the local intranet/researcher machine.
 
-### 3. The Protocol (Sync)
+### 4.2 Docker Composition
 
-* **Format**: Signed JSON Snapshots.
+The entire system is reproducible via `docker-compose.yml`:
 
-* **Transport**: USB, LAN, IPFS.
-* **Logic**: Additive Union with "Mizan" Weighting.
-
-## Data Flow
-
-### Request Lifecycle
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant API as API Layer
-    participant Service as Service Layer
-    participant Repo as Repository Layer
-    participant DB as SurrealDB
-
-    Client->>API: GET /api/verses/:id
-    API->>Service: get_verse(id)
-    Service->>Repo: find_by_id(id)
-    Repo->>DB: SELECT * FROM verse:id
-    DB-->>Repo: Record
-    Repo-->>Service: Domain Entity
-    Service-->>API: DTO
-    API-->>Client: JSON Response
+```yaml
+version: '3.8'
+services:
+  surrealdb:
+    image: surrealdb/surrealdb:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/my-database
+  
+  api:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - surrealdb
 ```
 
-## Security Architecture
+## 5. Deployment Strategy (FYP Phase)
 
-* **Authentication**: JWT-based stateless authentication.
-* **Password Hashing**: Argon2id for secure password storage.
-* **Input Validation**: Strong typing in Rust ensures invalid data is caught at the boundary.
+* **Environment**: Localhost (University Lab / Laptop).
+* **Data Volume**:
+  * **Tier 1 (Text)**: ~6,236 Verses + ~2,000 Hadith (Full Text).
+  * **Tier 2 (Graph)**: ~500 Verified Edges (Juz Amma Focus).

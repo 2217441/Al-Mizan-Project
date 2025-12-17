@@ -1,103 +1,55 @@
-# Al-Mizan Project
+# Al-Mizan: Semantic Knowledge Graph Framework
 
-![Al-Mizan Banner](https://via.placeholder.com/1200x300?text=Al-Mizan+Project+Banner)
+Al-Mizan is a research-driven backend infrastructure designed to address "Epistemological Incongruence" in Islamic digital resources. It shifts the paradigm from linear, keyword-based search to **Graph-based Semantic Traversal**, allowing for the preservation of complex theological relationships (Isnad, Tafsir, Istinbat).
 
-> **A Tawhidic Knowledge Graph Framework for the Unification of Islamic Digital Ecosystem**
+## 🏗 System Architecture
 
-[![Rust](https://img.shields.io/badge/Rust-1.75%2B-orange?logo=rust)](https://www.rust-lang.org/)
-[![HTMX](https://img.shields.io/badge/HTMX-1.9-blue?logo=htmx)](https://htmx.org/)
-[![SurrealDB](https://img.shields.io/badge/SurrealDB-1.0-purple?logo=surrealdb)](https://surrealdb.com/)
-[![License](https://img.shields.io/badge/License-Private-red)](#license)
-[![Status](https://img.shields.io/badge/Status-Active_Development-green)](#)
+The system operates on a Service-Oriented Architecture (SOA):
 
-The **Al-Mizan Project** is a cutting-edge software initiative designed to map, analyze, and visualize the complex relationships of abrogation (Naskh) within the Quran and Hadith. Built with a focus on "PhD-level research" rigor, security, and modern engineering practices, it aims to solve the epistemological fragmentation in the current Islamic digital ecosystem.
+* **Core API (`almizan-core`)**: A high-performance Rust (Axum) server that exposes the Knowledge Graph via RESTful endpoints.
+* **Graph Engine (`almizan-db`)**: SurrealDB instance storing the Ontology (Nodes & Edges).
+* **Data Pipeline (`almizan-etl`)**: Python scripts for ingesting raw text from Tanzil and generating semantic edges via NLP.
+
+## 🚀 Quick Start (Docker)
+
+**Prerequisites**: Docker and Docker Compose.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-repo/al-mizan.git
+cd al-mizan
+```
+
+### 2. Start the Infrastructure (DB + API)
+
+```bash
+docker-compose up -d
+```
+
+### 3. Access the Dashboard
+
+* **UI**: `http://localhost:8080`
+* **API Docs**: `http://localhost:3000/docs`
+
+## 📚 Documentation Index
+
+* **[Architecture Overview](docs/ARCHITECTURE.md)**: High-level C4 diagrams and system boundaries.
+* **[Ontology Specification](docs/specs/ONTOLOGY_SPEC.md)**: Definitions of Thabit (Immutable) and Zanni (Mutable) node types.
+* **[Decision Logs (ADR)](docs/adr/)**: Engineering trade-offs and technology choices.
+
+## 🛠 Tech Stack Justification
+
+| Component | Technology | Why? |
+| :--- | :--- | :--- |
+| **Backend** | Rust (Axum) | Type safety, zero-cost abstractions, and concurrency for heavy graph queries. |
+| **Database** | SurrealDB | Native graph support without the complexity of Neo4j; handles N:M relations efficiently. |
+| **ETL** | Python | Rich ecosystem for NLP (LangChain) and data cleaning (Pandas). |
+
+## 🧪 Research Hypothesis
+
+This project validates the hypothesis that **Graph Models** offer superior query performance ($O(1)$) compared to **Relational Models** ($O(N^2)$) when traversing recursive Islamic genealogical structures (Isnad).
 
 ---
 
-## ✨ Features
-
-- **Knowledge Graph Visualization**: Interactive exploration of Quranic verses and Hadith relationships using Cytoscape.js.
-- **Advanced Search**: Semantic search capabilities powered by SurrealDB.
-- **Scholarly Rigor**: Designed to support complex theological relationships and citations.
-- **High Performance**: Backend built with Rust for speed and memory safety.
-- **Reactive UI**: Modern frontend using SolidJS for a seamless user experience.
-
-## 🏗 Architecture
-
-The project follows a **Clean Architecture** (Onion/Hexagonal) pattern, ensuring separation of concerns and testability.
-
-### Tech Stack
-
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Backend** | [Rust](https://www.rust-lang.org/) (Axum) | Chosen for memory safety, concurrency, and performance. |
-| **Database** | [SurrealDB](https://surrealdb.com/) | A multi-model database perfect for complex graph relationships. |
-| **Frontend** | [HTMX](https://htmx.org/) | Server-side rendered HTML for a lightweight, no-build UI. |
-| **Auth** | Argon2 + JWT | Industry-standard security for authentication. |
-| **Viz** | [Cytoscape.js](https://js.cytoscape.org/) | Powerful graph theory (network) library for visualization. |
-
-For more details, see [ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Rust**: `rustup` (stable toolchain)
-- **SurrealDB**: Installed and running locally
-
-### Installation
-
-1. **Clone the repository**
-
-    ```bash
-    git clone https://github.com/FirdausHisyam/Islamic-Digital-Citadel.git
-    cd Islamic-Digital-Citadel
-    ```
-
-2. **Database Setup**
-    Start SurrealDB in memory mode for development:
-
-    ```bash
-    surreal start --log debug --user root --pass root memory
-    ```
-
-    Import the initial schema:
-
-    ```bash
-    surreal import --conn http://localhost:8000 --user root --pass root --namespace idc --database main database/schema/initial_schema.surql
-    ```
-
-3. **Backend Setup**
-
-    ```bash
-    cd backend
-    cargo run
-    ```
-
-    The API will be available at `http://localhost:3000`.
-
-## 🗺 Roadmap
-
-For the detailed strategic roadmap, including the **"Cyborg" Isnad Pipeline**, please see [ROADMAP.md](ROADMAP.md).
-
-## 🤝 Contributing
-
-We welcome contributions! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
-
-## ⚖️ Governance: Algorithmic Shura
-
-To mitigate the risk of a "Digital Dictator" or single point of failure, Al-Mizan employs an **Algorithmic Shura** consensus mechanism.
-
-- **Consensus Threshold**: A ruling (Fatwa) only achieves "Canon" status (Weight 1.0) when it is cryptographically signed by **40 Verified Scholars**.
-- **Decentralized Verification**: Truth is not determined by a central admin, but by the distributed consensus of the scholarly community.
-- **Immutable Audit Trail**: Every signature is recorded on the graph, creating a transparent and tamper-proof history of consensus.
-
-## 🛡 Security
-
-- **Zero Trust**: Strict validation at every layer.
-- **Type Safety**: End-to-end type safety with Rust and TypeScript.
-- **Secure Auth**: Industry-standard Argon2 hashing and JWT.
-
-## 📜 License
-
-Private Research Project. All rights reserved.
+*Submitted as partial fulfillment for CSCI 4401 (FYP 1) at IIUM.*

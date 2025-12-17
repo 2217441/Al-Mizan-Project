@@ -1,26 +1,26 @@
 version: '3.8'
 
 services:
-  database:
-    image: surrealdb/surrealdb:v2.1.0
+  almizan-db:
+    image: surrealdb/surrealdb:v2.1.4
     ports:
       - "8000:8000"
     command: start --log debug --user root --pass root memory
     volumes:
       - surreal_data:/mydata
 
-  backend:
-    build: ./backend
+  almizan-core:
+    build: ./almizan-core
     ports:
       - "3000:3000"
     environment:
-      - DB_URL=ws://database:8000
+      - DB_URL=ws://almizan-db:8000
       - DB_USER=root
       - DB_PASS=root
       - DB_NS=idc
       - DB_DB=main
     depends_on:
-      - database
+      - almizan-db
 
 volumes:
   surreal_data:

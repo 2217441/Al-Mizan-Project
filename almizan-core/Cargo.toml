@@ -1,0 +1,31 @@
+[package]
+name = "almizan-core"
+version = "0.1.0"
+edition = "2021"
+default-run = "almizan-core"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1.43", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+surrealdb = { version = "2.1.4", features = ["protocol-ws"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dotenvy = "0.15"
+argon2 = "0.5"
+jsonwebtoken = "9.3"
+tower-http = { version = "0.6", features = ["cors", "trace", "fs"] }
+chrono = { version = "0.4", features = ["serde"] }
+validator = { version = "0.19", features = ["derive"] }
+thiserror = "2.0"
+anyhow = "1.0"
+askama = "0.12"
+reqwest = { version = "0.12", features = ["json"] }
+lazy_static = "1.5.0"
+uuid = { version = "1.11.0", features = ["v4"] }
+serde_yaml = "0.9"
+
+[[bin]]
+name = "archive_to_ipfs"
+path = "../almizan-etl/archive_to_ipfs.rs"

@@ -1,69 +1,61 @@
-# 1. Tech Stack Selection
+# ADR 0001: Selection of Core Technology Stack
 
-Date: 2025-11-26
+Status: Accepted
 
-## Status
+Date: 2025-10-12
 
-Accepted
+Deciders: Ammar Qasiem (System Architect), Firdaus (Data Scientist)
 
-## Context
+## Context and Problem Statement
 
-The Islamic Digital Citadel project aims to visualize complex relationships (abrogations) in Islamic texts. The project has strict requirements for:
-1.  **Security**: "Most secure" possible architecture.
-2.  **Performance**: "Cutting edge" and "lightweight".
-3.  **Correctness**: Handling sacred texts requires high data integrity.
-4.  **Longevity**: Built like a "real company" with a long-term vision.
+We are building a Semantic Knowledge Graph for Islamic texts. The system requires:
 
-The initial proposal of a direct client-to-database connection was rejected due to security concerns (exposing DB directly, even with permissions, is risky for a high-assurance app).
+1. **High-Performance Traversal**: The ability to query deep relationships (Isnad chains of 10+ depth) with minimal latency.
+2. **Schema Flexibility**: The ability to model complex, irregular relationships (e.g., Abrogation, Conditionality) that do not fit neatly into SQL tables.
+3. **Type Safety**: The domain deals with "Theological Truths"; data integrity is paramount.
 
-## Decision
+## Decision Drivers
 
-We will use the following technology stack:
+* **Performance**: Recursive queries in SQL (JOIN hell) are $O(N^2)$ or worse. We need $O(1)$ adjacency lookups.
+* **Reliability**: The backend must be crash-resistant.
+* **Developer Experience**: Separation of concerns between "System Logic" and "Data Analysis."
 
-### 1. Database: SurrealDB
-*   **Type**: Multi-model (Graph + Relational + Document).
-*   **Justification**:
-    *   Native graph support is essential for the "Abrogation" network.
-    *   Real-time capabilities (Live Queries) for future collaboration features.
-    *   Strong typing and schema enforcement (`SCHEMAFULL`).
-*   **Security Configuration**:
-    *   Strict Mode (No guest access).
-    *   Role-Based Access Control (RBAC) defined in schema.
-    *   No direct public HTTP access; only accessible via the Backend API.
+## Considered Options
 
-### 2. Backend API: Rust (Axum)
-*   **Language**: Rust.
-*   **Framework**: Axum.
-*   **Justification**:
-    *   **Memory Safety**: Rust's ownership model prevents common vulnerabilities (buffer overflows, null pointer dereferences).
-    *   **Performance**: Compiles to native machine code; minimal runtime overhead.
-    *   **Correctness**: Strong type system ensures logic errors are caught at compile time.
-    *   **Ecosystem**: Axum is ergonomic, modular, and built on `tokio` (industry standard async runtime).
+### 1. Database
 
-### 3. Frontend: Vite + SolidJS + TypeScript
-*   **Framework**: SolidJS.
-*   **Build Tool**: Vite.
-*   **Justification**:
-    *   **Performance**: SolidJS uses fine-grained reactivity (no Virtual DOM), resulting in consistently high performance for graph rendering.
-    *   **Lightweight**: Extremely small bundle size compared to React/Angular.
-    *   **Type Safety**: TypeScript integration is first-class.
+* **Option A: PostgreSQL (SQL)**: Standard, reliable, but slow for deep recursion.
+* **Option B: Neo4j (Graph)**: Powerful, but heavy resource usage (Java-based) and proprietary query language (Cypher).
+* **Option C: SurrealDB (Multi-Model)**: Lightweight, Written in Rust, supports Graph + Document models natively.
 
-### 4. Authentication: JWT + Argon2
-*   **Mechanism**: Stateless JSON Web Tokens (JWT).
-*   **Hashing**: Argon2id (OWASP recommended).
-*   **Justification**: Standard, secure, and scalable.
+### 2. Backend Language
+
+* **Option A: Python (FastAPI)**: Easy to write, but slower execution, Global Interpreter Lock (GIL) issues with concurrency.
+* **Option B: Node.js (Express)**: Fast I/O, but weak type safety (JavaScript/TS).
+* **Option C: Rust (Axum)**: Memory safe, blazing fast, prevents entire classes of bugs at compile time.
+
+## Decision Outcome
+
+We chose **SurrealDB** and **Rust (Axum)**.
+
+### Justification
+
+**SurrealDB over Postgres**:
+
+* For Isnad chains, SurrealDB allows us to store pointers directly in the record (`narrated_by` -> `person`). Traversal is following a pointer (constant time), not computing a join (exponential time).
+* SurrealDB's "Live Queries" allow us to push updates to the frontend in real-time.
+
+**Rust over Python (for Backend)**:
+
+* **Correctness**: Rust's borrow checker ensures we cannot have data races when serving multiple concurrent requests.
+* **Performance**: Rust binaries are small and start instantly, making them ideal for the Dockerized/Containerized "Micro-Sovereign" architecture we are building.
+
+**Python (for ETL)**:
+
+* We retain Python only for the Data Ingestion pipeline (Member 2's role), leveraging libraries like pandas and langchain where they excel, without burdening the runtime performance of the API.
 
 ## Consequences
 
-### Positive
-*   **High Assurance**: Rust + Strict Schema minimizes runtime errors and security flaws.
-*   **Future Proof**: The stack is modern and capable of handling high loads.
-*   **Developer Experience**: Strong typing across the full stack (Rust <-> SurrealDB <-> TypeScript) improves maintainability.
-
-### Negative
-*   **Learning Curve**: Rust has a steeper learning curve than Node.js/Python, potentially slowing initial velocity.
-*   **Hiring**: Rust developers are harder to find than JS developers (though often higher quality).
-
-## Compliance
-*   **Security**: Aligns with OWASP Top 10 mitigation strategies.
-*   **Academic**: Suitable for a PhD-level research project demonstrating novel engineering practices.
+* **Positive**: System will handle massive query loads with minimal RAM.
+* **Negative**: Higher learning curve for Rust.
+* **Mitigation**: The architecture is split; the Data Scientist does not need to touch the Rust code, interacting only via JSON/SurQL scripts.

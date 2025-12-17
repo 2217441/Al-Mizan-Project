@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Al-Mizan | Epistemic Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/serif.min.css" id="theme">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'mizan-gold': '#d4af37',
+                        'mizan-dark': '#0f172a',
+                        'mizan-green': '#064e3b',
+                        'parchment': '#fdfbf7',
+                    },
+                    fontFamily: {
+                        'cinzel': ['Cinzel', 'serif'],
+                        'amiri': ['Amiri', 'serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Shared Styles */
+        body { 
+            background-color: #fdfbf7;
+            overflow: hidden; 
+        }
+
+        /* Presentation Specific Overrides */
+        .reveal { color: #333; }
+        .reveal h1, .reveal h2, .reveal h3 { font-family: 'Cinzel', serif; text-transform: none; color: #0f172a; }
+        .reveal p, .reveal li { font-family: 'Inter', sans-serif; }
+        .reveal .slide-number { color: #d4af37; }
+        
+        /* The Graph Container within the slide */
+        #cy-slide {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(5px);
+            border-radius: 8px;
+        }
+
+        /* Mode Switcher */
+        #mode-switch {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+        #mode-switch:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="reveal" id="presentation-layer">
+        <div class="slides">
+
+            <section>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-mizan-dark rounded-full flex items-center justify-center text-mizan-gold text-2xl mb-6 shadow-lg">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <h1>Project Al-Mizan</h1>
+                    <h3 class="text-mizan-green">Architecting the "Unity of Knowledge"</h3>
+                    <p class="text-sm mt-4 text-slate-500">From Epistemological Fragmentation to Digital Ontology</p>
+                    <div class="mt-8 border-t border-mizan-gold/30 pt-4 text-xs font-bold uppercase tracking-widest">
+                        Final Year Project Proposal
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>The Challenge: Context Collapse</h2>
+                <div class="text-left bg-white/50 p-4 rounded-xl border border-slate-200 shadow-sm" style="font-size: 0.9em;">
+                    <p class="fragment fade-up mb-2">
+                        <strong class="text-red-700">1. Fragmentation:</strong> 
+                        Current digital tools treat Islamic knowledge as isolated strings of text, severing the link between <em>Hukm</em> (Ruling) and <em>Usul</em> (Methodology).
+                    </p>
+                    <p class="fragment fade-up mb-2">
+                        <strong class="text-red-700">2. Loss of Isnad:</strong> 
+                        Algorithms prioritize engagement over authority, flattening the hierarchy of knowledge.
+                    </p>
+                    <p class="fragment fade-up">
+                        <strong class="text-red-700">3. The Consequence:</strong> 
+                        Interpretive anarchy. Without structural context, knowledge becomes susceptible to distortion.
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <h2>The Solution: Digital Tawhid</h2>
+                <p class="text-xl italic text-slate-600 mb-8">
+                    "To digitize knowledge without its connections is to corrupt it."
+                </p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 border border-slate-300 rounded bg-slate-100 opacity-50">
+                        <h4 class="text-sm uppercase font-bold">Relational Database</h4>
+                        <p class="text-xs">Rigid tables. Rows and Columns. Cannot model the organic complexity of scholarship.</p>
+                    </div>
+                    <div class="p-4 border-2 border-mizan-green rounded bg-white shadow-lg transform scale-105">
+                        <h4 class="text-sm uppercase font-bold text-mizan-green">Knowledge Graph</h4>
+                        <p class="text-xs">Living nodes. Fluid edges. Maps the <strong>Genealogy of Ideas</strong> exactly as scholars transmitted them.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section data-state="load-graph">
+                <h3>The Prototype</h3>
+                <div id="cy-slide"></div>
+                <p class="text-xs mt-2 text-slate-500"><i class="fas fa-mouse-pointer"></i> Interactive Epistemology: Draggable Nodes & Dynamic Relationships</p>
+            </section>
+
+            <section>
+                <h2>Epistemic Independence</h2>
+                <ul class="space-y-4 text-left ml-12">
+                    <li class="fragment">
+                        <i class="fas fa-shield-alt text-mizan-gold mr-2"></i>
+                        <strong>Sovereign Infrastructure:</strong> <br>
+                        <span class="text-sm text-slate-600">Building a "Waqf-Grade" system not dependent on secular algorithm biases.</span>
+                    </li>
+                    <li class="fragment">
+                        <i class="fas fa-check-circle text-mizan-green mr-2"></i>
+                        <strong>Verification Layer:</strong> <br>
+                        <span class="text-sm text-slate-600">A B2B model providing "Halal Compliance" APIs to sustain the open-source core.</span>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Future Scope</h2>
+                <div class="grid grid-cols-3 gap-2 mt-8">
+                    <div class="bg-white p-4 rounded shadow border-t-4 border-slate-400">
+                        <div class="text-2xl mb-2">Phase 1</div>
+                        <div class="text-xs font-bold">Foundation</div>
+                        <div class="text-[10px] text-slate-500 mt-2">Core Rust Engine & Graph Schema (In Progress)</div>
+                    </div>
+                    <div class="bg-white p-4 rounded shadow border-t-4 border-mizan-gold">
+                        <div class="text-2xl mb-2">Phase 2</div>
+                        <div class="text-xs font-bold">Ingestion</div>
+                        <div class="text-[10px] text-slate-500 mt-2">Mapping the primary Corpus of 6 Hadith Books</div>
+                    </div>
+                    <div class="bg-white p-4 rounded shadow border-t-4 border-mizan-green">
+                        <div class="text-2xl mb-2">Phase 3</div>
+                        <div class="text-xs font-bold">Standardization</div>
+                        <div class="text-[10px] text-slate-500 mt-2">Public API for "Verified Islamic Knowledge"</div>
+                    </div>
+                </div>
+                <div class="mt-12">
+                    <p class="font-bold">Q & A</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <a id="mode-switch" href="graph.html" class="bg-slate-800 text-white px-3 py-1 rounded text-xs no-underline hover:bg-slate-700 transition">
+        Exit Presentation
+    </a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script>
+        // --- Graph Logic for Slide 4 ---
+        let network = null;
+        
+        const rawNodes = [
+            { id: 0, label: 'Allah', group: 'divine', title: 'The Lawgiver' },
+            { id: 1, label: 'Quran', group: 'wahi', title: 'Revelation' },
+            { id: 3, label: 'Usul', group: 'usul', title: 'Methodology' },
+            { id: 9, label: 'Fiqh', group: 'fiqh', title: 'Jurisprudence' },
+            { id: 12, label: 'Imam Shafi\'i', group: 'scholar', title: 'Jurist' },
+            { id: 13, label: 'Riba', group: 'fiqh', title: 'Prohibition' }
+        ];
+
+        const rawEdges = [
+            { from: 0, to: 1 }, { from: 1, to: 3 }, { from: 3, to: 9 },
+            { from: 12, to: 3 }, { from: 9, to: 13 }, { from: 1, to: 13 }
+        ];
+
+        function initGraph() {
+            const container = document.getElementById('cy-slide');
+            
+            // VisJS Data
+            const nodes = new vis.DataSet(rawNodes.map(n => ({
+                id: n.id, label: n.label, 
+                color: n.group === 'divine' ? '#0f172a' : (n.group === 'wahi' ? '#d97706' : '#64748b'),
+                font: { color: n.group === 'divine' ? 'white' : 'black' },
+                shape: n.group === 'scholar' ? 'star' : 'dot'
+            })));
+            
+            const edges = new vis.DataSet(rawEdges.map(e => ({ from: e.from, to: e.to })));
+
+            const options = {
+                nodes: { size: 25, font: { size: 16, face: 'Inter' } },
+                edges: { width: 2, color: { color: '#cbd5e1' } },
+                physics: { stabilization: false, barnesHut: { gravitationalConstant: -2000 } }
+            };
+
+            network = new vis.Network(container, { nodes, edges }, options);
+        }
+
+        // --- Reveal.js Init ---
+        Reveal.initialize({
+            hash: true,
+            transition: 'convex', // nice organic transition
+            controls: true,
+            progress: true,
+        });
+
+        // Load graph only when Slide 4 is active
+        Reveal.on('slidechanged', event => {
+            if (event.currentSlide.getAttribute('data-state') === 'load-graph') {
+                if(!network) setTimeout(initGraph, 100);
+            }
+        });
+
+        function toggleMode() {
+            alert("This file is currently configured as the Presentation Deck only. To access the full App Dashboard, open graph.html");
+        }
+    </script>
+</body>
+</html>

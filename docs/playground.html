@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Mizan | Knowledge Playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'mizan-gold': '#d4af37',
+                        'mizan-dark': '#0f172a',
+                        'mizan-green': '#064e3b',
+                        'parchment': '#fdfbf7',
+                    },
+                    fontFamily: {
+                        'cinzel': ['Cinzel', 'serif'],
+                        'amiri': ['Amiri', 'serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #fdfbf7;
+            background-image: radial-gradient(#d4af37 0.5px, transparent 0.5px), radial-gradient(#d4af37 0.5px, #fdfbf7 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            background-attachment: fixed;
+            overflow: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.90);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* VisJS Manipulation Styling Override */
+        div.vis-network div.vis-manipulation {
+            background: rgba(255,255,255,0.95);
+            border-top: 1px solid #d4af37;
+            padding: 10px;
+        }
+        div.vis-network div.vis-edit-mode div.vis-button.vis-connect {
+            background-image: none; /* We'll use custom UI mostly, but this is backup */
+        }
+    </style>
+</head>
+<body class="text-slate-800 font-inter h-screen flex flex-col">
+
+    <nav class="glass-panel z-50 px-6 py-3 flex justify-between items-center border-b border-mizan-gold/20">
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="flex items-center gap-2 text-slate-800 hover:text-mizan-gold transition">
+                <i class="fas fa-home"></i> <span class="font-cinzel font-bold">Al-Mizan</span>
+            </a>
+            <span class="text-slate-300">|</span>
+            <span class="font-bold text-slate-600 text-mizan-gold">Playground</span>
+        </div>
+        
+        <div class="flex gap-2">
+            <button onclick="setMode('organic')" class="px-3 py-1.5 text-xs font-bold rounded-md bg-white border border-slate-200 hover:bg-slate-50 transition shadow-sm">
+                <i class="fas fa-snowflake mr-1"></i> Freeze/Thaw
+            </button>
+            <button onclick="resetGraph()" class="px-3 py-1.5 text-xs font-bold rounded-md bg-mizan-dark text-white hover:bg-slate-800 transition shadow-sm border border-transparent">
+                <i class="fas fa-history mr-1 text-mizan-gold"></i> Reset
+            </button>
+        </div>
+    </nav>
+
+    <div class="flex-1 relative flex overflow-hidden">
+        
+        <aside class="w-80 glass-panel border-r border-mizan-gold/20 flex flex-col z-40 transition-all duration-300 absolute h-full left-0 md:relative" id="sidebar">
+            
+            <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                
+                <!-- API Settings -->
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-bold uppercase text-slate-500"><i class="fas fa-key"></i> Gemini API Key</span>
+                        <button onclick="saveKey()" class="text-[10px] text-blue-600 hover:underline">Save</button>
+                    </div>
+                    <input type="password" id="apiKeyInput" placeholder="Paste Key Here..." 
+                        class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-mizan-gold">
+                </div>
+
+                <!-- Manual Workbench -->
+                <div class="bg-gradient-to-br from-amber-50 to-white p-4 rounded-xl border border-amber-200 shadow-sm relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-3">
+                         <h2 class="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-2">
+                            <i class="fas fa-pen-nib"></i> Scholar's Workbench
+                        </h2>
+                        <div class="flex gap-1">
+                             <button onclick="toggleAIMode()" id="aiToggle" class="px-2 py-0.5 rounded text-[9px] font-bold border border-slate-300 text-slate-400 bg-white">AI</button>
+                        </div>
+                    </div>
+                    
+                    <div id="manualControls" class="space-y-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase">Concept Name</label>
+                            <input type="text" id="customLabel" placeholder="e.g. 'Bitcoin', 'Ijtihad'" 
+                                class="w-full border border-amber-200 rounded-md p-2 text-xs focus:border-amber-500 focus:outline-none bg-white">
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase">Type</label>
+                            <select id="customGroup" class="w-full border border-amber-200 rounded-md p-2 text-xs focus:border-amber-500 focus:outline-none bg-white">
+                                <option value="modern">Modern Issue (Jadid)</option>
+                                <option value="fiqh">Fiqh Concept</option>
+                                <option value="usul">Usul Principle</option>
+                                <option value="scholar">Scholar / Body</option>
+                                <option value="wahi">Wahi (Text)</option>
+                            </select>
+                        </div>
+
+                        <button onclick="addCustomNode()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-md text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fas fa-plus-circle"></i> Add Concept
+                        </button>
+
+                        <div class="border-t border-amber-100 my-2 pt-2">
+                            <button id="toggleEditBtn" onclick="toggleEditMode()" class="w-full bg-white border border-amber-300 text-amber-800 hover:bg-amber-50 py-2 rounded-md text-xs font-bold transition flex items-center justify-center gap-2">
+                                <i class="fas fa-draw-polygon"></i> <span>Enable Link Mode</span>
+                            </button>
+                            <p class="text-[10px] text-slate-400 mt-1 text-center italic">
+                                Toggle to drag connections between nodes.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- AI Controls (Hidden by default) -->
+                    <div id="aiControls" class="space-y-3 hidden">
+                        <div>
+                             <label class="text-[10px] font-bold text-slate-500 uppercase">Research Topic</label>
+                             <input type="text" id="aiPrompt" placeholder="e.g. 'Islamic Banking', 'AI Ethics'" 
+                                class="w-full border border-indigo-200 rounded-md p-2 text-xs focus:border-indigo-500 focus:outline-none bg-white">
+                        </div>
+                        <button onclick="generateGeminiGraph()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fas fa-magic"></i> Generate Graph
+                        </button>
+                         <p class="text-[9px] text-slate-400 mt-1 text-center">
+                            Powered by Google Gemini Pro Latest API
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Info Panel -->
+                <div id="selection-details" class="hidden animate-fade-in-up">
+                    <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 relative">
+                        <button onclick="closeSelection()" class="absolute top-2 right-2 text-emerald-400 hover:text-emerald-700"><i class="fas fa-times"></i></button>
+                        <h3 id="sel-label" class="font-cinzel font-bold text-slate-800 text-lg leading-tight">Concept</h3>
+                        <p id="sel-desc" class="text-xs text-slate-600 mt-2 mb-2 italic"></p>
+                        <div class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest bg-emerald-100 inline-block px-1.5 py-0.5 rounded" id="sel-group"></div>
+                        <button onclick="deleteSelected()" class="mt-3 text-xs text-red-400 hover:text-red-600 underline">Delete Node</button>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Key</h3>
+                    <div class="grid grid-cols-2 gap-2 text-[10px] font-bold text-slate-600">
+                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-black"></div>Divine</div>
+                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber-500"></div>Wahi</div>
+                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div>Usul</div>
+                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-400"></div>Fiqh</div>
+                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-cyan-600"></div>Modern</div>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <main class="flex-1 relative bg-parchment/50" id="mynetwork">
+            <div id="edit-toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 bg-amber-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hidden">
+                <i class="fas fa-pen"></i> Link Mode Active: Drag from one node to another
+            </div>
+        </main>
+
+        <button onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')" class="md:hidden absolute bottom-6 right-6 z-50 bg-mizan-dark text-white p-4 rounded-full shadow-xl">
+            <i class="fas fa-bars"></i>
+        </button>
+
+    </div>
+
+    <script>
+        // --- Data ---
+        const initialNodes = [
+            { id: 0, label: 'Allah', group: 'divine', title: 'The Ultimate Source' },
+            { id: 1, label: 'Quran', group: 'wahi', title: 'Revelation' },
+            { id: 3, label: 'Usul al-Fiqh', group: 'usul', title: 'Methodology' },
+            { id: 8, label: 'Riba', group: 'fiqh', title: 'Usury / Interest' },
+            { id: 10, label: 'Crypto', group: 'modern', title: 'Digital Assets' },
+            { id: 13, label: 'Ayat 2:275', group: 'wahi', title: 'Prohibition Verse' },
+        ];
+
+        const initialEdges = [
+            { from: 0, to: 1 }, { from: 1, to: 3 }, { from: 1, to: 13 },
+            { from: 13, to: 8 }, { from: 3, to: 8 }, 
+        ];
+
+        // --- Styles ---
+        function getGroupStyle(group) {
+            const styles = {
+                divine: { color: '#0f172a', shape: 'dot', size: 35 },
+                wahi: { color: '#d97706', shape: 'dot', size: 25 },
+                usul: { color: '#2563eb', shape: 'diamond', size: 20 },
+                fiqh: { color: '#64748b', shape: 'box', size: 20 },
+                scholar: { color: '#be123c', shape: 'star', size: 25 },
+                modern: { color: '#0891b2', shape: 'box', size: 20 }
+            };
+            return styles[group] || styles.fiqh;
+        }
+
+        function formatNode(n) {
+            const s = getGroupStyle(n.group);
+            return {
+                id: n.id,
+                label: n.label,
+                group: n.group,
+                title: n.title || n.label,
+                color: { background: s.color, border: s.color, highlight: { background: s.color, border: '#d4af37' } },
+                shape: s.shape,
+                size: s.size,
+                font: { color: n.group === 'divine' ? '#d4af37' : '#334155', face: 'Inter', size: 14, strokeWidth: 3, strokeColor: '#fff', background: '#fdfbf7' },
+                shadow: { enabled: true, color: 'rgba(0,0,0,0.1)' }
+            };
+        }
+
+        const nodes = new vis.DataSet(initialNodes.map(formatNode));
+        const edges = new vis.DataSet(initialEdges.map(e => ({ ...e, color: { color: '#cbd5e1' }, width: 2, arrows: 'to' })));
+
+        let network = null;
+        let isEditMode = false;
+
+        function init() {
+            const container = document.getElementById('mynetwork');
+            const data = { nodes: nodes, edges: edges };
+            const options = {
+                physics: {
+                    enabled: true,
+                    barnesHut: { gravitationalConstant: -3000, centralGravity: 0.1, springLength: 200 },
+                    stabilization: { iterations: 100 }
+                },
+                interaction: { hover: true, multiselect: true },
+                manipulation: {
+                    enabled: false, // Toggled by button
+                    addEdge: function(data, callback) {
+                        data.arrows = 'to';
+                        data.color = { color: '#cbd5e1' };
+                        callback(data);
+                        network.setOptions({ manipulation: { addEdge: false } }); // Reset to avoid sticky mode if desired, but here we allow continuous
+                    }
+                }
+            };
+            network = new vis.Network(container, data, options);
+            
+            network.on("click", handleSelect);
+        }
+
+        // --- Interaction ---
+        function handleSelect(params) {
+            const selDiv = document.getElementById('selection-details');
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const node = nodes.get(nodeId);
+                selDiv.classList.remove('hidden');
+                document.getElementById('sel-label').innerText = node.label;
+                document.getElementById('sel-desc').innerText = node.title;
+                document.getElementById('sel-group').innerText = node.group;
+            } else {
+                selDiv.classList.add('hidden');
+            }
+        }
+
+        function closeSelection() {
+            document.getElementById('selection-details').classList.add('hidden');
+            network.unselectAll();
+        }
+
+        // --- Manual Editing ---
+        function addCustomNode() {
+            const label = document.getElementById('customLabel').value;
+            const group = document.getElementById('customGroup').value;
+            
+            if(!label) { alert("Please name your concept."); return; }
+
+            const id = Math.floor(Math.random() * 100000);
+            nodes.add(formatNode({
+                id: id,
+                label: label,
+                group: group,
+                title: "User Created Node"
+            }));
+
+            document.getElementById('customLabel').value = '';
+            network.focus(id, { animation: true, scale: 1.2 });
+        }
+
+        // --- AI Logic (Gemini) ---
+        function saveKey() {
+            const key = document.getElementById('apiKeyInput').value;
+            if(key) {
+                localStorage.setItem('mizan_gemini_key', key);
+                alert("API Key Saved safely to Local Storage.");
+            }
+        }
+
+        function toggleAIMode() {
+             const manual = document.getElementById('manualControls');
+             const ai = document.getElementById('aiControls');
+             const btn = document.getElementById('aiToggle');
+             
+             if(ai.classList.contains('hidden')) {
+                 manual.classList.add('hidden');
+                 ai.classList.remove('hidden');
+                 btn.classList.add('bg-indigo-100', 'text-indigo-600', 'border-indigo-300');
+                 btn.innerText = "Manual";
+             } else {
+                 manual.classList.remove('hidden');
+                 ai.classList.add('hidden');
+                 btn.classList.remove('bg-indigo-100', 'text-indigo-600', 'border-indigo-300');
+                 btn.innerText = "AI";
+             }
+        }
+
+        async function generateGeminiGraph() {
+            const topic = document.getElementById('aiPrompt').value;
+            const apiKey = localStorage.getItem('mizan_gemini_key');
+            
+            if(!topic) { alert("Please enter a research topic."); return; }
+            if(!apiKey) { alert("Please enter and save your Gemini API Key first."); return; }
+
+            // Show loading state
+            const btn = document.querySelector('button[onclick="generateGeminiGraph()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Thinking...';
+            btn.disabled = true;
+
+            const prompt = `
+                Act as an Islamic Knowledge Architect. Layout a knowledge graph for the topic: "${topic}".
+                Return ONLY raw JSON with no markdown formatting.
+                Structure: {
+                    "nodes": [ {"id": 100, "label": "Name", "group": "one of [wahi, usul, fiqh, scholar, modern]", "title": "Description", "arabic": "Arabic Name"} ],
+                    "edges": [ {"from": 100, "to": 0, "label": "relationship"} ]
+                }.
+                Ensure you connect to existing root nodes if relevant (Allah=0, Quran=1, Usul=3).
+                Generate at least 5 nodes and 5 edges.
+            `;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
+                const data = await response.json();
+                const text = data.candidates[0].content.parts[0].text;
+                // clean markdown if present
+                const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                const graphData = JSON.parse(jsonStr);
+
+                // Add to Graph
+                if(graphData.nodes) {
+                    graphData.nodes.forEach(n => {
+                        // Avoid ID collisions
+                        if(!nodes.get(n.id)) {
+                             nodes.add(formatNode(n));
+                        }
+                    });
+                }
+                if(graphData.edges) {
+                    edges.add(graphData.edges);
+                }
+                
+                network.fit();
+                alert(`Architect: Generated ontology for "${topic}"`);
+
+            } catch(e) {
+                console.error(e);
+                alert("AI Error: " + e.message + ". Check Console/API Key.");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Load Key on Init
+        if(localStorage.getItem('mizan_gemini_key')) {
+            document.getElementById('apiKeyInput').value = localStorage.getItem('mizan_gemini_key');
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('toggleEditBtn');
+            const toast = document.getElementById('edit-toast');
+
+            if (isEditMode) {
+                network.addEdgeMode();
+                btn.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-500');
+                btn.innerHTML = '<i class="fas fa-check"></i> <span>Done Linking</span>';
+                toast.classList.remove('hidden');
+            } else {
+                network.disableEditMode();
+                btn.classList.remove('bg-amber-100', 'text-amber-900', 'border-amber-500');
+                btn.innerHTML = '<i class="fas fa-draw-polygon"></i> <span>Enable Link Mode</span>';
+                toast.classList.add('hidden');
+            }
+        }
+
+        function deleteSelected() {
+            const sel = network.getSelectedNodes();
+            if(sel.length) nodes.remove(sel);
+            const selE = network.getSelectedEdges();
+            if(selE.length) edges.remove(selE);
+            closeSelection();
+        }
+
+        function resetGraph() {
+            nodes.clear();
+            edges.clear();
+            nodes.add(initialNodes.map(formatNode));
+            edges.add(initialEdges.map(e => ({ ...e, color: { color: '#cbd5e1' }, width: 2, arrows: 'to' })));
+            network.fit();
+        }
+
+        function setMode(mode) {
+             const options = { physics: { enabled: !network.physics.options.enabled } };
+             network.setOptions(options);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
