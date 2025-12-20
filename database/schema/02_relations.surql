@@ -24,7 +24,7 @@ DEFINE FIELD out ON TABLE DERIVED_FROM TYPE record<quran_verse | hadith>;
 DEFINE FIELD strength ON TABLE DERIVED_FROM TYPE float; -- Confidence score (0.0 - 1.0)
 DEFINE FIELD method ON TABLE DERIVED_FROM TYPE string; -- e.g. "Qiyas", "Ijma"
 
--- THE "DAJJAL FILTER" (Logic Gate)
+-- THE "BIAS FILTER" (Logic Gate)
 -- If someone tries to link a ruling to a WEAK/FABRICATED Hadith, block it.
 DEFINE EVENT check_grading ON TABLE DERIVED_FROM WHEN $event = "CREATE" THEN {
     -- Fetch the Hadith being linked to

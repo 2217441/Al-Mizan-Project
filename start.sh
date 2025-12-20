@@ -1,12 +1,35 @@
 #!/bin/bash
 set -e
 
+# Cleanup function to kill background processes on exit
+cleanup() {
+    if [ ! -z "$SURREAL_PID" ]; then
+        echo "🧹 Stopping Local SurrealDB (PID: $SURREAL_PID)..."
+        kill $SURREAL_PID
+    fi
+}
+trap cleanup EXIT
+
 echo "=== 🏛️  INITIALIZING DIGITAL CITADEL ==="
 
 # 1. Start Infrastructure
 echo "[1/4] Launching SurrealDB..."
-docker-compose up -d almizan-db
-sleep 3 # Wait for DB to wake up
+if command -v docker &> /dev/null && docker ps &> /dev/null; then
+    echo "    > Using Docker..."
+    docker-compose up -d almizan-db
+    sleep 3 # Wait for DB to wake up
+elif command -v surreal &> /dev/null; then
+    echo "    > Docker not found/running. Using local 'surreal' binary..."
+    # Start SurrealDB in background
+    surreal start --bind 0.0.0.0:8000 --user root --pass root memory &
+    SURREAL_PID=$!
+    echo "    > Started Local SurrealDB (PID: $SURREAL_PID)"
+    sleep 2 # Process startup time
+else
+    echo "❌ Error: Neither 'docker' nor 'surreal' found in PATH."
+    echo "   Please install Docker OR SurrealDB to proceed."
+    exit 1
+fi
 
 # 2. Run Data Pipeline
 echo "[2/4] Executing ETL Pipeline..."

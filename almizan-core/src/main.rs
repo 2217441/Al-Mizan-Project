@@ -55,21 +55,21 @@ async fn main() {
         //     "/api/v1/synthesis",
         //     post(api::v1::synthesis::synthesize_topic),
         // )
-        // .route("/api/v1/dashboard", post(api::v1::dashboard::get_dashboard))
+        .route("/api/v1/dashboard", post(api::v1::dashboard::get_dashboard))
         // .route("/api/v1/graph", get(api::v1::graph::get_graph))
         // .route(
         //     "/api/v1/syntax/translate",
         //     post(api::v1::syntax::translate_query),
         // )
-        // .route("/citadel", get(api::v1::citadel::dashboard))
-        // .route(
-        //     "/api/v1/citadel/export",
-        //     get(api::v1::citadel::export_snapshot),
-        // )
-        // .route(
-        //     "/api/v1/citadel/ingest",
-        //     post(api::v1::citadel::ingest_snapshot),
-        // )
+        .route("/citadel", get(api::v1::citadel::dashboard))
+        .route(
+            "/api/v1/citadel/export",
+            get(api::v1::citadel::export_snapshot),
+        )
+        .route(
+            "/api/v1/citadel/ingest",
+            post(api::v1::citadel::ingest_snapshot),
+        )
         // .route(
         //     "/api/v1/authority/propose",
         //     post(api::v1::authority::propose_ruling),

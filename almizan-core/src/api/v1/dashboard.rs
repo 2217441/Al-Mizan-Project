@@ -19,22 +19,30 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
 
     let is_mujtahid = payload.auth_token == "MUJTAHID_KEY_786";
 
+    // Enterprise Integration: Calculate Trust Metrics
+    // In a real scenario, this would aggregate across the network.
+    let metric = crate::enterprise::analytics::calculate_trust_metrics("scholar_sys_001");
+    let system_trust = format!("{}%", (metric.reliability_score * 100.0) as u32);
+
     let (title, modules) = if is_mujtahid {
         (
-            "Eschatology Command Center (The Eye)".to_string(),
+            format!(
+                "Theological Depth Dashboard (Admin) - Trust: {}",
+                system_trust
+            ),
             vec![
-                "Prophecy Tracker (Euphrates)".to_string(),
-                "Army of Khorasan Monitor".to_string(),
-                "Dajjalic System Analysis".to_string(),
+                "Narrative Trend Analysis".to_string(),
+                "Source Reliability Index".to_string(),
+                "Systemic Bias Analysis".to_string(),
             ],
         )
     } else {
         (
-            "Strategic Foresight Dashboard".to_string(),
+            format!("Public Research Dashboard - Trust: {}", system_trust),
             vec![
-                "Predictive Geopolitical Indicators".to_string(),
-                "Regional Stability Monitor".to_string(),
-                "Global Systemic Risk Analysis".to_string(),
+                "Dataset Statistics".to_string(),
+                "Ontology Coverage Map".to_string(),
+                "Recent Ingestions".to_string(),
             ],
         )
     };

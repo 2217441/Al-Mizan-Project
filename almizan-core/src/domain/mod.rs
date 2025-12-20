@@ -1,7 +1,7 @@
 pub mod authority;
 pub mod compliance;
 pub mod graph;
-pub mod hidden_hand;
+
 pub mod models;
 pub mod opinion;
 pub mod scholar;

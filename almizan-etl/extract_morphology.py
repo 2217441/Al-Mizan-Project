@@ -48,14 +48,15 @@ def extract_morphology(input_path, output_path):
     for root in sorted(unique_roots):
         # Escape special chars if any
         clean_root = root.replace("'", "") 
-        statements.append(f"CREATE root:{clean_root} SET label = '{clean_root}', types = ['root'];")
+        statements.append(f"CREATE root:`{clean_root}` SET label = '{clean_root}', types = ['root'];")
 
     # 2. Create Relations (Root -> Verse)
     # Note: We assume verse nodes (verse:1_1) are created by extract_quran.py
     for root, surah, ayah in sorted(root_occurrences):
         clean_root = root.replace("'", "")
         # Edge: root:smw -> appears_in -> verse:1_1
-        statements.append(f"RELATE root:{clean_root}->appears_in->verse:{surah}_{ayah};")
+        # Wrap root ID in backticks to handle special chars like $
+        statements.append(f"RELATE root:`{clean_root}`->appears_in->verse:{surah}_{ayah};")
 
     statements.append("COMMIT TRANSACTION;")
     statements.append("-- MORPHOLOGY INGESTION END")

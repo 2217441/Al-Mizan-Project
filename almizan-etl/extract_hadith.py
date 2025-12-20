@@ -1,54 +1,60 @@
 import json
 import os
 
-def extract_hadith(output_path):
-    print("Extracting Hadith Data...")
+import json
+import os
+
+def extract_hadith(json_path, output_path):
+    print(f"Extracting Hadith Data from {json_path}...")
     
-    # Mock Data: 40 Hadith Nawawi style
-    mock_hadith = [
-        {
-            "collection": "bukhari",
-            "number": 1,
-            "matn_ar": "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ",
-            "matn_en": "Actions are but by intentions.",
-            "grading": "Sahih"
-        },
-        {
-            "collection": "mawdu_collection",
-            "number": 999,
-            "matn_ar": "FAKE TEXT",
-            "matn_en": "This is a fabricated hadith for testing the Dajjal Filter.",
-            "grading": "Mawdu"
-        }
-    ]
+    if not os.path.exists(json_path):
+        print(f"ERROR: JSON Source {json_path} not found. Please place 'hadith_collection.json' in database/ folder.")
+        return
+
+    with open(json_path, 'r') as f:
+        hadith_collection = json.load(f)
 
     surql_statements = []
     surql_statements.append("-- HADITH INGESTION START")
     surql_statements.append("BEGIN TRANSACTION;")
 
-    for h in mock_hadith:
+    for h in hadith_collection:
+        # 1. Create Hadith Node (The Text/Matn)
         hadith_id = f"hadith:{h['collection']}_{h['number']}"
         matn_ar = h['matn_ar'].replace("'", "\\'")
-        matn_en = h['matn_en'].replace("'", "\\'")
         
-        statement = f"CREATE {hadith_id} SET \n" \
-                    f"    collection = '{h['collection']}', \n" \
-                    f"    hadith_number = {h['number']}, \n" \
-                    f"    matn_ar = '{matn_ar}', \n" \
-                    f"    matn_en = '{matn_en}', \n" \
-                    f"    grading = '{h['grading']}', \n" \
-                    f"    mutability = 'CONSTANT';"
-        
-        surql_statements.append(statement)
+        # Note: 'grading' and 'matn_en' removed from Hadith node as per New Ontology.
+        statement_hadith = f"CREATE {hadith_id} SET \n" \
+                           f"    collection = '{h['collection']}', \n" \
+                           f"    hadith_number = {h['number']}, \n" \
+                           f"    matn_ar = '{matn_ar}', \n" \
+                           f"    mutability = 'CONSTANT';"
+        surql_statements.append(statement_hadith)
+
+        # 2. Create Translation Node (If exists)
+        if 'matn_en' in h and h['matn_en']:
+            matn_en = h['matn_en'].replace("'", "\\'")
+            trans_id = f"translation:{h['collection']}_{h['number']}_en"
+            
+            statement_trans = f"CREATE {trans_id} SET \n" \
+                              f"    text_en = '{matn_en}', \n" \
+                              f"    language = 'en', \n" \
+                              f"    translator = 'Standard Version';" 
+            surql_statements.append(statement_trans)
+            
+            # 3. Link Hadith -> Translation
+            surql_statements.append(f"RELATE {hadith_id}->translated_as->{trans_id};")
 
     surql_statements.append("COMMIT TRANSACTION;")
     surql_statements.append("-- HADITH INGESTION END")
 
-    with open(output_path, 'w') as f:
+    with open(output_path, 'w', encoding='utf-8') as f:
         f.write("\n".join(surql_statements))
 
-    print(f"Generated {output_path} with {len(mock_hadith)} narrations.")
+    print(f"Generated {output_path} with {len(hadith_collection)} narrations.")
 
 if __name__ == "__main__":
     os.makedirs("output", exist_ok=True)
-    extract_hadith("output/hadith_nodes.surql")
+    INPUT_JSON = "../database/hadith_collection.json"
+    OUTPUT_SURQL = "output/hadith_nodes.surql"
+    extract_hadith(INPUT_JSON, OUTPUT_SURQL)

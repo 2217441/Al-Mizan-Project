@@ -9,13 +9,17 @@ pub enum Strictness {
     Lenient,
 }
 
-impl Strictness {
-    pub fn from_str(s: &str) -> Self {
-        match s.to_lowercase().as_str() {
+use std::str::FromStr;
+
+impl FromStr for Strictness {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(match s.to_lowercase().as_str() {
             "loose" | "lenient" => Self::Lenient,
             "moderate" => Self::Moderate,
             _ => Self::Strict,
-        }
+        })
     }
 }
 
