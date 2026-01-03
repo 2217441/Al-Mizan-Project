@@ -26,51 +26,309 @@
         position: absolute;
         top: 1rem;
         right: 1rem;
-        background: var(--bg-panel);
-        padding: 1rem;
-        border: var(--border-glass);
-        border-radius: 8px;
+        background: rgba(15, 15, 20, 0.75);
+        padding: 1.5rem;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 12px;
         z-index: 10;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+                    0 0 20px rgba(212, 175, 55, 0.1);
+        transition: all 0.3s ease;
+        min-width: 260px;
+    }
+    .controls-overlay:hover {
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5),
+                    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+                    0 0 30px rgba(212, 175, 55, 0.15);
     }
     .controls-overlay h3 {
-        margin: 0 0 1rem 0;
+        margin: 0 0 1.25rem 0;
         color: var(--accent-gold);
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
     }
     .filter-group label {
         display: block;
-        margin: 0.5rem 0;
-        color: var(--text-muted);
+        margin: 0.75rem 0;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: color 0.2s;
+        font-size: 0.9rem;
+    }
+    .filter-group label:hover {
+        color: var(--accent-gold);
     }
     .search-bar input {
         width: 100%;
-        padding: 0.5rem;
-        margin-top: 1rem;
-        border-radius: 4px;
-        border: var(--border-glass);
-        background: var(--bg-card);
+        padding: 0.65rem 0.85rem;
+        margin-top: 1.25rem;
+        border-radius: 8px;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        background: rgba(255, 255, 255, 0.03);
         color: var(--text-primary);
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    .search-bar input:focus {
+        outline: none;
+        border-color: var(--accent-gold);
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+    .zoom-controls {
+        position: absolute;
+        bottom: 2rem;
+        right: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        z-index: 10;
+    }
+    .zoom-btn {
+        width: 50px;
+        height: 50px;
+        background: rgba(15, 15, 20, 0.75);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 10px;
+        color: var(--accent-gold);
+        font-size: 22px;
+        font-weight: 700;
+        cursor: pointer;
+        backdrop-filter: blur(20px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    }
+    .zoom-btn:hover {
+        background: rgba(212, 175, 55, 0.2);
+        transform: scale(1.1) translateY(-2px);
+        box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4),
+                    0 0 0 1px rgba(212, 175, 55, 0.5) inset,
+                    0 0 30px rgba(212, 175, 55, 0.3);
+        border-color: var(--accent-gold);
+    }
+    .zoom-btn:active {
+        transform: scale(0.98) translateY(0);
+    }
+    .node {
+        transition: opacity 0.3s;
+    }
+    .legend {
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(212, 175, 55, 0.15);
+    }
+    .legend h4 {
+        margin: 0 0 0.85rem 0;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin: 0.55rem 0;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        transition: transform 0.2s;
+    }
+    .legend-item:hover {
+        transform: translateX(3px);
+    }
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        box-shadow: 0 0 8px currentColor;
+    }
+    .node-details {
+        position: absolute;
+        top: 0;
+        right: -380px;
+        width: 350px;
+        height: 100%;
+        background: rgba(15, 15, 20, 0.85);
+        border-left: 1px solid rgba(212, 175, 55, 0.3);
+        backdrop-filter: blur(25px);
+        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 20;
+        padding: 2rem;
+        overflow-y: auto;
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+    }
+    .node-details.active {
+        right: 0;
+    }
+    .node-details__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+    .node-details__header h3 {
+        margin: 0;
+        color: var(--accent-gold);
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+    .close-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 6px;
+        color: var(--text-muted);
+        font-size: 1.5rem;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0.25rem 0.5rem;
+        transition: all 0.2s;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .close-btn:hover {
+        color: var(--accent-gold);
+        background: rgba(212, 175, 55, 0.15);
+        border-color: var(--accent-gold);
+        transform: rotate(90deg);
+    }
+    .detail-row {
+        margin: 1.25rem 0;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.2s;
+    }
+    .detail-row:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(212, 175, 55, 0.2);
+    }
+    .detail-label {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    .detail-value {
+        display: block;
+        font-size: 1rem;
+        color: var(--text-primary);
+        font-weight: 500;
+        line-height: 1.5;
     }
 </style>
 
 <div class="graph-wrapper">
     <div id="graph-container"></div>
     
+    <!-- Controls Overlay -->
     <div class="controls-overlay">
         <h3>Graph Explorer</h3>
         <div class="filter-group">
-            <label><input type="checkbox" checked> Quran (Thabit)</label>
-            <label><input type="checkbox" checked> Hadith (Thabit)</label>
-            <label><input type="checkbox" checked> Rulings (Zanni)</label>
+            <label><input type="checkbox" checked onchange="toggleFilter('verse', this.checked)"> Quran (Thabit)</label>
+            <label><input type="checkbox" checked onchange="toggleFilter('hadith', this.checked)"> Hadith (Thabit)</label>
+            <label><input type="checkbox" checked onchange="toggleFilter('ruling', this.checked)"> Rulings (Zanni)</label>
         </div>
         <div class="search-bar">
-            <input type="text" placeholder="Search Node ID..." id="search-input">
+            <input type="text" placeholder="Search Node ID or Label..." id="search-input" oninput="searchGraph(this.value)">
         </div>
+        
+        <!-- Legend -->\n        <div class="legend">
+            <h4>Tawhidic Tiers</h4>
+            <div class="legend-item"><span class="legend-dot" style="background: #D4AF37;"></span> Quran (Thabit)</div>
+            <div class="legend-item"><span class="legend-dot" style="background: #C0C0C0;"></span> Hadith (Thabit)</div>
+            <div class="legend-item"><span class="legend-dot" style="background: #DC143C;"></span> Ruling (Zanni)</div>
+        </div>
+    </div>
+    
+    <!-- Node Details Panel -->
+    <div id="node-details" class="node-details">
+        <div class="node-details__header">
+            <h3>Node Details</h3>
+            <button class="close-btn" onclick="closeNodeDetails()">×</button>
+        </div>
+        <div class="node-details__content">
+            <div class="detail-row">
+                <span class="detail-label">ID:</span>
+                <span class="detail-value" id="detail-id">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Label:</span>
+                <span class="detail-value" id="detail-label">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Type:</span>
+                <span class="detail-value" id="detail-type">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Connections:</span>
+                <span class="detail-value" id="detail-connections">-</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Zoom Controls -->
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="window.graphZoom.zoomIn()" title="Zoom In (+)">+</button>
+        <button class="zoom-btn" onclick="window.graphZoom.zoomOut()" title="Zoom Out (-)">−</button>
+        <button class="zoom-btn" onclick="window.graphZoom.reset()" title="Reset View (Space)">⌖</button>
+        <button class="zoom-btn" onclick="toggleFullscreen()" title="Fullscreen (F)">⛶</button>
     </div>
 </div>
 
 <!-- D3.js Library -->
 <script src="https://d3js.org/d3.v7.min.js"></script>
-<!-- Graph Visualization (v2 = API fetch) -->
-<script src="/static/js/graph.js?v=2"></script>
+<!-- Graph Visualization (v4 = search & filters) -->
+<script src="/static/js/graph.js?v=4"></script>
+<script>
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        window.graphZoom?.zoomIn();
+    } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        window.graphZoom?.zoomOut();
+    } else if (e.key === ' ') {
+        e.preventDefault();
+        window.graphZoom?.reset();
+    } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+    } else if (e.key === 'Escape') {
+        closeNodeDetails();
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
+    }
+});
+
+// Fullscreen toggle
+function toggleFullscreen() {
+    const wrapper = document.querySelector('.graph-wrapper');
+    if (!document.fullscreenElement) {
+        wrapper.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
+</script>
 {% endblock %}

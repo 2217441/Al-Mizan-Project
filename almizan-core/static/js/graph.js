@@ -1,18 +1,44 @@
-// Graph Visualization Logic - Fetches real data from API
+// Graph Visualization Logic - Advanced Features
+
+// Global state for graph interactions
+const graphState = {
+    activeFilters: new Set(['verse', 'hadith', 'ruling']),
+    searchTerm: '',
+    selectedNode: null
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('graph-container');
     const width = container.clientWidth || 800;
     const height = container.clientHeight || 600;
 
-    // Create SVG
+    // Create SVG with zoom container
     const svg = d3.select("#graph-container")
         .append("svg")
         .attr("width", width)
         .attr("height", height);
 
-    // Add loading indicator
-    const loadingText = svg.append("text")
+    // Create a group for zoom/pan transformations
+    const g = svg.append("g");
+
+    // Set up zoom behavior
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+            g.attr("transform", event.transform);
+        });
+
+    svg.call(zoom);
+
+    // Expose zoom controls globally
+    window.graphZoom = {
+        zoomIn: () => svg.transition().call(zoom.scaleBy, 1.3),
+        zoomOut: () => svg.transition().call(zoom.scaleBy, 0.7),
+        reset: () => svg.transition().call(zoom.transform, d3.zoomIdentity)
+    };
+
+    // Add loading indicator (to the zoom group)
+    const loadingText = g.append("text")
         .attr("x", width / 2)
         .attr("y", height / 2)
         .attr("text-anchor", "middle")
@@ -69,25 +95,69 @@ document.addEventListener('DOMContentLoaded', async () => {
             .force("center", d3.forceCenter(width / 2, height / 2))
             .force("collision", d3.forceCollide().radius(30));
 
-        // Draw links
-        const link = svg.append("g")
+        // Draw links (add to zoom group)
+        const link = g.append("g")
+            .attr("class", "links")
             .selectAll("line")
             .data(links)
             .enter().append("line")
-            .attr("stroke", "#555")
-            .attr("stroke-width", 1.5)
-            .attr("stroke-opacity", 0.6);
+            .attr("stroke", "#888")
+            .attr("stroke-width", 2)
+            .attr("stroke-opacity", 0.5);
 
-        // Draw nodes
-        const node = svg.append("g")
+        // Draw nodes (add to zoom group)
+        const node = g.append("g")
+            .attr("class", "nodes")
             .selectAll("g")
             .data(nodes)
             .enter().append("g")
             .attr("class", "node")
+            .style("cursor", "pointer")
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
-                .on("end", dragended));
+                .on("end", dragended))
+            .on("mouseenter", function(event, d) {
+                d3.select(this).select("circle")
+                    .transition().duration(200)
+                    .attr("r", d.tier === 'thabit' ? 16 : 12)
+                    .attr("stroke-width", 3);
+                
+                // Highlight connected nodes
+                const connectedIds = new Set();
+                links.forEach(l => {
+                    if (l.source.id === d.id) connectedIds.add(l.target.id);
+                    if (l.target.id === d.id) connectedIds.add(l.source.id);
+                });
+                
+                node.style("opacity", n => connectedIds.has(n.id) || n.id === d.id ? 1 : 0.3);
+                link.style("opacity", l => 
+                    (l.source.id === d.id || l.target.id === d.id) ? 1 : 0.1
+                );
+            })
+            .on("mouseleave", function(event, d) {
+                d3.select(this).select("circle")
+                    .transition().duration(200)
+                    .attr("r", d.tier === 'thabit' ? 12 : 8)
+                    .attr("stroke-width", 2);
+                
+                node.style("opacity", 1);
+                link.style("opacity", 0.6);
+            })
+            .on("click", function(event, d) {
+                graphState.selectedNode = d;
+                
+                // Pulse animation on click
+                d3.select(this).select("circle")
+                    .transition()
+                    .duration(300)
+                    .attr("r", d.tier === 'thabit' ? 18 : 14)
+                    .transition()
+                    .duration(300)
+                    .attr("r", d.tier === 'thabit' ? 12 : 8);
+                
+                showNodeDetails(d, links);
+            });
 
         // Node circles with colors by type
         node.append("circle")
@@ -123,6 +193,59 @@ document.addEventListener('DOMContentLoaded', async () => {
             node.attr("transform", d => `translate(${d.x},${d.y})`);
         });
 
+        // Search functionality
+        window.searchGraph = function(term) {
+            graphState.searchTerm = term.toLowerCase();
+            
+            if (!term) {
+                node.style("opacity", 1);
+                node.selectAll("circle").attr("stroke", "#fff").attr("stroke-width", 2);
+                return;
+            }
+            
+            const matches = nodes.filter(n => 
+                n.id.toLowerCase().includes(term) || n.label.toLowerCase().includes(term)
+            );
+            
+            if (matches.length > 0) {
+                // Highlight matches
+                node.style("opacity", n => matches.find(m => m.id === n.id) ? 1 : 0.2);
+                node.selectAll("circle")
+                    .attr("stroke", d => matches.find(m => m.id === d.id) ? "#D4AF37" : "#fff")
+                    .attr("stroke-width", d => matches.find(m => m.id === d.id) ? 4 : 2);
+                
+                // Center on first match
+                const firstMatch = matches[0];
+                const transform = d3.zoomIdentity
+                    .translate(width / 2, height / 2)
+                    .scale(1.5)
+                    .translate(-firstMatch.x, -firstMatch.y);
+                svg.transition().duration(750).call(zoom.transform, transform);
+            } else {
+                node.style("opacity", 0.2);
+            }
+        };
+
+        // Filter functionality
+        window.toggleFilter = function(type, isChecked) {
+            if (isChecked) {
+                graphState.activeFilters.add(type);
+            } else {
+                graphState.activeFilters.delete(type);
+            }
+            
+            node.transition().duration(300)
+                .style("opacity", d => graphState.activeFilters.has(d.type) ? 1 : 0)
+                .style("pointer-events", d => graphState.activeFilters.has(d.type) ? "all" : "none");
+            
+            link.transition().duration(300)
+                .style("opacity", l => {
+                    const sourceVisible = graphState.activeFilters.has(l.source.type);
+                    const targetVisible = graphState.activeFilters.has(l.target.type);
+                    return (sourceVisible && targetVisible) ? 0.6 : 0;
+                });
+        };
+
         function dragstarted(event, d) {
             if (!event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
@@ -140,4 +263,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             d.fy = null;
         }
     }
+
+    // Node details panel
+    function showNodeDetails(node, links) {
+        const panel = document.getElementById('node-details');
+        const connections = links.filter(l => l.source.id === node.id || l.target.id === node.id);
+        
+        document.getElementById('detail-id').textContent = node.id;
+        document.getElementById('detail-label').textContent = node.label;
+        document.getElementById('detail-type').textContent = node.type.toUpperCase();
+        document.getElementById('detail-connections').textContent = connections.length;
+        
+        panel.classList.add('active');
+    }
+
+    window.closeNodeDetails = function() {
+        document.getElementById('node-details').classList.remove('active');
+    };
 });
