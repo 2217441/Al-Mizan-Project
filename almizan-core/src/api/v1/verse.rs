@@ -48,7 +48,7 @@ pub struct VerseQuery {
     include_roots: bool,
 }
 
-/// GET /api/v1/verse/:surah/:ayah
+/// GET /api/v1/verse/{surah}/{ayah}
 /// Get a specific verse by surah and ayah number
 pub async fn get_verse(
     State(db): State<Database>,
@@ -117,7 +117,7 @@ pub async fn get_verse(
     }
 }
 
-/// GET /api/v1/verse/:surah
+/// GET /api/v1/verse/{surah}
 /// Get all verses in a surah
 pub async fn get_surah(State(db): State<Database>, Path(surah): Path<i32>) -> impl IntoResponse {
     // Query all verse IDs for this surah (e.g., quran_verse:1_1 to quran_verse:1_286)

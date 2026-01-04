@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Islamic Digital Citadel API
-  description: Secure API for accessing Islamic texts and abrogation data.
+  title: Al-Mizan API
+  description: RESTful API for the Al-Mizan Semantic Knowledge Graph
   version: 1.0.0
 servers:
   - url: http://localhost:3000/api/v1

@@ -60,7 +60,7 @@ pub async fn get_all_names(State(db): State<Database>) -> impl IntoResponse {
     }
 }
 
-/// GET /api/v1/names/:id
+/// GET /api/v1/names/{id}
 /// Get a specific divine name by ID
 pub async fn get_name(State(db): State<Database>, Path(id): Path<i32>) -> impl IntoResponse {
     let result: Result<Option<DbDivineName>, _> =

@@ -1,11 +1,30 @@
 import requests
 import json
 import sys
+import os
+
+# Manual .env loader since pip is unavailable
+def load_env_file(filepath):
+    if not os.path.exists(filepath):
+        return
+    with open(filepath, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if '=' in line:
+                key, val = line.split('=', 1)
+                os.environ[key.strip()] = val.strip()
+
+# Load env vars
+BASE_DIR = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+load_env_file(os.path.join(PROJECT_ROOT, ".env"))
 
 # Configuration
 DB_URL = "http://localhost:8000/sql"
-HEADERS = {"Accept": "application/json", "NS": "idc", "DB": "main"}
-AUTH = ("root", "root")
+HEADERS = {"Accept": "application/json", "NS": os.getenv("DB_NS", "idc"), "DB": os.getenv("DB_DB", "main")}
+AUTH = (os.getenv("DB_USER", "root"), os.getenv("DB_PASS", "root"))
 
 def run_query(sql):
     try:

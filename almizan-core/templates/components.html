@@ -1,0 +1,498 @@
+{% extends "base.html" %}
+
+{% block title %}Component Library | Al-Mizan{% endblock %}
+
+{% block content %}
+<style>
+    .docs-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--space-8);
+    }
+    
+    .docs-header {
+        text-align: center;
+        margin-bottom: var(--space-16);
+    }
+    
+    .docs-header h1 {
+        font-size: var(--text-4xl);
+        font-family: var(--font-heading);
+        margin-bottom: var(--space-4);
+    }
+    
+    .docs-section {
+        margin-bottom: var(--space-16);
+        scroll-margin-top: var(--space-8);
+    }
+    
+    .docs-section__title {
+        font-size: var(--text-2xl);
+        font-family: var(--font-heading);
+        color: var(--color-gold);
+        margin-bottom: var(--space-6);
+        padding-bottom: var(--space-3);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .docs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--space-6);
+    }
+    
+    .docs-example {
+        background: var(--color-card);
+        border: var(--border-glass);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+    }
+    
+    .docs-example__preview {
+        padding: var(--space-8);
+        background: var(--color-void);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: var(--space-4);
+        min-height: 120px;
+    }
+    
+    .docs-example__info {
+        padding: var(--space-4);
+        border-top: var(--border-glass);
+    }
+    
+    .docs-example__name {
+        font-weight: var(--font-bold);
+        font-size: var(--text-base);
+        margin-bottom: var(--space-1);
+    }
+    
+    .docs-example__class {
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        color: var(--color-gold);
+    }
+    
+    .docs-toc {
+        position: sticky;
+        top: var(--space-8);
+        background: var(--color-panel);
+        border: var(--border-glass);
+        border-radius: var(--radius-xl);
+        padding: var(--space-6);
+        margin-bottom: var(--space-8);
+    }
+    
+    .docs-toc__title {
+        font-size: var(--text-sm);
+        font-weight: var(--font-bold);
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wider);
+        color: var(--text-muted);
+        margin-bottom: var(--space-4);
+    }
+    
+    .docs-toc__list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .docs-toc__item {
+        padding: var(--space-2) var(--space-4);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-md);
+        font-size: var(--text-sm);
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all var(--duration-fast);
+    }
+    
+    .docs-toc__item:hover {
+        background: var(--color-gold);
+        color: var(--text-inverse);
+    }
+    
+    .full-width { grid-column: 1 / -1; }
+</style>
+
+<div class="docs-container">
+    <!-- Header -->
+    <header class="docs-header">
+        <h1 class="gradient-text">Al-Mizan Component Library</h1>
+        <p class="text-muted">A comprehensive design system for the Tawhidic Knowledge Graph</p>
+    </header>
+    
+    <!-- Table of Contents -->
+    <nav class="docs-toc">
+        <h2 class="docs-toc__title">Components</h2>
+        <ul class="docs-toc__list">
+            <a href="#buttons" class="docs-toc__item">Buttons</a>
+            <a href="#badges" class="docs-toc__item">Badges</a>
+            <a href="#cards" class="docs-toc__item">Cards</a>
+            <a href="#inputs" class="docs-toc__item">Inputs</a>
+            <a href="#tabs" class="docs-toc__item">Tabs</a>
+            <a href="#gauge" class="docs-toc__item">Gauge</a>
+            <a href="#glass-panel" class="docs-toc__item">Glass Panel</a>
+            <a href="#legend" class="docs-toc__item">Legend</a>
+            <a href="#stats" class="docs-toc__item">Stats</a>
+            <a href="#toast" class="docs-toc__item">Toast</a>
+        </ul>
+    </nav>
+
+    <!-- BUTTONS -->
+    <section id="buttons" class="docs-section">
+        <h2 class="docs-section__title">Buttons</h2>
+        <div class="docs-grid">
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <button class="btn btn--primary">Primary</button>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Primary Button</div>
+                    <div class="docs-example__class">.btn .btn--primary</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <button class="btn btn--ghost">Ghost</button>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Ghost Button</div>
+                    <div class="docs-example__class">.btn .btn--ghost</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <button class="btn btn--action">Action</button>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Action Button</div>
+                    <div class="docs-example__class">.btn .btn--action</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <button class="btn btn--success">Approve</button>
+                    <button class="btn btn--danger">Reject</button>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Status Buttons</div>
+                    <div class="docs-example__class">.btn--success / .btn--danger</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <button class="btn btn--primary btn--sm">Small</button>
+                    <button class="btn btn--primary">Default</button>
+                    <button class="btn btn--primary btn--lg">Large</button>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Button Sizes</div>
+                    <div class="docs-example__class">.btn--sm / .btn--lg</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BADGES -->
+    <section id="badges" class="docs-section">
+        <h2 class="docs-section__title">Badges</h2>
+        <div class="docs-grid">
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <span class="badge badge--status">
+                        <span class="badge__dot"></span>
+                        <span>System Operational</span>
+                    </span>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Status Badge</div>
+                    <div class="docs-example__class">.badge .badge--status</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <span class="badge badge--success">
+                        <span class="badge__dot"></span>
+                        <span>Verified</span>
+                    </span>
+                    <span class="badge badge--warning">Pending</span>
+                    <span class="badge badge--error">Rejected</span>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Badge Variants</div>
+                    <div class="docs-example__class">.badge--success / warning / error</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <span class="badge badge--tag">Fiqh</span>
+                    <span class="badge badge--tag badge--info">Hadith</span>
+                    <span class="badge badge--tag badge--success">Verified</span>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Tag Badges</div>
+                    <div class="docs-example__class">.badge .badge--tag</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CARDS -->
+    <section id="cards" class="docs-section">
+        <h2 class="docs-section__title">Cards</h2>
+        <div class="docs-grid">
+            <div class="docs-example full-width">
+                <div class="docs-example__preview" style="flex-direction: row; gap: var(--space-6);">
+                    <a href="#" class="card card--portal card--blue" style="flex: 1; min-height: 200px;">
+                        <div class="card__hover-gradient"></div>
+                        <div class="card__icon">📖</div>
+                        <h3 class="card__title">Portal Card</h3>
+                        <span class="card__tag">Blue Theme</span>
+                        <p class="card__desc">Interactive card with hover effects.</p>
+                        <span class="card__action">Explore →</span>
+                    </a>
+                    <a href="#" class="card card--portal card--green" style="flex: 1; min-height: 200px;">
+                        <div class="card__hover-gradient"></div>
+                        <div class="card__icon">⚡</div>
+                        <h3 class="card__title">Portal Card</h3>
+                        <span class="card__tag">Green Theme</span>
+                        <p class="card__desc">Interactive card with hover effects.</p>
+                        <span class="card__action">Explore →</span>
+                    </a>
+                    <a href="#" class="card card--portal card--gold" style="flex: 1; min-height: 200px;">
+                        <div class="card__hover-gradient"></div>
+                        <div class="card__icon">⚖️</div>
+                        <h3 class="card__title">Portal Card</h3>
+                        <span class="card__tag">Gold Theme</span>
+                        <p class="card__desc">Interactive card with hover effects.</p>
+                        <span class="card__action">Explore →</span>
+                    </a>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Portal Cards (Landing Page)</div>
+                    <div class="docs-example__class">.card .card--portal .card--blue/green/gold</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INPUTS -->
+    <section id="inputs" class="docs-section">
+        <h2 class="docs-section__title">Form Inputs</h2>
+        <div class="docs-grid">
+            <div class="docs-example">
+                <div class="docs-example__preview" style="flex-direction: column; width: 100%;">
+                    <input type="text" class="input" placeholder="Default input">
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Text Input</div>
+                    <div class="docs-example__class">.input</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview" style="flex-direction: column; width: 100%;">
+                    <input type="text" class="input input--lg" placeholder="Large input">
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Large Input</div>
+                    <div class="docs-example__class">.input .input--lg</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview" style="flex-direction: column; width: 100%;">
+                    <select class="input select">
+                        <option>Select an option</option>
+                        <option>Bukhari</option>
+                        <option>Muslim</option>
+                    </select>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Select</div>
+                    <div class="docs-example__class">.input .select</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview" style="width: 100%;">
+                    <div class="input-group" style="width: 100%;">
+                        <input type="text" class="input" placeholder="Search...">
+                        <button class="btn btn--primary">Search</button>
+                    </div>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Input Group</div>
+                    <div class="docs-example__class">.input-group</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TABS -->
+    <section id="tabs" class="docs-section">
+        <h2 class="docs-section__title">Tabs</h2>
+        <div class="docs-grid">
+            <div class="docs-example full-width">
+                <div class="docs-example__preview" style="flex-direction: column; align-items: stretch; width: 100%;">
+                    <div data-tabs>
+                        <nav class="tabs">
+                            <button class="tab active" data-tab="overview">Overview</button>
+                            <button class="tab" data-tab="details">Details</button>
+                            <button class="tab" data-tab="history">History</button>
+                        </nav>
+                        <div data-tab-panel="overview">
+                            <p class="text-muted" style="padding: var(--space-4);">Overview content panel</p>
+                        </div>
+                        <div data-tab-panel="details" style="display: none;">
+                            <p class="text-muted" style="padding: var(--space-4);">Details content panel</p>
+                        </div>
+                        <div data-tab-panel="history" style="display: none;">
+                            <p class="text-muted" style="padding: var(--space-4);">History content panel</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Tab Navigation</div>
+                    <div class="docs-example__class">.tabs .tab [data-tabs]</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GAUGE -->
+    <section id="gauge" class="docs-section">
+        <h2 class="docs-section__title">Gauge</h2>
+        <div class="docs-grid">
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <div class="gauge" id="demo-gauge-1">
+                        <svg class="gauge__svg" width="120" height="120">
+                            <circle class="gauge__bg" cx="60" cy="60" r="45"></circle>
+                            <circle class="gauge__progress" cx="60" cy="60" r="45" style="stroke-dashoffset: 85;"></circle>
+                        </svg>
+                        <div class="gauge__text">70%</div>
+                    </div>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Progress Gauge</div>
+                    <div class="docs-example__class">.gauge</div>
+                </div>
+            </div>
+            <div class="docs-example">
+                <div class="docs-example__preview">
+                    <div class="gauge">
+                        <svg class="gauge__svg" width="120" height="120">
+                            <circle class="gauge__bg" cx="60" cy="60" r="45"></circle>
+                            <circle class="gauge__progress" cx="60" cy="60" r="45" style="stroke: #10b981; stroke-dashoffset: 28;"></circle>
+                        </svg>
+                        <div class="gauge__text">90%</div>
+                    </div>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Custom Color Gauge</div>
+                    <div class="docs-example__class">style="stroke: #10b981"</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GLASS PANEL -->
+    <section id="glass-panel" class="docs-section">
+        <h2 class="docs-section__title">Glass Panel</h2>
+        <div class="docs-grid">
+            <div class="docs-example full-width">
+                <div class="docs-example__preview">
+                    <div class="glass-panel" style="width: 300px;">
+                        <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-gold);">Glass Panel</h3>
+                        <p class="text-muted">Glassmorphism container with blur effect and hover state.</p>
+                    </div>
+                    <div class="glass-panel glass-panel--static" style="width: 300px;">
+                        <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-gold);">Static Panel</h3>
+                        <p class="text-muted">No hover animation variant.</p>
+                    </div>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Glass Panels</div>
+                    <div class="docs-example__class">.glass-panel / .glass-panel--static</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LEGEND -->
+    <section id="legend" class="docs-section">
+        <h2 class="docs-section__title">Legend</h2>
+        <div class="docs-grid">
+            <div class="docs-example">
+                <div class="docs-example__preview" style="flex-direction: column; align-items: flex-start;">
+                    <div class="legend" style="margin-top: 0; padding-top: 0; border-top: none;">
+                        <h4 class="legend__title">Tawhidic Tiers</h4>
+                        <div class="legend__item"><span class="legend__dot legend__dot--gold"></span> Quran (Thabit)</div>
+                        <div class="legend__item"><span class="legend__dot legend__dot--silver"></span> Hadith (Thabit)</div>
+                        <div class="legend__item"><span class="legend__dot legend__dot--crimson"></span> Ruling (Zanni)</div>
+                    </div>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Graph Legend</div>
+                    <div class="docs-example__class">.legend .legend__item .legend__dot</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section id="stats" class="docs-section">
+        <h2 class="docs-section__title">Stats</h2>
+        <div class="docs-grid">
+            <div class="docs-example">
+                <div class="docs-example__preview" style="gap: var(--space-6);">
+                    <div class="stat">
+                        <span class="stat__dot stat__dot--green"></span>
+                        <span>Nodes: <span class="stat__value">12,450</span></span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat__dot stat__dot--blue"></span>
+                        <span>Latency: <span class="stat__value">142ms</span></span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat__dot stat__dot--gold"></span>
+                        <span>Uptime: <span class="stat__value">99.9%</span></span>
+                    </div>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Stat Items</div>
+                    <div class="docs-example__class">.stat .stat__dot .stat__value</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOAST -->
+    <section id="toast" class="docs-section">
+        <h2 class="docs-section__title">Toast Notifications</h2>
+        <div class="docs-grid">
+            <div class="docs-example full-width">
+                <div class="docs-example__preview" style="gap: var(--space-4);">
+                    <button class="btn btn--success" onclick="AlMizan.components.toast('Operation successful!', 'success')">Success Toast</button>
+                    <button class="btn btn--danger" onclick="AlMizan.components.toast('Something went wrong', 'error')">Error Toast</button>
+                    <button class="btn btn--ghost" onclick="AlMizan.components.toast('Please note...', 'warning')">Warning Toast</button>
+                    <button class="btn btn--action" onclick="AlMizan.components.toast('Here is some info', 'info')">Info Toast</button>
+                </div>
+                <div class="docs-example__info">
+                    <div class="docs-example__name">Toast Notifications (Interactive)</div>
+                    <div class="docs-example__class">AlMizan.components.toast(message, type)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script src="/static/js/components.js"></script>
+{% endblock %}

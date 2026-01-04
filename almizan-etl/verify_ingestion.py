@@ -8,10 +8,28 @@ import json
 import os
 import xml.etree.ElementTree as ET
 
+# Manual .env loader since pip is unavailable
+def load_env_file(filepath):
+    if not os.path.exists(filepath):
+        return
+    with open(filepath, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if '=' in line:
+                key, val = line.split('=', 1)
+                os.environ[key.strip()] = val.strip()
+
+# Load env vars from project root
+BASE_DIR = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+load_env_file(os.path.join(PROJECT_ROOT, ".env"))
+
 DB_URL = "http://localhost:8000/sql"
-DB_NS = "idc"
-DB_DB = "main"
-DB_AUTH = ("root", "root")
+DB_NS = os.getenv("DB_NS", "idc")
+DB_DB = os.getenv("DB_DB", "main")
+DB_AUTH = (os.getenv("DB_USER", "root"), os.getenv("DB_PASS", "root"))
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(BASE_DIR, "data")

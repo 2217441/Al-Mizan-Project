@@ -1,36 +1,17 @@
-:root {
-    /* Dark Theme (Default) */
-    --bg-void: #050510;
-    --bg-panel: rgba(20, 20, 35, 0.7);
-    --bg-card: rgba(20, 20, 35, 0.9);
-    --bg-gradient: radial-gradient(circle at center, #1a1a2e 0%, #050510 100%);
-    --glass-bg: rgba(20, 20, 35, 0.6);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-    --text-primary: #E0E0E0;
-    --text-muted: #8892B0;
-    --accent-gold: #D4AF37;
-    --accent-crimson: #DC143C;
-    --border-glass: 1px solid rgba(255, 255, 255, 0.1);
-    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.5);
-    /* System fonts - no external dependencies */
-    --font-heading: Georgia, 'Times New Roman', serif;
-    --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
+/**
+ * Al-Mizan Global Styles
+ * Uses design tokens from tokens.css
+ * This file contains layout and component styles only
+ */
 
-/* Light Theme */
-[data-theme="light"] {
-    --bg-void: #f5f3ef;
-    --bg-panel: rgba(255, 255, 255, 0.95);
-    --bg-card: #ffffff;
-    --bg-gradient: radial-gradient(circle at center, #ffffff 0%, #f5f3ef 100%);
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: 1px solid rgba(0, 0, 0, 0.1);
-    --text-primary: #1a1a2e;
-    --text-muted: #475569;
-    --accent-gold: #b8860b;
-    /* Darker gold for better contrast */
-    --border-glass: 1px solid rgba(0, 0, 0, 0.12);
-    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.1);
+/* Legacy variable aliases for backward compatibility */
+:root {
+    --bg-void: var(--color-void);
+    --bg-panel: var(--color-panel);
+    --bg-card: var(--color-card);
+    --bg-gradient: radial-gradient(circle at center, #1a1a2e 0%, var(--color-void) 100%);
+    --accent-gold: var(--color-gold);
+    --accent-crimson: var(--color-crimson);
 }
 
 /* Light mode specific fixes */
@@ -39,19 +20,19 @@
 [data-theme="light"] textarea {
     background: #fff !important;
     border: 1px solid #d1d5db !important;
-    color: #1a1a2e !important;
+    color: var(--text-primary) !important;
 }
 
 [data-theme="light"] input:focus,
 [data-theme="light"] select:focus {
-    border-color: var(--accent-gold) !important;
+    border-color: var(--color-gold) !important;
     box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.2) !important;
 }
 
 [data-theme="light"] .btn,
 [data-theme="light"] .button,
 [data-theme="light"] .btn-primary {
-    background: var(--accent-gold);
+    background: var(--color-gold);
     color: #fff;
 }
 
@@ -68,6 +49,12 @@ body {
     font-family: var(--font-body);
     min-height: 100vh;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode body */
+[data-theme="light"] body {
+    background: linear-gradient(180deg, #f8f6f3 0%, #f5f3ef 100%);
 }
 
 a {
@@ -152,11 +139,28 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 2rem;
-    background: var(--bg-panel);
-    border-bottom: var(--border-glass);
-    backdrop-filter: blur(10px);
+    padding: 0.875rem 2rem;
+    background: linear-gradient(180deg,
+            rgba(20, 20, 35, 0.95) 0%,
+            rgba(20, 20, 35, 0.85) 100%);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
+
+/* Light mode header */
+[data-theme="light"] .header-nav {
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.95) 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+}
+
 
 .header-nav__brand {
     display: flex;
@@ -347,6 +351,12 @@ a {
         linear-gradient(to right, currentColor 1px, transparent 1px),
         linear-gradient(to bottom, currentColor 1px, transparent 1px);
     background-size: 60px 60px;
+}
+
+/* Light mode grid */
+[data-theme="light"] .landing-grid {
+    opacity: 0.08;
+    color: #b8860b;
 }
 
 .landing-mandala {
@@ -554,6 +564,13 @@ a {
     transform: translateY(-8px);
 }
 
+/* Light mode portal cards */
+[data-theme="light"] .portal-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
 .portal-card--blue:hover {
     border-color: #1173d4;
     box-shadow: 0 0 50px rgba(17, 115, 212, 0.15);
@@ -707,6 +724,14 @@ a {
     background: rgba(5, 9, 20, 0.9);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     padding: 1rem 1.5rem;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* Light mode footer */
+[data-theme="light"] .landing-footer {
+    background: rgba(255, 255, 255, 0.95);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .landing-footer__inner {

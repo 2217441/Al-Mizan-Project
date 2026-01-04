@@ -1,0 +1,11 @@
+# Al-Mizan Automated Backup Cron Configuration
+# 
+# Install with: sudo cp cron.d/almizan-backup /etc/cron.d/
+# Or add to user crontab: crontab -e
+
+# Daily backup at 2:00 AM server time
+# Runs as the deployment user (change 'deploy' to your actual username)
+0 2 * * * deploy cd /opt/al-mizan-project && ./database/scripts/backup.sh >> /var/log/almizan-backup.log 2>&1
+
+# Weekly full verification backup on Sundays at 3:00 AM
+0 3 * * 0 deploy cd /opt/al-mizan-project && ./database/scripts/backup.sh >> /var/log/almizan-backup.log 2>&1 && echo "[$(date)] Weekly verification complete" >> /var/log/almizan-backup.log

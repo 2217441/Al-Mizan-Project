@@ -32,6 +32,10 @@ struct PresentationTemplate;
 #[template(path = "governance.html")]
 struct GovernanceTemplate;
 
+#[derive(Template)]
+#[template(path = "components.html")]
+struct ComponentsTemplate;
+
 #[tokio::main]
 async fn main() {
     // Initialize tracing
@@ -62,25 +66,31 @@ async fn main() {
         .route("/", get(index_handler))
         .route("/auth/signup", post(auth::signup))
         .route("/auth/signin", post(auth::signin))
-        .route("/api/v1/evidence/:id", get(api::v1::evidence::get_evidence))
+        .route(
+            "/api/v1/evidence/{id}",
+            get(api::v1::evidence::get_evidence),
+        )
         .route(
             "/api/v1/synthesis",
             post(api::v1::synthesis::synthesize_topic),
         )
         .route("/api/v1/dashboard", post(api::v1::dashboard::get_dashboard))
         .route("/api/v1/graph", get(api::v1::graph::get_graph))
-        .route("/api/v1/verse/:surah/:ayah", get(api::v1::verse::get_verse))
-        .route("/api/v1/verse/:surah", get(api::v1::verse::get_surah))
         .route(
-            "/api/v1/hadith/:collection/:number",
+            "/api/v1/verse/{surah}/{ayah}",
+            get(api::v1::verse::get_verse),
+        )
+        .route("/api/v1/verse/{surah}", get(api::v1::verse::get_surah))
+        .route(
+            "/api/v1/hadith/{collection}/{number}",
             get(api::v1::hadith::get_hadith),
         )
         .route(
-            "/api/v1/hadith/:collection",
+            "/api/v1/hadith/{collection}",
             get(api::v1::hadith::list_collection),
         )
         .route("/api/v1/names", get(api::v1::names::get_all_names))
-        .route("/api/v1/names/:id", get(api::v1::names::get_name))
+        .route("/api/v1/names/{id}", get(api::v1::names::get_name))
         .route("/network", get(api::v1::network::dashboard))
         .route("/playground", get(api::v1::network::playground))
         .route(
@@ -116,7 +126,7 @@ async fn main() {
             post(api::v1::enterprise::certify_contract_handler),
         )
         .route(
-            "/api/v1/identity/resolve/:did",
+            "/api/v1/identity/resolve/{did}",
             get(api::v1::identity::resolve_did),
         )
         .route(
@@ -128,6 +138,7 @@ async fn main() {
         .route("/landing", get(landing_handler))
         .route("/presentation", get(presentation_handler))
         .route("/governance", get(governance_handler))
+        .route("/components", get(components_handler))
         .nest_service("/static", ServeDir::new("static"))
         .route(
             "/favicon.ico",
@@ -136,7 +147,17 @@ async fn main() {
         .with_state(db);
 
     // Run it
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    // Run it
+    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
+    let addr = format!("0.0.0.0:{}", port);
+
+    let listener = tokio::net::TcpListener::bind(&addr)
+        .await
+        .unwrap_or_else(|e| {
+            tracing::error!("Failed to bind to address {}: {}", addr, e);
+            std::process::exit(1);
+        });
+
     tracing::info!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
 }
@@ -168,5 +189,10 @@ async fn presentation_handler() -> Html<String> {
 
 async fn governance_handler() -> Html<String> {
     let template = GovernanceTemplate;
+    Html(template.render().unwrap())
+}
+
+async fn components_handler() -> Html<String> {
+    let template = ComponentsTemplate;
     Html(template.render().unwrap())
 }

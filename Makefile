@@ -15,4 +15,13 @@ logs:
 
 # Local development shortcuts
 test:
-	cd backend && cargo test
+	cd almizan-core && cargo test
+
+# Database operations
+backup:
+	./database/scripts/backup.sh
+
+restore:
+	@echo "Usage: make restore FILE=database/backups/backup_YYYYMMDD_HHMMSS.surql"
+	@test -n "$(FILE)" || (echo "ERROR: FILE not set" && exit 1)
+	./database/scripts/restore.sh $(FILE)

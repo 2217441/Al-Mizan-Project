@@ -2,7 +2,7 @@
 
 // Global state for graph interactions
 const graphState = {
-    activeFilters: new Set(['verse', 'hadith', 'ruling']),
+    activeFilters: new Set(['allah', 'prophet', 'verse', 'hadith', 'narrator', 'ruling']),
     searchTerm: '',
     selectedNode: null
 };
@@ -57,7 +57,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             id: n.data.id,
             label: n.data.label,
             type: n.data.type,
-            tier: n.data.type === 'verse' ? 'thabit' : 'context'
+            // Allah and Prophets are 'thabit' (fixed/foundation)
+            tier: ['allah', 'prophet', 'verse'].includes(n.data.type) ? 'thabit' : 'context'
         }));
         
         const edges = graphData.edges.map(e => ({
@@ -77,12 +78,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => {
             loadingText.remove();
             renderGraph([
-                { id: "verse:1_1", label: "Al-Fatiha 1:1", type: "verse", tier: "thabit" },
-                { id: "root:b-s-m", label: "ب-س-م", type: "root", tier: "context" },
-                { id: "root:r-h-m", label: "ر-ح-م", type: "root", tier: "context" }
+                { id: "allah:tawhid", label: "الله", type: "allah", tier: "thabit" },
+                { id: "prophet:muhammad", label: "محمد", type: "prophet", tier: "thabit" },
+                { id: "verse:1_1", label: "Al-Fatiha 1:1", type: "verse", tier: "thabit" }
             ], [
-                { source: "verse:1_1", target: "root:b-s-m" },
-                { source: "verse:1_1", target: "root:r-h-m" }
+                { source: "allah:tawhid", target: "prophet:muhammad" },
+                { source: "prophet:muhammad", target: "verse:1_1" }
             ]);
         }, 1000);
     }
@@ -90,10 +91,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderGraph(nodes, links) {
         // Create simulation
         const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links).id(d => d.id).distance(80))
-            .force("charge", d3.forceManyBody().strength(-200))
+            .force("link", d3.forceLink(links).id(d => d.id).distance(d => {
+                if (d.source.type === 'allah') return 150; // Spread out from root
+                return 80;
+            }))
+            .force("charge", d3.forceManyBody().strength(-300))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(30));
+            .force("collision", d3.forceCollide().radius(40));
 
         // Draw links (add to zoom group)
         const link = g.append("g")
@@ -101,9 +105,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             .selectAll("line")
             .data(links)
             .enter().append("line")
-            .attr("stroke", "#888")
-            .attr("stroke-width", 2)
-            .attr("stroke-opacity", 0.5);
+            .attr("stroke", d => {
+                if (d.source.type === 'allah') return '#D4AF37'; // Gold links from Allah
+                return '#888';
+            })
+            .attr("stroke-width", d => d.source.type === 'allah' ? 2 : 1.5)
+            .attr("stroke-opacity", 0.4);
 
         // Draw nodes (add to zoom group)
         const node = g.append("g")
@@ -120,29 +127,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             .on("mouseenter", function(event, d) {
                 d3.select(this).select("circle")
                     .transition().duration(200)
-                    .attr("r", d.tier === 'thabit' ? 16 : 12)
-                    .attr("stroke-width", 3);
+                    .attr("r", d.type === 'allah' ? 24 : (d.tier === 'thabit' ? 16 : 12))
+                    .attr("stroke-width", 4);
                 
                 // Highlight connected nodes
                 const connectedIds = new Set();
                 links.forEach(l => {
-                    if (l.source.id === d.id) connectedIds.add(l.target.id);
-                    if (l.target.id === d.id) connectedIds.add(l.source.id);
+                    const sourceId = typeof l.source === 'object' ? l.source.id : l.source;
+                    const targetId = typeof l.target === 'object' ? l.target.id : l.target;
+                    
+                    if (sourceId === d.id) connectedIds.add(targetId);
+                    if (targetId === d.id) connectedIds.add(sourceId);
                 });
                 
-                node.style("opacity", n => connectedIds.has(n.id) || n.id === d.id ? 1 : 0.3);
-                link.style("opacity", l => 
-                    (l.source.id === d.id || l.target.id === d.id) ? 1 : 0.1
-                );
+                node.style("opacity", n => connectedIds.has(n.id) || n.id === d.id ? 1 : 0.2);
+                link.style("opacity", l => {
+                    const sourceId = typeof l.source === 'object' ? l.source.id : l.source;
+                    const targetId = typeof l.target === 'object' ? l.target.id : l.target;
+                    return (sourceId === d.id || targetId === d.id) ? 1 : 0.05;
+                });
             })
             .on("mouseleave", function(event, d) {
                 d3.select(this).select("circle")
                     .transition().duration(200)
-                    .attr("r", d.tier === 'thabit' ? 12 : 8)
+                    .attr("r", d.type === 'allah' ? 20 : (d.tier === 'thabit' ? 12 : 8))
                     .attr("stroke-width", 2);
                 
                 node.style("opacity", 1);
-                link.style("opacity", 0.6);
+                link.style("opacity", 0.4);
             })
             .on("click", function(event, d) {
                 graphState.selectedNode = d;
@@ -151,36 +163,52 @@ document.addEventListener('DOMContentLoaded', async () => {
                 d3.select(this).select("circle")
                     .transition()
                     .duration(300)
-                    .attr("r", d.tier === 'thabit' ? 18 : 14)
+                    .attr("r", d.type === 'allah' ? 28 : (d.tier === 'thabit' ? 18 : 14))
                     .transition()
                     .duration(300)
-                    .attr("r", d.tier === 'thabit' ? 12 : 8);
+                    .attr("r", d.type === 'allah' ? 20 : (d.tier === 'thabit' ? 12 : 8));
                 
                 showNodeDetails(d, links);
             });
 
+        // Add glow filters
+        const defs = svg.append("defs");
+        const filter = defs.append("filter")
+            .attr("id", "glow");
+        filter.append("feGaussianBlur")
+            .attr("stdDeviation", "3.5")
+            .attr("result", "coloredBlur");
+        const feMerge = filter.append("feMerge");
+        feMerge.append("feMergeNode")
+            .attr("in", "coloredBlur");
+        feMerge.append("feMergeNode")
+            .attr("in", "SourceGraphic");
+
         // Node circles with colors by type
         node.append("circle")
-            .attr("r", d => d.tier === 'thabit' ? 12 : 8)
+            .attr("r", d => d.type === 'allah' ? 20 : (d.tier === 'thabit' ? 12 : 8))
             .attr("fill", d => {
-                if (d.type === 'verse') return '#D4AF37';  // Gold for Quran
-                if (d.type === 'root') return '#00CED1';   // Cyan for Roots
-                if (d.type === 'hadith') return '#C0C0C0'; // Silver
-                if (d.type === 'ruling') return '#DC143C'; // Crimson
+                if (d.type === 'allah') return '#FFD700';   // Bright Gold for Allah
+                if (d.type === 'prophet') return '#50C878'; // Emerald for Prophets
+                if (d.type === 'verse') return '#D4AF37';   // Gold for Quran
+                if (d.type === 'hadith') return '#C0C0C0';  // Silver
+                if (d.type === 'narrator') return '#9370DB'; // Medium Purple
+                if (d.type === 'ruling') return '#DC143C';  // Crimson
                 return '#4682B4';  // Blue default
             })
+            .attr("filter", d => d.type === 'allah' ? "url(#glow)" : "none")
             .attr("stroke", "#fff")
             .attr("stroke-width", 2);
 
         // Labels
         node.append("text")
             .text(d => d.label)
-            .attr("x", 15)
-            .attr("y", 4)
-            .attr("fill", "#fff")
-            .attr("font-size", "14px")
-            .attr("font-weight", "500")
-            .style("text-shadow", "0 0 4px rgba(0,0,0,0.8)");
+            .attr("x", d => d.type === 'allah' ? 25 : 15)
+            .attr("y", 5)
+            .attr("fill", d => d.type === 'allah' ? '#FFD700' : '#fff')
+            .attr("font-size", d => d.type === 'allah' ? '18px' : '14px')
+            .attr("font-weight", d => d.type === 'allah' ? '700' : '500')
+            .style("text-shadow", "2px 2px 4px rgba(0,0,0,0.9)");
 
         // Tick handler
         simulation.on("tick", () => {
@@ -264,20 +292,77 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Node details panel
-    function showNodeDetails(node, links) {
+    // --- UI OVERRIDES FOR HOTFIX ---
+    const originalShow = window.showNodeDetails;
+    window.showNodeDetails = function(node, links) {
         const panel = document.getElementById('node-details');
+        if (panel) {
+            panel.classList.add('active');
+            panel.style.left = '0';
+            panel.style.right = 'auto';
+        }
+        // Call original if it exists and we haven't broken anything
+        // Actually, let's just re-implement the part we need to be safe
         const connections = links.filter(l => l.source.id === node.id || l.target.id === node.id);
-        
         document.getElementById('detail-id').textContent = node.id;
         document.getElementById('detail-label').textContent = node.label;
         document.getElementById('detail-type').textContent = node.type.toUpperCase();
         document.getElementById('detail-connections').textContent = connections.length;
-        
-        panel.classList.add('active');
-    }
+    };
 
     window.closeNodeDetails = function() {
-        document.getElementById('node-details').classList.remove('active');
+        const panel = document.getElementById('node-details');
+        if (panel) {
+            panel.classList.remove('active');
+            panel.style.left = '-400px';
+        }
     };
+
+    // --- HOT FIX: UI RECOVERY ---
+    // This cleans up issues from stale compiled Askama templates
+    function applyUIHotfix() {
+        const overlay = document.querySelector('.controls-overlay');
+        const details = document.getElementById('node-details');
+        
+        if (overlay) {
+            // 1. Scrub literal \n
+            overlay.innerHTML = overlay.innerHTML.replace(/\\n/g, '');
+            
+            // 2. Force Theme Parity for Sidebar
+            const observer = new MutationObserver(() => {
+                const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                overlay.style.background = isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(20, 20, 35, 0.9)';
+                overlay.style.color = isLight ? '#1a1a2e' : '#E0E0E0';
+                overlay.style.borderColor = isLight ? '#b8860b' : '#D4AF37';
+                
+                if (details) {
+                    details.style.background = isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(20, 20, 35, 0.9)';
+                    details.style.color = isLight ? '#1a1a2e' : '#E0E0E0';
+                    details.style.borderRight = `2px solid ${isLight ? '#b8860b' : '#D4AF37'}`;
+                    details.style.borderLeft = 'none';
+                    details.style.left = details.classList.contains('active') ? '0' : '-400px';
+                    details.style.right = 'auto'; // Force disable right alignment
+                }
+
+                // Force input colors if stales
+                const input = overlay.querySelector('input');
+                if (input) {
+                    input.style.background = isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.08)';
+                    input.style.color = isLight ? '#1a1a2e' : '#FFFFFF';
+                }
+            });
+
+            observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+            // Initial run
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            overlay.style.background = isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(20, 20, 35, 0.9)';
+            overlay.style.color = isLight ? '#1a1a2e' : '#E0E0E0';
+            if (details) {
+                details.style.borderRightColor = isLight ? '#b8860b' : '#D4AF37';
+            }
+        }
+    }
+    
+    // Run hotfix after the graph starts rendering
+    setTimeout(applyUIHotfix, 100);
 });

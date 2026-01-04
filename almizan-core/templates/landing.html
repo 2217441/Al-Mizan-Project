@@ -3,29 +3,40 @@
 {% block title %}Al-Mizan | The Tawhidic Knowledge Graph{% endblock %}
 
 {% block content %}
-<div class="landing-page">
-    <!-- Background Layers -->
-    <div class="landing-grid"></div>
-    <div class="landing-mandala">
-        <div class="mandala-ring mandala-ring-1"></div>
-        <div class="mandala-ring mandala-ring-2"></div>
-        <div class="mandala-ring mandala-ring-3"></div>
+<div class="landing-page noise-overlay">
+    <!-- Animated Mesh Background -->
+    <div class="mesh-background">
+        <div class="mesh-blob mesh-blob--gold morph-blob"></div>
+        <div class="mesh-blob mesh-blob--blue morph-blob"></div>
+        <div class="mesh-blob mesh-blob--purple morph-blob"></div>
     </div>
-    <div class="landing-glow"></div>
+    
+    <!-- Aurora Effect -->
+    <div class="aurora">
+        <div class="aurora__layer"></div>
+        <div class="aurora__layer"></div>
+    </div>
+    
+    <!-- Floating Geometric Shapes -->
+    <div class="geo-shape geo-shape--diamond" style="top: 15%; left: 10%;"></div>
+    <div class="geo-shape geo-shape--ring" style="top: 60%; right: 8%; animation-delay: -5s;"></div>
+    <div class="geo-shape geo-shape--triangle" style="bottom: 20%; left: 20%; animation-delay: -10s;"></div>
+    <div class="geo-shape geo-shape--ring" style="top: 25%; right: 25%; width: 60px; height: 60px; animation-delay: -15s;"></div>
 
     <!-- Main Content -->
     <div class="landing-content">
         
         <!-- Hero Section -->
         <div class="hero-section">
-            <div class="status-badge">
-                <span class="status-dot"></span>
+            <div class="badge badge--status glow-pulse" style="margin-bottom: var(--space-6);">
+                <span class="badge__dot"></span>
                 <span>System Operational • v1.0.4 Beta</span>
             </div>
             
             <h1 class="hero-title">
-                The <span class="highlight">Tawhidic</span><br>
-                Knowledge Graph
+                <span class="text-reveal" style="animation-delay: 0.1s;">The </span>
+                <span class="text-shimmer">Tawhidic</span><br>
+                <span class="text-reveal" style="animation-delay: 0.3s;">Knowledge Graph</span>
             </h1>
             
             <p class="hero-subtitle">
@@ -35,49 +46,52 @@
         </div>
 
         <!-- Portal Cards -->
-        <div class="portal-grid">
+        <div class="portal-grid stagger-reveal">
             
             <!-- Certainty Engine -->
-            <a href="/" class="portal-card portal-card--blue">
-                <div class="portal-card__hover-gradient"></div>
-                <div class="portal-card__icon">📖</div>
-                <h3 class="portal-card__title">Certainty Engine</h3>
-                <span class="portal-card__tag">For Seekers (B2C)</span>
-                <p class="portal-card__desc">
+            <a href="/" class="card card--portal card--blue gradient-border hover-lift">
+                <div class="card__hover-gradient"></div>
+                <div class="tilt-card__glow"></div>
+                <div class="card__icon">📖</div>
+                <h3 class="card__title">Certainty Engine</h3>
+                <span class="card__tag">For Seekers (B2C)</span>
+                <p class="card__desc">
                     Semantic search engine for authenticated Islamic knowledge. 
                     Verify rulings, check isnad chains, and learn with certainty.
                 </p>
-                <span class="portal-card__action">
+                <span class="card__action">
                     Launch App →
                 </span>
             </a>
 
             <!-- Credibility API -->
-            <a href="/citadel" class="portal-card portal-card--green">
-                <div class="portal-card__hover-gradient"></div>
-                <div class="portal-card__icon">⚡</div>
-                <h3 class="portal-card__title">Credibility API</h3>
-                <span class="portal-card__tag">For Institutions (B2B)</span>
-                <p class="portal-card__desc">
+            <a href="/citadel" class="card card--portal card--green gradient-border hover-lift">
+                <div class="card__hover-gradient"></div>
+                <div class="tilt-card__glow"></div>
+                <div class="card__icon">⚡</div>
+                <h3 class="card__title">Credibility API</h3>
+                <span class="card__tag">For Institutions (B2B)</span>
+                <p class="card__desc">
                     Integrate verified knowledge into your AI models or platforms. 
                     Reputation insurance and citation analytics dashboard.
                 </p>
-                <span class="portal-card__action">
+                <span class="card__action">
                     View Dashboard →
                 </span>
             </a>
 
             <!-- Scholarly Console -->
-            <a href="/presentation" class="portal-card portal-card--gold">
-                <div class="portal-card__hover-gradient"></div>
-                <div class="portal-card__icon">⚖️</div>
-                <h3 class="portal-card__title">Scholarly Console</h3>
-                <span class="portal-card__tag">Governance (Majlis)</span>
-                <p class="portal-card__desc">
+            <a href="/presentation" class="card card--portal card--gold gradient-border hover-lift">
+                <div class="card__hover-gradient"></div>
+                <div class="tilt-card__glow"></div>
+                <div class="card__icon">⚖️</div>
+                <h3 class="card__title">Scholarly Console</h3>
+                <span class="card__tag">Governance (Majlis)</span>
+                <p class="card__desc">
                     Tazkiyat al-Ilm (Knowledge Curation). Human-in-the-loop 
                     verification tools for the Council of Scholars.
                 </p>
-                <span class="portal-card__action">
+                <span class="card__action">
                     Access Console 🔒
                 </span>
             </a>
@@ -86,24 +100,45 @@
     </div>
 
     <!-- Footer Status Bar -->
-    <footer class="landing-footer">
+    <footer class="landing-footer glass-ultra">
         <div class="landing-footer__inner">
             <div class="landing-footer__stats">
-                <div class="stat-item">
-                    <span class="stat-dot stat-dot--green"></span>
-                    <span>Nodes: <span>12,450</span></span>
+                <div class="stat">
+                    <span class="stat__dot stat__dot--green"></span>
+                    <span>Nodes: <span class="stat__value counter" data-target="12450">12,450</span></span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-dot stat-dot--green"></span>
-                    <span>Scholars: <span>840</span></span>
+                <div class="stat">
+                    <span class="stat__dot stat__dot--green"></span>
+                    <span>Scholars: <span class="stat__value counter" data-target="840">840</span></span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-dot stat-dot--blue"></span>
-                    <span>Latency: <span>142ms</span></span>
+                <div class="stat">
+                    <span class="stat__dot stat__dot--blue"></span>
+                    <span>Latency: <span class="stat__value">142ms</span></span>
                 </div>
             </div>
-            <span>Al-Mizan © 2025 • Tawhidic Infrastructure</span>
+            <span style="opacity: 0.6;">Al-Mizan © 2026 • Tawhidic Infrastructure</span>
         </div>
     </footer>
 </div>
+
+<script>
+// Stagger animation trigger on load
+document.addEventListener('DOMContentLoaded', () => {
+    // Text reveal animations
+    document.querySelectorAll('.text-reveal').forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.2}s`;
+    });
+    
+    // Cursor glow effect on cards
+    document.querySelectorAll('.card--portal').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            card.style.setProperty('--mouse-x', `${x}%`);
+            card.style.setProperty('--mouse-y', `${y}%`);
+        });
+    });
+});
+</script>
 {% endblock %}

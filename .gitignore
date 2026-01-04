@@ -27,6 +27,7 @@ almizan-etl/data/*
 almizan-etl/output/*
 !almizan-etl/output/.gitkeep
 *.surql
+database/backups/
 *.jsonl
 *.xml
 history.txt

@@ -37,3 +37,4 @@ function updateThemeIcon(theme) {
 
 // Expose globally
 window.toggleTheme = toggleTheme;
+// --- END OF THEME SYSTEM ---

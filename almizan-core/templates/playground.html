@@ -3,129 +3,178 @@
 {% block title %}Playground | Al-Mizan{% endblock %}
 
 {% block content %}
-<!-- Premium Glassmorphism Styles -->
 <style>
-    :root {
-        --color-gold: var(--accent-gold);
-        --color-emerald: #10B981;
-        --color-void: var(--bg-void);
-        --glass-bg: var(--glass-bg);
-        --glass-border: var(--glass-border);
-        --glass-blur: blur(12px);
-    }
-
-
-    .glass-panel {
-        background: var(--glass-bg);
-        backdrop-filter: var(--glass-blur);
-        -webkit-backdrop-filter: var(--glass-blur);
-        border: var(--glass-border);
-        border-radius: 16px;
-        box-shadow: var(--shadow-card);
-        transition: transform 0.2s, box-shadow 0.2s;
-        color: var(--text-primary);
-    }
-
-    .glass-panel:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
-        border-color: var(--accent-gold);
+    .playground-page {
+        min-height: calc(100vh - 70px);
+        padding: 2rem;
+        position: relative;
     }
 
     .premium-header {
         font-family: var(--font-heading);
-        background: linear-gradient(45deg, var(--accent-gold), var(--text-primary));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        padding-bottom: 1rem;
+        letter-spacing: 1px;
+        color: var(--color-gold);
+        text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
     }
 
     .action-btn {
-        background: var(--bg-card);
-        color: var(--accent-gold);
-        border: 1px solid var(--accent-gold);
+        background: rgba(20, 20, 35, 0.6);
+        color: var(--color-gold);
+        border: 1px solid var(--color-gold);
         transition: all 0.3s ease;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        backdrop-filter: blur(4px);
     }
 
     .action-btn:hover {
-        background: var(--accent-gold);
-        color: white;
-        box-shadow: 0 0 15px rgba(184, 134, 11, 0.4);
+        background: var(--color-gold);
+        color: #000;
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
     }
-
-    input, select {
-        background: var(--bg-card) !important;
-        border: var(--border-glass) !important;
-        color: var(--text-primary) !important;
+    
+    .playground-grid {
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); 
+        gap: 2rem;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .graph-panel {
+        grid-column: 1 / -1; 
+        height: 600px; 
+        display: flex; 
+        flex-direction: column;
+    }
+    
+    .input-group {
+        display: flex;
+        gap: 0.75rem;
+        margin: 1.5rem 0;
+    }
+    
+    .result-box {
+        background: rgba(0,0,0,0.3);
+        padding: 1.5rem;
+        border-radius: 12px;
+        min-height: 120px;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .result-box:hover {
+        border-color: rgba(255,255,255,0.1);
+        background: rgba(0,0,0,0.4);
+    }
+    
+    .names-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+        max-height: 250px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+    }
+    
+    .name-card {
+        background: rgba(255,255,255,0.03); 
+        padding: 1.5rem; 
+        border-radius: 12px; 
+        text-align: center; 
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.2s ease;
+        animation: fadeIn 0.5s ease backwards;
+    }
+    
+    .name-card:hover {
+        background: rgba(212, 175, 55, 0.1);
+        border-color: #D4AF37;
+        transform: translateY(-2px);
     }
 </style>
 
-<div class="playground-container" style="padding: 2rem; max-width: 1400px; margin: 0 auto; min-height: 100vh;">
-    <h1 class="premium-header" style="font-size: 2.5rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(212, 175, 55, 0.1); padding-bottom: 1rem; letter-spacing: 1px;">
-        🏛️ Al-Mizan Citadel Playground
-    </h1>
+<div class="playground-page noise-overlay">
+    <!-- Mesh Background -->
+    <div class="mesh-background" style="opacity: 0.15;">
+        <div class="mesh-blob mesh-blob--gold morph-blob"></div>
+        <div class="mesh-blob mesh-blob--blue morph-blob" style="animation-delay: -5s; left: 60%;"></div>
+    </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
-        
-        <!-- 1. Graph Visualizer (The Hero) -->
-        <div class="glass-panel" style="grid-column: 1 / -1; padding: 1.5rem; height: 600px; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 style="color: #eee; margin: 0;">🕸️ Neuro-Symbolic Graph</h3>
-                <div style="display: flex; gap: 1rem;">
-                    <span style="color: var(--color-gold); font-size: 0.8rem;">● Root (Thabit)</span>
-                    <span style="color: var(--color-emerald); font-size: 0.8rem;">● Verse (Wahyu)</span>
-                    <button onclick="loadGraph()" class="action-btn" style="padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold;">Initialise Graph</button>
+    <div class="container" style="max-width: 1400px; margin: 0 auto;">
+        <h1 class="premium-header text-shimmer">
+            🏛️ Al-Mizan Citadel Playground
+        </h1>
+
+        <div class="playground-grid">
+            
+            <!-- 1. Graph Visualizer (The Hero) -->
+            <div class="glass-panel graph-panel hover-lift">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="color: #eee; margin: 0;">🕸️ Neuro-Symbolic Graph</h3>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <span style="color: var(--color-gold); font-size: 0.8rem;">● Root (Thabit)</span>
+                        <span style="color: var(--color-emerald); font-size: 0.8rem;">● Verse (Wahyu)</span>
+                        <button onclick="loadGraph()" class="action-btn">Initialise Graph</button>
+                    </div>
+                </div>
+                <div id="cy" style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;">
+                    <div style="text-align: center; color: #666;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">🕸️</div>
+                        <p style="margin: 0 0 1rem 0;">Click <strong style="color: var(--color-gold);">Initialise Graph</strong> to load knowledge graph</p>
+                    </div>
                 </div>
             </div>
-            <div id="cy" style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;">
-                <div style="text-align: center; color: #666;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">🕸️</div>
-                    <p style="margin: 0 0 1rem 0;">Click <strong style="color: var(--color-gold);">Initialise Graph</strong> to load the knowledge graph</p>
+
+            <!-- 2. Quran Verse Lookup -->
+            <div class="glass-panel hover-lift" style="padding: 1.5rem;">
+                <h3 style="color: #eee; margin-top: 0;">📖 Verse Lookup</h3>
+                <div class="input-group">
+                    <input type="number" id="surahInput" class="glass-input" placeholder="Surah" value="1" style="flex: 1;">
+                    <input type="number" id="ayahInput" class="glass-input" placeholder="Ayah" value="1" style="flex: 1;">
+                    <button onclick="fetchVerse()" class="action-btn">Seek</button>
+                </div>
+                <div id="verseResult" class="result-box">
+                    <p style="color: #666; font-style: italic; text-align: center;">Query the immutable record...</p>
                 </div>
             </div>
-        </div>
 
-        <!-- 2. Quran Verse Lookup -->
-        <div class="glass-panel" style="padding: 1.5rem;">
-            <h3 style="color: #eee; margin-top: 0;">📖 Verse Lookup</h3>
-            <div style="display: flex; gap: 0.5rem; margin: 1.5rem 0;">
-                <input type="number" id="surahInput" placeholder="Surah" value="1" style="flex: 1; padding: 0.8rem; border-radius: 8px;">
-                <input type="number" id="ayahInput" placeholder="Ayah" value="1" style="flex: 1; padding: 0.8rem; border-radius: 8px;">
-                <button onclick="fetchVerse()" class="action-btn" style="padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer;">Seek</button>
+            <!-- 3. Hadith Explorer -->
+            <div class="glass-panel hover-lift" style="padding: 1.5rem;">
+                <h3 style="color: #eee; margin-top: 0;">📜 Hadith Explorer</h3>
+                <div class="input-group">
+                    <select id="collectionSelect" class="glass-select" style="flex: 2;">
+                        <option value="bukhari">Sahih al-Bukhari</option>
+                        <option value="muslim">Sahih Muslim</option>
+                        <option value="nasai">Sunan an-Nasai</option>
+                        <option value="abudawud">Sunan Abi Dawud</option>
+                    </select>
+                    <input type="number" id="hadithInput" class="glass-input" placeholder="#" value="1" style="flex: 1;">
+                    <button onclick="fetchHadith()" class="action-btn">Trace</button>
+                </div>
+                <div id="hadithResult" class="result-box">
+                    <p style="color: #666; font-style: italic; text-align: center;">Verify the transmission chain...</p>
+                </div>
             </div>
-            <div id="verseResult" style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; min-height: 120px; border: 1px solid rgba(255,255,255,0.05);">
-                <p style="color: #666; font-style: italic; text-align: center;">Query the immutable record...</p>
-            </div>
-        </div>
 
-        <!-- 3. Hadith Explorer -->
-        <div class="glass-panel" style="padding: 1.5rem;">
-            <h3 style="color: #eee; margin-top: 0;">📜 Hadith Explorer</h3>
-            <div style="display: flex; gap: 0.5rem; margin: 1.5rem 0;">
-                <select id="collectionSelect" style="flex: 2; padding: 0.8rem; border-radius: 8px;">
-                    <option value="bukhari">Sahih al-Bukhari</option>
-                    <option value="muslim">Sahih Muslim</option>
-                    <option value="nasai">Sunan an-Nasai</option>
-                    <option value="abudawud">Sunan Abi Dawud</option>
-                </select>
-                <input type="number" id="hadithInput" placeholder="#" value="1" style="flex: 1; padding: 0.8rem; border-radius: 8px;">
-                <button onclick="fetchHadith()" class="action-btn" style="padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer;">Trace</button>
+            <!-- 4. Divine Names -->
+            <div class="glass-panel hover-lift" style="grid-column: 1 / -1; padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="color: #eee; margin: 0;">✨ Divine Attributes (Ontology Root)</h3>
+                    <button onclick="loadNames()" class="action-btn">Manifest Names</button>
+                </div>
+                <div id="namesGrid" class="names-grid">
+                    <p style="color: #666; font-style: italic; grid-column: 1/-1; text-align: center; padding: 2rem;">Awaiting invocation...</p>
+                </div>
             </div>
-            <div id="hadithResult" style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; min-height: 120px; border: 1px solid rgba(255,255,255,0.05);">
-                <p style="color: #666; font-style: italic; text-align: center;">Verify the transmission chain...</p>
-            </div>
-        </div>
 
-        <!-- 4. Divine Names -->
-        <div class="glass-panel" style="grid-column: 1 / -1; padding: 1.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 style="color: #eee; margin: 0;">✨ Divine Attributes (Ontology Root)</h3>
-                <button onclick="loadNames()" class="action-btn" style="padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer;">Manifest Names</button>
-            </div>
-            <div id="namesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; max-height: 250px; overflow-y: auto; scrollbar-width: thin;">
-                <p style="color: #666; font-style: italic; grid-column: 1/-1; text-align: center; padding: 2rem;">Awaiting invocation...</p>
-            </div>
         </div>
-
     </div>
 </div>
 
@@ -197,6 +246,54 @@
                             'background-color': '#cbd5e1', // Silver
                             'width': 15,
                             'height': 15
+                        }
+                    },
+                    // SPECIFIC TYPES (Matching graph.rs)
+                    {
+                        selector: '[node_type = "allah"]',
+                        style: {
+                            'background-color': '#D4AF37', // Gold
+                            'width': 50,
+                            'height': 50,
+                            'border-width': 3,
+                            'border-color': '#FFF',
+                            'font-size': '16px',
+                            'font-weight': 'bold'
+                        }
+                    },
+                    {
+                        selector: '[node_type = "prophet"]',
+                        style: {
+                            'background-color': '#10B981', // Emerald
+                            'width': 30,
+                            'height': 30,
+                            'border-width': 2,
+                            'border-color': '#FFF'
+                        }
+                    },
+                    {
+                        selector: '[node_type = "verse"]',
+                        style: {
+                            'background-color': '#059669', // Darker Emerald
+                            'width': 20,
+                            'height': 20
+                        }
+                    },
+                    {
+                        selector: '[node_type = "hadith"]',
+                        style: {
+                            'background-color': '#94a3b8', // Slate 400
+                            'width': 18,
+                            'height': 18
+                        }
+                    },
+                    {
+                        selector: '[node_type = "narrator"]',
+                        style: {
+                            'background-color': '#64748b', // Slate 500
+                            'width': 15,
+                            'height': 15,
+                            'opacity': 0.7
                         }
                     }
                 ],
@@ -286,23 +383,16 @@
             const data = await res.json();
             
             grid.innerHTML = data.names.map((n, i) => `
-                <div style="
-                    background: rgba(255,255,255,0.03); 
-                    padding: 1.5rem; 
-                    border-radius: 12px; 
-                    text-align: center; 
-                    border: 1px solid rgba(255,255,255,0.05);
-                    transition: all 0.2s ease;
-                    animation: fadeIn 0.5s ease backwards;
-                    animation-delay: ${i * 0.05}s;
-                " onmouseover="this.style.background='rgba(212, 175, 55, 0.1)';this.style.borderColor='#D4AF37'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.05)'">
+                <div class="name-card" style="animation-delay: ${i * 0.05}s;"
+                    onmouseover="this.style.background='rgba(212, 175, 55, 0.1)';this.style.borderColor='#D4AF37'" 
+                    onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.05)'">
                     <div style="color: var(--color-gold); font-size: 2rem; margin-bottom: 0.5rem; font-family: 'Amiri', serif;">${n.arabic}</div>
                     <div style="font-weight: bold; letter-spacing: 1px; font-size: 0.9rem;">${n.transliteration}</div>
                     <div style="font-size: 0.75rem; color: #888; margin-top:0.5rem;">${n.meaning}</div>
                 </div>
             `).join('');
             
-            // Add keyframes for stagger effect
+            // Add keyframes if not exists
             if (!document.getElementById('animStyles')) {
                 const style = document.createElement('style');
                 style.id = 'animStyles';
@@ -321,4 +411,3 @@
     }
 </script>
 {% endblock %}
-

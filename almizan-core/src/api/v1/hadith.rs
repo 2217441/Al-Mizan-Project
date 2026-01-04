@@ -27,7 +27,7 @@ struct DbHadith {
     grade: Option<String>,
 }
 
-/// GET /api/v1/hadith/:collection/:number
+/// GET /api/v1/hadith/{collection}/{number}
 /// Get a specific hadith by collection and number
 pub async fn get_hadith(
     State(db): State<Database>,
@@ -67,7 +67,7 @@ pub async fn get_hadith(
     }
 }
 
-/// GET /api/v1/hadith/:collection
+/// GET /api/v1/hadith/{collection}
 /// List hadiths from a collection (paginated)
 pub async fn list_collection(
     State(db): State<Database>,

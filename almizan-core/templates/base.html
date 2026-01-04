@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Al-Mizan | Digital Citadel{% endblock %}</title>
-    
+
     <!-- Theme Script (must load first to prevent flash) -->
     <script src="/static/js/theme.js?v=2"></script>
-    
-    <!-- Custom Style -->
-    <link rel="stylesheet" href="/static/css/style.css?v=2">
-    
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="/static/css/tokens.css?v=3">
+    <link rel="stylesheet" href="/static/css/effects.css?v=2">
+    <link rel="stylesheet" href="/static/css/components.css?v=3">
+    <link rel="stylesheet" href="/static/css/style.css?v=6">
+    <link rel="stylesheet" href="/static/css/pages.css?v=2">
+
     <!-- HTMX for interactive features -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="/static/js/htmx.min.js"></script>
 </head>
+
 <body>
     <!-- Horizontal Header Navigation -->
     <header class="header-nav">
@@ -21,18 +27,20 @@
             <span class="header-nav__brand-icon">⚖️</span>
             <span>AL-MIZAN</span>
         </a>
-        
+
         <nav>
             <ul class="header-nav__links">
                 <li><a href="/landing" class="header-nav__link" data-path="/landing">Landing</a></li>
                 <li><a href="/" class="header-nav__link" data-path="/">Certainty Engine</a></li>
                 <li><a href="/presentation" class="header-nav__link" data-path="/presentation">Presentation</a></li>
-                <li><a href="/citadel" class="header-nav__link" data-path="/citadel">Dashboard</a></li>
+
                 <li><a href="/graph" class="header-nav__link" data-path="/graph">Knowledge Graph</a></li>
                 <li><a href="/governance" class="header-nav__link" data-path="/governance">Governance</a></li>
+                <li><a href="/network" class="header-nav__link" data-path="/network">Network</a></li>
+                <li><a href="/components" class="header-nav__link" data-path="/components">Components</a></li>
             </ul>
         </nav>
-        
+
         <div class="header-nav__actions">
             <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                 🌙
@@ -52,7 +60,7 @@
             const currentPath = window.location.pathname;
             document.querySelectorAll('.header-nav__link').forEach(link => {
                 const linkPath = link.getAttribute('data-path');
-                if (currentPath === linkPath || 
+                if (currentPath === linkPath ||
                     (linkPath !== '/' && currentPath.startsWith(linkPath))) {
                     link.classList.add('active');
                 }
@@ -60,4 +68,5 @@
         });
     </script>
 </body>
+
 </html>

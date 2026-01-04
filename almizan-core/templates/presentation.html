@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Al-Mizan | Presentation</title>
-    <script src="/static/js/theme.js?v=2"></script>
-    <link rel="stylesheet" href="/static/css/style.css?v=2">
+    <!-- Premium Fonts Locally Served -->
+    <link rel="stylesheet" href="/static/css/tokens.css?v=2">
+    <!-- Premium Effects -->
+    <link rel="stylesheet" href="/static/css/effects.css?v=2">
+    
     <style>
-        /* Presentation-specific styles */
+        /* Presentation Base */
         .pres-container {
             min-height: 100vh;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: var(--bg-void);
             scroll-snap-type: y mandatory;
             overflow-y: scroll;
             height: 100vh;
+            position: relative;
+            z-index: 1;
         }
         
         .pres-slide {
@@ -25,154 +30,175 @@
             padding: 4rem 2rem;
             scroll-snap-align: start;
             text-align: center;
+            position: relative;
+            z-index: 2;
         }
         
         .pres-slide__content {
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
+            z-index: 3;
         }
         
         .pres-slide h1 {
             font-family: var(--font-heading);
-            font-size: 3.5rem;
-            color: var(--accent-gold);
-            margin-bottom: 1rem;
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--color-gold) 0%, #FFF 50%, var(--color-gold) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
         }
         
         .pres-slide h2 {
-            font-family: var(--font-heading);
             font-size: 2.5rem;
             color: var(--text-primary);
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .pres-slide h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--color-gold);
+            box-shadow: 0 0 10px var(--color-gold);
         }
         
         .pres-slide h3 {
             color: #10b981;
             font-size: 1.5rem;
             margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
         }
         
         .pres-slide p {
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             line-height: 1.8;
             color: var(--text-muted);
             margin-bottom: 1.5rem;
+            font-weight: 300;
         }
         
         .pres-slide__icon {
-            width: 64px;
-            height: 64px;
-            background: var(--bg-panel);
+            width: 100px;
+            height: 100px;
+            background: rgba(20, 20, 35, 0.6);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 1.5rem;
-            border: 2px solid var(--accent-gold);
+            font-size: 3.5rem;
+            margin: 0 auto 2rem;
+            border: 1px solid var(--color-gold);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.2); }
+            50% { box-shadow: 0 0 60px rgba(212, 175, 55, 0.4); }
         }
         
         .pres-slide__badge {
             display: inline-block;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.2em;
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--accent-gold);
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--color-gold);
             border-radius: 9999px;
-            color: var(--accent-gold);
-            margin-top: 2rem;
+            color: var(--color-gold);
+            margin-top: 3rem;
+            background: rgba(212, 175, 55, 0.1);
         }
         
         .pres-card-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            gap: 2rem;
             text-align: left;
-            margin-top: 2rem;
-        }
-        
-        @media (max-width: 768px) {
-            .pres-card-grid { grid-template-columns: 1fr; }
-            .pres-slide h1 { font-size: 2.5rem; }
+            margin-top: 3rem;
         }
         
         .pres-card {
-            background: var(--bg-panel);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+        
+        .pres-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
         
         .pres-card--danger { border-left: 4px solid #ef4444; }
         .pres-card--success { border-left: 4px solid #10b981; }
         
         .pres-card h4 {
-            color: var(--text-primary);
+            color: #fff;
+            font-size: 1.25rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
         
         .pres-card p {
-            font-size: 0.9rem;
+            font-size: 1rem;
             margin: 0;
+            color: #bbb;
         }
         
-        .pres-list {
-            list-style: none;
-            text-align: left;
-            margin: 2rem auto;
-            max-width: 600px;
-        }
-        
-        .pres-list li {
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-        
-        .pres-list li:last-child { border-bottom: none; }
-        
-        .pres-list__icon {
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-        
+        /* Timeline */
         .phase-timeline {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-top: 2rem;
+            gap: 1.5rem;
+            margin-top: 3rem;
         }
         
         .phase-card {
-            background: var(--bg-panel);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
+            background: rgba(20, 20, 35, 0.6);
+            border-radius: 1rem;
+            padding: 2rem;
             border-top: 4px solid;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
         }
         
+        .phase-card:hover { transform: translateY(-5px); }
         .phase-card:nth-child(1) { border-color: var(--text-muted); }
-        .phase-card:nth-child(2) { border-color: var(--accent-gold); }
+        .phase-card:nth-child(2) { border-color: var(--color-gold); }
         .phase-card:nth-child(3) { border-color: #10b981; }
         
         .phase-card__num {
-            font-size: 2rem;
+            font-size: 3rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: rgba(255, 255, 255, 0.1);
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
         }
         
         .phase-card__title {
+            font-size: 1.5rem;
             font-weight: 700;
-            margin: 0.5rem 0;
-        }
-        
-        .phase-card__desc {
-            font-size: 0.75rem;
-            color: var(--text-muted);
+            margin: 1.5rem 0 0.5rem;
+            color: #fff;
         }
         
         /* Navigation */
@@ -182,17 +208,18 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
             z-index: 100;
-            background: var(--bg-panel);
-            padding: 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.75rem 1.5rem;
             border-radius: 9999px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
         
         .pres-nav__dot {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.2);
             cursor: pointer;
@@ -201,50 +228,71 @@
         
         .pres-nav__dot:hover,
         .pres-nav__dot.active {
-            background: var(--accent-gold);
+            background: var(--color-gold);
+            transform: scale(1.2);
+            box-shadow: 0 0 10px var(--color-gold);
         }
         
         .pres-exit {
             position: fixed;
             bottom: 2rem;
             left: 2rem;
-            background: var(--bg-panel);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(20, 20, 35, 0.8);
             color: var(--text-muted);
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
             text-decoration: none;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0.5;
-            transition: opacity 0.3s;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            z-index: 100;
         }
         
-        .pres-exit:hover { opacity: 1; }
+        .pres-exit:hover {
+            color: #fff;
+            border-color: var(--color-gold);
+        }
 
-        /* Light Mode Overrides for Presentation */
-        [data-theme="light"] .pres-container {
-            background: var(--bg-void);
+        .pres-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem auto;
+            max-width: 800px;
         }
-        [data-theme="light"] .pres-card,
-        [data-theme="light"] .phase-card,
-        [data-theme="light"] .pres-nav,
-        [data-theme="light"] .pres-exit {
-            background: var(--bg-card);
-            border-color: rgba(0, 0, 0, 0.1);
+
+        .pres-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        [data-theme="light"] .pres-list li {
-            border-bottom-color: rgba(0, 0, 0, 0.1);
-        }
+
     </style>
 </head>
-<body>
+<body class="theme-dark noise-overlay" style="margin: 0; overflow: hidden;">
+    
+    <!-- Animated Mesh Background -->
+    <div class="mesh-background" style="opacity: 0.6; z-index: 0;">
+        <div class="mesh-blob mesh-blob--gold morph-blob"></div>
+        <div class="mesh-blob mesh-blob--blue morph-blob" style="animation-delay: -7s;"></div>
+        <div class="mesh-blob mesh-blob--purple morph-blob" style="animation-delay: -3s; top: 60%; right: 10%;"></div>
+    </div>
+
+    <!-- Particle Constellation -->
+    <div id="particles" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index: 0; opacity: 0.3;"></div>
+
     <div class="pres-container" id="container">
         
         <!-- Slide 1: Title -->
         <section class="pres-slide">
-            <div class="pres-slide__content">
+            <div class="pres-slide__content stagger-reveal">
                 <div class="pres-slide__icon">⚖️</div>
-                <h1>Project Al-Mizan</h1>
+                <h1 class="text-shimmer">Project Al-Mizan</h1>
                 <h3>Architecting the "Unity of Knowledge"</h3>
                 <p>From Epistemological Fragmentation to Digital Ontology</p>
                 <span class="pres-slide__badge">Final Year Project Proposal</span>
@@ -265,7 +313,7 @@
                         <p>Algorithms prioritize engagement over authority, flattening the hierarchy of knowledge.</p>
                     </div>
                 </div>
-                <p style="margin-top: 2rem;"><strong style="color: #ef4444;">The Consequence:</strong> Interpretive anarchy. Without structural context, knowledge becomes susceptible to distortion.</p>
+                <p style="margin-top: 3rem; font-size: 1.1rem;"><strong style="color: #ef4444;">The Consequence:</strong> Interpretive anarchy. Without structural context, knowledge becomes susceptible to distortion.</p>
             </div>
         </section>
         
@@ -275,11 +323,11 @@
                 <h2>The Solution: Digital Tawhid</h2>
                 <p style="font-style: italic; color: var(--text-muted);">"To digitize knowledge without its connections is to corrupt it."</p>
                 <div class="pres-card-grid">
-                    <div class="pres-card" style="opacity: 0.5;">
+                    <div class="pres-card" style="opacity: 0.6;">
                         <h4>Relational Database</h4>
                         <p>Rigid tables. Rows and Columns. Cannot model the organic complexity of scholarship.</p>
                     </div>
-                    <div class="pres-card pres-card--success" style="transform: scale(1.02);">
+                    <div class="pres-card pres-card--success" style="transform: scale(1.05); border-color: #10b981; box-shadow: 0 0 30px rgba(16, 185, 129, 0.1);">
                         <h4>Knowledge Graph ✓</h4>
                         <p>Living nodes. Fluid edges. Maps the <strong>Genealogy of Ideas</strong> exactly as scholars transmitted them.</p>
                     </div>
@@ -293,16 +341,16 @@
                 <h2>Epistemic Independence</h2>
                 <ul class="pres-list">
                     <li>
-                        <span class="pres-list__icon">🛡️</span>
+                        <span style="font-size: 2rem;">🛡️</span>
                         <div>
-                            <strong>Sovereign Infrastructure</strong><br>
+                            <strong style="font-size: 1.25rem; color: #fff;">Sovereign Infrastructure</strong><br>
                             <span style="color: var(--text-muted);">Building a "Waqf-Grade" system not dependent on secular algorithm biases.</span>
                         </div>
                     </li>
                     <li>
-                        <span class="pres-list__icon">✅</span>
+                        <span style="font-size: 2rem;">✅</span>
                         <div>
-                            <strong>Verification Layer</strong><br>
+                            <strong style="font-size: 1.25rem; color: #fff;">Verification Layer</strong><br>
                             <span style="color: var(--text-muted);">A B2B model providing "Halal Compliance" APIs to sustain the open-source core.</span>
                         </div>
                     </li>
@@ -316,22 +364,22 @@
                 <h2>Future Scope</h2>
                 <div class="phase-timeline">
                     <div class="phase-card">
-                        <div class="phase-card__num">Phase 1</div>
+                        <div class="phase-card__num">01</div>
                         <div class="phase-card__title">Foundation</div>
                         <div class="phase-card__desc">Core Rust Engine & Graph Schema (In Progress)</div>
                     </div>
                     <div class="phase-card">
-                        <div class="phase-card__num">Phase 2</div>
+                        <div class="phase-card__num">02</div>
                         <div class="phase-card__title">Ingestion</div>
                         <div class="phase-card__desc">Mapping the primary Corpus of 6 Hadith Books</div>
                     </div>
                     <div class="phase-card">
-                        <div class="phase-card__num">Phase 3</div>
+                        <div class="phase-card__num">03</div>
                         <div class="phase-card__title">Standardization</div>
                         <div class="phase-card__desc">Public API for "Verified Islamic Knowledge"</div>
                     </div>
                 </div>
-                <p style="margin-top: 3rem; font-weight: 700;">Q & A</p>
+                <p style="margin-top: 5rem; font-weight: 700; font-size: 2rem; color: var(--color-gold);">Q & A</p>
             </div>
         </section>
         

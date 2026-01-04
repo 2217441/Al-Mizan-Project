@@ -70,7 +70,7 @@ DEFINE FIELD essence ON allah TYPE string
     ASSERT $value = 'al-Wujud al-Mutlaq';  -- Immutable
 
 -- Enforce singleton pattern
-DEFINE INDEX allah_singleton_idx ON allah FIELDS id UNIQUE;
+-- DEFINE INDEX allah_singleton_idx ON allah FIELDS id UNIQUE; -- Removed: id is implicit
 
 -- Create the singleton (idempotent)
 -- Note: This will be created during schema import
@@ -649,7 +649,7 @@ WHEN $event IN ["CREATE", "UPDATE"] THEN {
     -- Log creation
     IF $event = "CREATE" {
         CREATE ruling_history SET
-            ruling_id = $after.id,
+            ruling_id = $after,
             modified_by = $auth.id OR 'system',
             new_hukm = $after.hukm,
             change_type = 'created';
@@ -658,7 +658,7 @@ WHEN $event IN ["CREATE", "UPDATE"] THEN {
     -- Log hukm changes
     IF $event = "UPDATE" AND $before.hukm != $after.hukm {
         CREATE ruling_history SET
-            ruling_id = $after.id,
+            ruling_id = $after,
             modified_by = $auth.id OR 'system',
             previous_hukm = $before.hukm,
             new_hukm = $after.hukm,
@@ -669,7 +669,7 @@ WHEN $event IN ["CREATE", "UPDATE"] THEN {
     -- Log status changes
     IF $event = "UPDATE" AND $before.status != $after.status {
         CREATE ruling_history SET
-            ruling_id = $after.id,
+            ruling_id = $after,
             modified_by = $auth.id OR 'system',
             new_hukm = $after.hukm,
             change_reason = $after.change_reason,
@@ -681,7 +681,7 @@ WHEN $event IN ["CREATE", "UPDATE"] THEN {
 DEFINE EVENT track_ruling_deletion ON TABLE fiqh_ruling
 WHEN $event = "DELETE" THEN {
     CREATE ruling_history SET
-        ruling_id = $before.id,
+        ruling_id = $before,
         modified_by = $auth.id OR 'system',
         previous_hukm = $before.hukm,
         change_type = 'deleted';
@@ -752,7 +752,7 @@ DEFINE EVENT auto_ban_byzantine_scholars ON TABLE scholar
 WHEN $event = "UPDATE" THEN {
     -- Trigger on 3rd slash
     IF $after.slashing_count >= 3 AND $after.permanent_ban = false {
-        UPDATE $after.id SET
+        UPDATE $after SET
             status = 'slashed',
             permanent_ban = true,
             reputation = 0.0;

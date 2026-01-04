@@ -3,66 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Al-Mizan | Neuro-Symbolic AI</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Al-Mizan | Tawhidic Knowledge Graph</title>
+    <meta name="description" content="A semantic knowledge graph framework for preserving Islamic epistemology with mathematical certainty.">
+    
+    <!-- Design System -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Arabic Font for Presentation -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <!-- Hero -->
+    
+    <!-- Hero Section -->
     <header class="hero">
-        <div class="icon"><i class="fas fa-network-wired fa-3x" style="color:var(--accent-gold); margin-bottom:1rem;"></i></div>
-        <h1>Project Al-Mizan</h1>
-        <span class="subtitle">Neuro-Symbolic Knowledge Graph Framework</span>
+        <div class="badge" style="margin-bottom: var(--space-6);">
+            <span class="badge__dot"></span>
+            <span>System Operational • v1.0.4 Beta</span>
+        </div>
         
-        <p style="margin-top: 2rem; max-width: 600px; color: var(--text-muted);">
-            A Final Year Project exploring the application of Graph Theory and Strict Ontology to model the "Stratification of Truth" in Islamic Epistemology.
+        <h1>Al-Mizan</h1>
+        <span class="subtitle">The Tawhidic Knowledge Graph</span>
+        
+        <p style="max-width: 600px; color: var(--text-muted); margin-bottom: var(--space-8);">
+            Operationalizing Islamic epistemology for the AI age.<br>
+            <strong style="color: var(--text-primary);">One Source of Truth. Infinite Applications.</strong>
         </p>
 
-        <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
-            <a href="playground.html" class="btn" style="background: var(--accent-gold); color: var(--bg-void); border-color: var(--accent-gold);">
+        <div style="display: flex; gap: var(--space-4); flex-wrap: wrap; justify-content: center;">
+            <a href="playground.html" class="btn btn--primary">
                 <i class="fas fa-play"></i> Interactive Playground
             </a>
-            <a href="presentation.html" class="btn">View Presentation</a>
+            <a href="presentation.html" class="btn">
+                View Presentation
+            </a>
         </div>
     </header>
 
-    <!-- Abstract -->
+    <!-- Research Abstract -->
     <section id="research">
-        <h2 style="text-align: center;">Research Abstract</h2>
+        <h2>Research Abstract</h2>
         <div class="grid">
             <div class="card">
                 <h3><i class="fas fa-search"></i> The Problem</h3>
-                <p class="text-muted">Current digital systems rely on keyword indexing, which severs the semantic link between a Ruling (Hukm) and its Evidence (Dalil), leading to "Context Collapse".</p>
+                <p>Current digital systems rely on keyword indexing, which severs the semantic link between a Ruling (<em>Hukm</em>) and its Evidence (<em>Dalil</em>), leading to "Context Collapse".</p>
             </div>
             <div class="card">
                 <h3><i class="fas fa-project-diagram"></i> The Solution</h3>
-                <p class="text-muted">A Graph-based API that models knowledge as Nodes (Entities) and Edges (Relationships), preserving the Isnad and Derivation logic computationally.</p>
+                <p>A Graph-based API that models knowledge as Nodes (Entities) and Edges (Relationships), preserving the Isnad and Derivation logic computationally.</p>
             </div>
             <div class="card">
                 <h3><i class="fas fa-microchip"></i> The Stack</h3>
-                <p class="text-muted">Built with <strong>Rust</strong> for type safety and <strong>SurrealDB</strong> for graph capabilities. Ingests data via a Neuro-Symbolic Python pipeline.</p>
+                <p>Built with <strong>Rust</strong> for type safety and <strong>SurrealDB</strong> for graph capabilities. Ingests data via a Neuro-Symbolic Python pipeline.</p>
             </div>
         </div>
     </section>
 
     <!-- Architecture -->
     <section id="architecture">
-        <h2 style="text-align: center;">System Architecture</h2>
-        <div style="text-align: center; margin-top: 2rem;">
-            <img src="https://mermaid.ink/img/pako:eNptkctqwzAQRX9FzKpF_AAfC6F00013XbRZOBpHY0u2RBrTDPn3yE4c0q5G986dc0eajzJjgUqN8vOQ0Q_Oq4K_v6Qp4xXnF85o19I_XF5eXnF2t72_J5_JgP-Q8YwLDtW9bB1yQcE5C8_gQ12yD6-w3t9h3T-Cj344j09w9sM4_IR1P52_4IuP1yM844Q9-sFp1z-C737cj8_goy_P4cI5951s0FpQ1aG0oNqgsqA6oLKgBtCKoU-k05Q1o5Sik2Q1qJOkE42eGqXoIilF_5P2wT-pUKV0s1w1y9WzXN3L1bNcQ1a5QhO6P1d4_gKj2Yg0?type=png" alt="Architecture Diagram" style="max-width: 100%; border-radius: 8px; border: 1px solid #334155;">
+        <h2>System Architecture</h2>
+        <div style="text-align: center; margin-top: var(--space-8);">
+            <div class="card" style="display: inline-block; padding: var(--space-12); max-width: 800px;">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); text-align: center;">
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">📖</div>
+                        <h4 style="color: var(--color-gold); margin-bottom: var(--space-2);">Core API</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Rust/Axum<br>Type-safe endpoints</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">🕸️</div>
+                        <h4 style="color: var(--color-gold); margin-bottom: var(--space-2);">Graph Engine</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">SurrealDB<br>Native graph queries</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">⚡</div>
+                        <h4 style="color: var(--color-gold); margin-bottom: var(--space-2);">ETL Pipeline</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Python<br>NLP + Data ingestion</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
-        <p>Final Year Project (CSCI 4401/4402) &bull; 2024/2025</p>
-        <p style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.7;">
-            Disclaimer: This is an academic research project. <br>
+        <p>Final Year Project (CSCI 4401/4402) • 2024/2025</p>
+        <p style="font-size: 0.8rem; margin-top: var(--space-2); opacity: 0.7;">
+            Disclaimer: This is an academic research project.<br>
             The live application runs on local infrastructure for data sovereignty.
         </p>
+        <p style="margin-top: var(--space-4);">
+            <a href="https://github.com/FirdausHisyam/Islamic-Digital-Citadel" target="_blank">
+                <i class="fab fa-github"></i> View on GitHub
+            </a>
+        </p>
     </footer>
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 </body>
 </html>
