@@ -15,6 +15,31 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 CONF_DIR="$SCRIPT_DIR/nginx"
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.prod.yml"
+DEPLOY_LOG="$SCRIPT_DIR/deploy_history.log"
+METRICS_FILE="$SCRIPT_DIR/deploy_metrics.json"
+
+# Logging function
+log_deployment() {
+    local status="$1"
+    local color="$2"
+    local duration="$3"
+    local timestamp=$(date -Iseconds)
+    local commit=$(git -C "$PROJECT_ROOT" rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    
+    # Append to log file
+    echo "$timestamp|$status|$color|$commit|${duration}s" >> "$DEPLOY_LOG"
+    
+    # Update metrics JSON
+    cat > "$METRICS_FILE" << EOF
+{
+  "last_deployment": "$timestamp",
+  "status": "$status",
+  "color": "$color",
+  "commit": "$commit",
+  "duration_seconds": $duration
+}
+EOF
+}
 
 # Dynamic container name discovery
 get_nginx_container() {
@@ -93,6 +118,7 @@ fi
 
 # Normal deployment
 NEW_COLOR="$OTHER_COLOR"
+START_TIME=$(date +%s)
 
 echo "=== Al-Mizan Blue-Green Deployment ==="
 echo "🔵 Current: $CURRENT_COLOR"
@@ -131,6 +157,9 @@ for i in $(seq 1 $MAX_RETRIES); do
         echo ""
         echo "Debug info:"
         docker logs "almizan-core-$NEW_COLOR" --tail 20
+        END_TIME=$(date +%s)
+        DURATION=$((END_TIME - START_TIME))
+        log_deployment "FAILED" "$NEW_COLOR" "$DURATION"
         exit 1
     fi
     
@@ -150,9 +179,14 @@ else
     echo "  ⚠️  Nginx container not found. Config updated but not reloaded."
 fi
 
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+log_deployment "SUCCESS" "$NEW_COLOR" "$DURATION"
+
 echo ""
 echo "=== ✅ Deployment Complete ==="
 echo "🟢 Active: $NEW_COLOR"
 echo "🔵 Standby: $CURRENT_COLOR (kept as hot spare)"
+echo "⏱️  Duration: ${DURATION}s"
 echo ""
 echo "Rollback command: ./switch.sh --rollback"
