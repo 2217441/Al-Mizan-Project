@@ -36,20 +36,19 @@
 
 ### 🟡 P2 - Medium Priority
 
-- [ ] **Automated Release Tagging**
-  - Integrate release-please for semantic versioning
-  - Auto-generate changelogs
-  - Tag container images with version
+- [x] **Automated Release Tagging**
+  - ✅ Created `release.yml` with release-please
+  - ✅ Auto-generates changelogs on merge
+  - ✅ Tags container images with version
 
-- [ ] **Post-Deployment Verification**
-  - Add smoke tests after switch
-  - Verify critical endpoints
-  - Auto-rollback on failure
+- [x] **Container Image Scanning**
+  - ✅ Added Trivy scanning to deploy.yml
+  - ✅ Scans for HIGH/CRITICAL CVEs
+  - ✅ Results in GitHub Security tab
 
-- [ ] **Container Image Scanning**
-  - Add Trivy or Grype to pipeline
-  - Block deployment on critical CVEs
-  - Generate security reports
+- [x] **Discord Notifications**
+  - ✅ Created `notify-discord.yml` reusable workflow
+  - ✅ Ready to enable with `DISCORD_WEBHOOK_URL` secret
 
 ### 🟢 P3 - Enhancements
 

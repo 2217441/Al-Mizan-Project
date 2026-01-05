@@ -1,0 +1,72 @@
+name: Discord Notification
+
+# Reusable workflow for sending Discord notifications
+# Usage: Call this workflow with the required inputs
+
+on:
+  workflow_call:
+    inputs:
+      status:
+        description: 'Deployment status (success, failure, cancelled)'
+        required: true
+        type: string
+      environment:
+        description: 'Environment name (production, staging, etc.)'
+        required: false
+        type: string
+        default: 'production'
+      message:
+        description: 'Custom message to include'
+        required: false
+        type: string
+        default: ''
+    secrets:
+      DISCORD_WEBHOOK_URL:
+        description: 'Discord webhook URL'
+        required: true
+
+jobs:
+  notify:
+    name: 📢 Discord Notification
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Set Notification Content
+        id: content
+        run: |
+          if [ "${{ inputs.status }}" == "success" ]; then
+            EMOJI="✅"
+            COLOR="3066993"
+            TITLE="Deployment Successful"
+          elif [ "${{ inputs.status }}" == "failure" ]; then
+            EMOJI="❌"
+            COLOR="15158332"
+            TITLE="Deployment Failed"
+          else
+            EMOJI="⚠️"
+            COLOR="15844367"
+            TITLE="Deployment Status: ${{ inputs.status }}"
+          fi
+          
+          echo "emoji=$EMOJI" >> $GITHUB_OUTPUT
+          echo "color=$COLOR" >> $GITHUB_OUTPUT
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+
+      - name: Send Discord Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "embeds": [{
+                "title": "${{ steps.content.outputs.emoji }} ${{ steps.content.outputs.title }}",
+                "description": "**Repository:** ${{ github.repository }}\n**Branch:** ${{ github.ref_name }}\n**Commit:** [`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})\n**Environment:** ${{ inputs.environment }}\n**Triggered by:** ${{ github.actor }}\n\n${{ inputs.message }}",
+                "color": ${{ steps.content.outputs.color }},
+                "footer": {
+                  "text": "Al-Mizan CI/CD"
+                },
+                "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+              }]
+            }' \
+            "$DISCORD_WEBHOOK"
