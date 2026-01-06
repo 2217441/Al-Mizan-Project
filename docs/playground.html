@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -30,13 +34,22 @@
     </script>
 
     <style>
-        body { 
+        body {
             background-color: #fdfbf7;
             background-image: radial-gradient(#d4af37 0.5px, transparent 0.5px), radial-gradient(#d4af37 0.5px, #fdfbf7 0.5px);
             background-size: 20px 20px;
             background-position: 0 0, 10px 10px;
             background-attachment: fixed;
             overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark mode body */
+        html.dark body {
+            background-color: #0a0a14;
+            background-image: radial-gradient(rgba(212, 175, 55, 0.15) 0.5px, transparent 0.5px),
+                radial-gradient(rgba(212, 175, 55, 0.15) 0.5px, #0a0a14 0.5px);
+            color: #e0e0e0;
         }
 
         .glass-panel {
@@ -45,24 +58,144 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(212, 175, 55, 0.3);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
+        /* Dark mode glass panel */
+        html.dark .glass-panel {
+            background: rgba(20, 20, 35, 0.9);
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        /* Dark mode text overrides */
+        html.dark .text-slate-800 {
+            color: #e0e0e0;
+        }
+
+        html.dark .text-slate-600 {
+            color: #a0a0b0;
+        }
+
+        html.dark .text-slate-500 {
+            color: #8892b0;
+        }
+
+        html.dark .text-slate-400 {
+            color: #6b7280;
+        }
+
+        /* Dark mode backgrounds */
+        html.dark .bg-white {
+            background-color: rgba(30, 30, 45, 0.9);
+        }
+
+        html.dark .bg-slate-50 {
+            background-color: rgba(25, 25, 40, 0.9);
+        }
+
+        html.dark .bg-gradient-to-br.from-amber-50 {
+            background: linear-gradient(to bottom right, rgba(40, 35, 25, 0.9), rgba(30, 30, 45, 0.9));
+        }
+
+        html.dark .bg-emerald-50\/50 {
+            background-color: rgba(16, 40, 35, 0.5);
+        }
+
+        /* Dark mode borders */
+        html.dark .border-slate-200 {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        html.dark .border-slate-300 {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        html.dark .border-amber-200 {
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        html.dark .border-amber-100 {
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        html.dark .border-emerald-100 {
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        /* Dark mode inputs */
+        html.dark input,
+        html.dark select {
+            background-color: rgba(30, 30, 45, 0.9) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: #e0e0e0 !important;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        html.dark .theme-toggle {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        html.dark ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+        }
+
         /* VisJS Manipulation Styling Override */
         div.vis-network div.vis-manipulation {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             border-top: 1px solid #d4af37;
             padding: 10px;
         }
+
+        html.dark div.vis-network div.vis-manipulation {
+            background: rgba(20, 20, 35, 0.95);
+        }
+
         div.vis-network div.vis-edit-mode div.vis-button.vis-connect {
-            background-image: none; /* We'll use custom UI mostly, but this is backup */
+            background-image: none;
+        }
+
+        /* Graph area dark mode */
+        html.dark #mynetwork {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a14 100%);
         }
     </style>
 </head>
+
 <body class="text-slate-800 font-inter h-screen flex flex-col">
 
     <nav class="glass-panel z-50 px-6 py-3 flex justify-between items-center border-b border-mizan-gold/20">
@@ -71,56 +204,67 @@
                 <i class="fas fa-home"></i> <span class="font-cinzel font-bold">Al-Mizan</span>
             </a>
             <span class="text-slate-300">|</span>
-            <span class="font-bold text-slate-600 text-mizan-gold">Playground</span>
+            <span class="font-bold text-mizan-gold">Playground</span>
         </div>
-        
-        <div class="flex gap-2">
-            <button onclick="setMode('organic')" class="px-3 py-1.5 text-xs font-bold rounded-md bg-white border border-slate-200 hover:bg-slate-50 transition shadow-sm">
+
+        <div class="flex gap-2 items-center">
+            <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+            <button onclick="setMode('organic')"
+                class="px-3 py-1.5 text-xs font-bold rounded-md bg-white border border-slate-200 hover:bg-slate-50 transition shadow-sm">
                 <i class="fas fa-snowflake mr-1"></i> Freeze/Thaw
             </button>
-            <button onclick="resetGraph()" class="px-3 py-1.5 text-xs font-bold rounded-md bg-mizan-dark text-white hover:bg-slate-800 transition shadow-sm border border-transparent">
+            <button onclick="resetGraph()"
+                class="px-3 py-1.5 text-xs font-bold rounded-md bg-mizan-dark text-white hover:bg-slate-800 transition shadow-sm border border-transparent">
                 <i class="fas fa-history mr-1 text-mizan-gold"></i> Reset
             </button>
         </div>
     </nav>
 
     <div class="flex-1 relative flex overflow-hidden">
-        
-        <aside class="w-80 glass-panel border-r border-mizan-gold/20 flex flex-col z-40 transition-all duration-300 absolute h-full left-0 md:relative" id="sidebar">
-            
+
+        <aside
+            class="w-80 glass-panel border-r border-mizan-gold/20 flex flex-col z-40 transition-all duration-300 absolute h-full left-0 md:relative"
+            id="sidebar">
+
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
-                
+
                 <!-- API Settings -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-4">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-[10px] font-bold uppercase text-slate-500"><i class="fas fa-key"></i> Gemini API Key</span>
+                        <span class="text-[10px] font-bold uppercase text-slate-500"><i class="fas fa-key"></i> Gemini
+                            API Key</span>
                         <button onclick="saveKey()" class="text-[10px] text-blue-600 hover:underline">Save</button>
                     </div>
-                    <input type="password" id="apiKeyInput" placeholder="Paste Key Here..." 
+                    <input type="password" id="apiKeyInput" placeholder="Paste Key Here..."
                         class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-mizan-gold">
                 </div>
 
                 <!-- Manual Workbench -->
-                <div class="bg-gradient-to-br from-amber-50 to-white p-4 rounded-xl border border-amber-200 shadow-sm relative overflow-hidden">
+                <div
+                    class="bg-gradient-to-br from-amber-50 to-white p-4 rounded-xl border border-amber-200 shadow-sm relative overflow-hidden">
                     <div class="flex justify-between items-center mb-3">
-                         <h2 class="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-2">
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-2">
                             <i class="fas fa-pen-nib"></i> Scholar's Workbench
                         </h2>
                         <div class="flex gap-1">
-                             <button onclick="toggleAIMode()" id="aiToggle" class="px-2 py-0.5 rounded text-[9px] font-bold border border-slate-300 text-slate-400 bg-white">AI</button>
+                            <button onclick="toggleAIMode()" id="aiToggle"
+                                class="px-2 py-0.5 rounded text-[9px] font-bold border border-slate-300 text-slate-400 bg-white">AI</button>
                         </div>
                     </div>
-                    
+
                     <div id="manualControls" class="space-y-3">
                         <div>
                             <label class="text-[10px] font-bold text-slate-500 uppercase">Concept Name</label>
-                            <input type="text" id="customLabel" placeholder="e.g. 'Bitcoin', 'Ijtihad'" 
+                            <input type="text" id="customLabel" placeholder="e.g. 'Bitcoin', 'Ijtihad'"
                                 class="w-full border border-amber-200 rounded-md p-2 text-xs focus:border-amber-500 focus:outline-none bg-white">
                         </div>
-                        
+
                         <div>
                             <label class="text-[10px] font-bold text-slate-500 uppercase">Type</label>
-                            <select id="customGroup" class="w-full border border-amber-200 rounded-md p-2 text-xs focus:border-amber-500 focus:outline-none bg-white">
+                            <select id="customGroup"
+                                class="w-full border border-amber-200 rounded-md p-2 text-xs focus:border-amber-500 focus:outline-none bg-white">
                                 <option value="modern">Modern Issue (Jadid)</option>
                                 <option value="fiqh">Fiqh Concept</option>
                                 <option value="usul">Usul Principle</option>
@@ -129,12 +273,14 @@
                             </select>
                         </div>
 
-                        <button onclick="addCustomNode()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-md text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
+                        <button onclick="addCustomNode()"
+                            class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-md text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
                             <i class="fas fa-plus-circle"></i> Add Concept
                         </button>
 
                         <div class="border-t border-amber-100 my-2 pt-2">
-                            <button id="toggleEditBtn" onclick="toggleEditMode()" class="w-full bg-white border border-amber-300 text-amber-800 hover:bg-amber-50 py-2 rounded-md text-xs font-bold transition flex items-center justify-center gap-2">
+                            <button id="toggleEditBtn" onclick="toggleEditMode()"
+                                class="w-full bg-white border border-amber-300 text-amber-800 hover:bg-amber-50 py-2 rounded-md text-xs font-bold transition flex items-center justify-center gap-2">
                                 <i class="fas fa-draw-polygon"></i> <span>Enable Link Mode</span>
                             </button>
                             <p class="text-[10px] text-slate-400 mt-1 text-center italic">
@@ -146,14 +292,15 @@
                     <!-- AI Controls (Hidden by default) -->
                     <div id="aiControls" class="space-y-3 hidden">
                         <div>
-                             <label class="text-[10px] font-bold text-slate-500 uppercase">Research Topic</label>
-                             <input type="text" id="aiPrompt" placeholder="e.g. 'Islamic Banking', 'AI Ethics'" 
+                            <label class="text-[10px] font-bold text-slate-500 uppercase">Research Topic</label>
+                            <input type="text" id="aiPrompt" placeholder="e.g. 'Islamic Banking', 'AI Ethics'"
                                 class="w-full border border-indigo-200 rounded-md p-2 text-xs focus:border-indigo-500 focus:outline-none bg-white">
                         </div>
-                        <button onclick="generateGeminiGraph()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
+                        <button onclick="generateGeminiGraph()"
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
                             <i class="fas fa-magic"></i> Generate Graph
                         </button>
-                         <p class="text-[9px] text-slate-400 mt-1 text-center">
+                        <p class="text-[9px] text-slate-400 mt-1 text-center">
                             Powered by Google Gemini Pro Latest API
                         </p>
                     </div>
@@ -163,11 +310,16 @@
                 <!-- Info Panel -->
                 <div id="selection-details" class="hidden animate-fade-in-up">
                     <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 relative">
-                        <button onclick="closeSelection()" class="absolute top-2 right-2 text-emerald-400 hover:text-emerald-700"><i class="fas fa-times"></i></button>
-                        <h3 id="sel-label" class="font-cinzel font-bold text-slate-800 text-lg leading-tight">Concept</h3>
+                        <button onclick="closeSelection()"
+                            class="absolute top-2 right-2 text-emerald-400 hover:text-emerald-700"><i
+                                class="fas fa-times"></i></button>
+                        <h3 id="sel-label" class="font-cinzel font-bold text-slate-800 text-lg leading-tight">Concept
+                        </h3>
                         <p id="sel-desc" class="text-xs text-slate-600 mt-2 mb-2 italic"></p>
-                        <div class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest bg-emerald-100 inline-block px-1.5 py-0.5 rounded" id="sel-group"></div>
-                        <button onclick="deleteSelected()" class="mt-3 text-xs text-red-400 hover:text-red-600 underline">Delete Node</button>
+                        <div class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest bg-emerald-100 inline-block px-1.5 py-0.5 rounded"
+                            id="sel-group"></div>
+                        <button onclick="deleteSelected()"
+                            class="mt-3 text-xs text-red-400 hover:text-red-600 underline">Delete Node</button>
                     </div>
                 </div>
 
@@ -175,11 +327,21 @@
                 <div>
                     <h3 class="text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Key</h3>
                     <div class="grid grid-cols-2 gap-2 text-[10px] font-bold text-slate-600">
-                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-black"></div>Divine</div>
-                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber-500"></div>Wahi</div>
-                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div>Usul</div>
-                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-400"></div>Fiqh</div>
-                        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-cyan-600"></div>Modern</div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-black"></div>Divine
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-amber-500"></div>Wahi
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-blue-500"></div>Usul
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-slate-400"></div>Fiqh
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-cyan-600"></div>Modern
+                        </div>
                     </div>
                 </div>
 
@@ -187,12 +349,14 @@
         </aside>
 
         <main class="flex-1 relative bg-parchment/50" id="mynetwork">
-            <div id="edit-toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 bg-amber-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hidden">
+            <div id="edit-toast"
+                class="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 bg-amber-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hidden">
                 <i class="fas fa-pen"></i> Link Mode Active: Drag from one node to another
             </div>
         </main>
 
-        <button onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')" class="md:hidden absolute bottom-6 right-6 z-50 bg-mizan-dark text-white p-4 rounded-full shadow-xl">
+        <button onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')"
+            class="md:hidden absolute bottom-6 right-6 z-50 bg-mizan-dark text-white p-4 rounded-full shadow-xl">
             <i class="fas fa-bars"></i>
         </button>
 
@@ -238,12 +402,12 @@
         const initialEdges = [
             // Wahi Grounds (Theological Roots)
             { from: 0, to: 1 }, { from: 0, to: 2 }, { from: 0, to: 34 }, { from: 0, to: 40 },
-            
+
             // Evidence connections
-            { from: 1, to: 10, label: 'source_of' }, 
-            { from: 2, to: 10, label: 'validates' }, 
-            { from: 0, to: 14, label: 'prohibits' }, 
-            { from: 34, to: 32, label: 'permits_trade' },  
+            { from: 1, to: 10, label: 'source_of' },
+            { from: 2, to: 10, label: 'validates' },
+            { from: 0, to: 14, label: 'prohibits' },
+            { from: 34, to: 32, label: 'permits_trade' },
             { from: 0, to: 42, label: 'prohibits_uncertainty' }, // Allah prohibits Gharar
 
             // Rules & Maxims
@@ -253,28 +417,28 @@
             { from: 42, to: 30, label: 'must_avoid' }, // Sukuk must avoid Gharar
 
             // Qiyas Logic
-            { from: 2, to: 4, label: 'basis_for' },  
-            { from: 4, to: 20, label: 'validates_analogy' }, 
+            { from: 2, to: 4, label: 'basis_for' },
+            { from: 4, to: 20, label: 'validates_analogy' },
 
             // Ar-Rahnu Logic
             { from: 10, to: 20, label: 'foundation' },
-            { from: 11, to: 20, label: 'contract_1' }, 
-            { from: 12, to: 20, label: 'contract_2' }, 
-            { from: 13, to: 20, label: 'revenue' },    
-            { from: 14, to: 11, label: 'prohibits_excess' }, 
+            { from: 11, to: 20, label: 'contract_1' },
+            { from: 12, to: 20, label: 'contract_2' },
+            { from: 13, to: 20, label: 'revenue' },
+            { from: 14, to: 11, label: 'prohibits_excess' },
             { from: 14, to: 20, label: 'avoided_by' },
-            { from: 3, to: 20, label: 'justifies_need' }, 
+            { from: 3, to: 20, label: 'justifies_need' },
 
             // Sukuk Logic
             { from: 3, to: 30, label: 'justifies_structure' },
-            { from: 20, to: 22, label: 'provides' }, 
-            { from: 21, to: 20, label: 'secured_by' }, 
+            { from: 20, to: 22, label: 'provides' },
+            { from: 21, to: 20, label: 'secured_by' },
             { from: 30, to: 31, label: 'issued_by' },
             { from: 35, to: 31, label: 'held_by' },
             { from: 32, to: 30, label: 'structure_1' },
             { from: 33, to: 30, label: 'structure_2' },
-            { from: 36, to: 30, label: 'validates_form' }, 
-            { from: 31, to: 22, label: 'raises_capital' }, 
+            { from: 36, to: 30, label: 'validates_form' },
+            { from: 31, to: 22, label: 'raises_capital' },
             { from: 14, to: 30, label: 'must_avoid' },
         ];
 
@@ -324,7 +488,7 @@
                 interaction: { hover: true, multiselect: true },
                 manipulation: {
                     enabled: false, // Toggled by button
-                    addEdge: function(data, callback) {
+                    addEdge: function (data, callback) {
                         data.arrows = 'to';
                         data.color = { color: '#cbd5e1' };
                         callback(data);
@@ -333,7 +497,7 @@
                 }
             };
             network = new vis.Network(container, data, options);
-            
+
             network.on("click", handleSelect);
         }
 
@@ -361,8 +525,8 @@
         function addCustomNode() {
             const label = document.getElementById('customLabel').value;
             const group = document.getElementById('customGroup').value;
-            
-            if(!label) { alert("Please name your concept."); return; }
+
+            if (!label) { alert("Please name your concept."); return; }
 
             const id = Math.floor(Math.random() * 100000);
             nodes.add(formatNode({
@@ -379,36 +543,36 @@
         // --- AI Logic (Gemini) ---
         function saveKey() {
             const key = document.getElementById('apiKeyInput').value;
-            if(key) {
+            if (key) {
                 localStorage.setItem('mizan_gemini_key', key);
                 alert("API Key Saved safely to Local Storage.");
             }
         }
 
         function toggleAIMode() {
-             const manual = document.getElementById('manualControls');
-             const ai = document.getElementById('aiControls');
-             const btn = document.getElementById('aiToggle');
-             
-             if(ai.classList.contains('hidden')) {
-                 manual.classList.add('hidden');
-                 ai.classList.remove('hidden');
-                 btn.classList.add('bg-indigo-100', 'text-indigo-600', 'border-indigo-300');
-                 btn.innerText = "Manual";
-             } else {
-                 manual.classList.remove('hidden');
-                 ai.classList.add('hidden');
-                 btn.classList.remove('bg-indigo-100', 'text-indigo-600', 'border-indigo-300');
-                 btn.innerText = "AI";
-             }
+            const manual = document.getElementById('manualControls');
+            const ai = document.getElementById('aiControls');
+            const btn = document.getElementById('aiToggle');
+
+            if (ai.classList.contains('hidden')) {
+                manual.classList.add('hidden');
+                ai.classList.remove('hidden');
+                btn.classList.add('bg-indigo-100', 'text-indigo-600', 'border-indigo-300');
+                btn.innerText = "Manual";
+            } else {
+                manual.classList.remove('hidden');
+                ai.classList.add('hidden');
+                btn.classList.remove('bg-indigo-100', 'text-indigo-600', 'border-indigo-300');
+                btn.innerText = "AI";
+            }
         }
 
         async function generateGeminiGraph() {
             const topic = document.getElementById('aiPrompt').value;
             const apiKey = localStorage.getItem('mizan_gemini_key');
-            
-            if(!topic) { alert("Please enter a research topic."); return; }
-            if(!apiKey) { alert("Please enter and save your Gemini API Key first."); return; }
+
+            if (!topic) { alert("Please enter a research topic."); return; }
+            if (!apiKey) { alert("Please enter and save your Gemini API Key first."); return; }
 
             // Show loading state
             const btn = document.querySelector('button[onclick="generateGeminiGraph()"]');
@@ -443,22 +607,22 @@
                 const graphData = JSON.parse(jsonStr);
 
                 // Add to Graph
-                if(graphData.nodes) {
+                if (graphData.nodes) {
                     graphData.nodes.forEach(n => {
                         // Avoid ID collisions
-                        if(!nodes.get(n.id)) {
-                             nodes.add(formatNode(n));
+                        if (!nodes.get(n.id)) {
+                            nodes.add(formatNode(n));
                         }
                     });
                 }
-                if(graphData.edges) {
+                if (graphData.edges) {
                     edges.add(graphData.edges);
                 }
-                
+
                 network.fit();
                 alert(`Architect: Generated ontology for "${topic}"`);
 
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 alert("AI Error: " + e.message + ". Check Console/API Key.");
             } finally {
@@ -468,7 +632,7 @@
         }
 
         // Load Key on Init
-        if(localStorage.getItem('mizan_gemini_key')) {
+        if (localStorage.getItem('mizan_gemini_key')) {
             document.getElementById('apiKeyInput').value = localStorage.getItem('mizan_gemini_key');
         }
 
@@ -492,9 +656,9 @@
 
         function deleteSelected() {
             const sel = network.getSelectedNodes();
-            if(sel.length) nodes.remove(sel);
+            if (sel.length) nodes.remove(sel);
             const selE = network.getSelectedEdges();
-            if(selE.length) edges.remove(selE);
+            if (selE.length) edges.remove(selE);
             closeSelection();
         }
 
@@ -507,11 +671,50 @@
         }
 
         function setMode(mode) {
-             const options = { physics: { enabled: !network.physics.options.enabled } };
-             network.setOptions(options);
+            const options = { physics: { enabled: !network.physics.options.enabled } };
+            network.setOptions(options);
         }
 
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const isDark = html.classList.contains('dark');
+
+            if (isDark) {
+                html.classList.remove('dark');
+                html.setAttribute('data-theme', 'light');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                html.setAttribute('data-theme', 'dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize theme from localStorage
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+                html.setAttribute('data-theme', 'dark');
+                if (icon) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+            }
+        }
+
+        initTheme();
         window.onload = init;
     </script>
 </body>
+
 </html>

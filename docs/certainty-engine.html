@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certainty Engine | Al-Mizan</title>
+    <meta name="description" content="Theologically-aligned synthesis of Islamic law and ethics.">
+
+    <!-- Theme Script -->
+    <script src="static/js/theme.js"></script>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="static/css/tokens.css">
+    <link rel="stylesheet" href="static/css/effects.css">
+    <link rel="stylesheet" href="static/css/components.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/pages.css">
+</head>
+
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <a href="index.html" class="header-nav__brand">
+            <span class="header-nav__brand-icon">⚖️</span>
+            <span>AL-MIZAN</span>
+        </a>
+
+        <nav class="header-nav__links">
+            <a href="index.html" class="header-nav__link">Home</a>
+            <a href="certainty-engine.html" class="header-nav__link active">Certainty Engine</a>
+            <a href="graph.html" class="header-nav__link">Graph</a>
+            <a href="governance.html" class="header-nav__link">Governance</a>
+            <a href="playground.html" class="header-nav__link">Playground</a>
+        </nav>
+
+        <div class="header-nav__actions">
+            <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                ☀️
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-area">
+        <div class="landing-page noise-overlay" style="min-height: 80vh;">
+            <!-- Background Effects -->
+            <div class="mesh-background" style="opacity: 0.3;">
+                <div class="mesh-blob mesh-blob--gold morph-blob"></div>
+                <div class="mesh-blob mesh-blob--blue morph-blob" style="animation-delay: -5s;"></div>
+            </div>
+
+            <div class="ce-hero">
+                <h1 class="ce-title">Certainty Engine</h1>
+                <p class="ce-subtitle">
+                    Theologically-aligned synthesis of Islamic law and ethics.<br>
+                    Trace every ruling back to its primary source with <span class="text-shimmer">mathematical
+                        certainty</span>.
+                </p>
+            </div>
+
+            <div class="mufti-box hover-lift">
+                <form id="muftiForm" class="mufti-input-group">
+                    <input type="text" id="topicInput" class="mufti-input"
+                        placeholder="Search topic (e.g., Bitcoin, Inheritance, Zakat)..." required autocomplete="off">
+                    <button type="submit" class="mufti-btn glow-pulse" id="synthesizeBtn">
+                        <span>Synthesize</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+            <div id="traceAnimation" class="trace-container" style="display: none;">
+                <div class="trace-node" style="animation-delay: 0s"></div>
+                <div class="trace-node" style="animation-delay: 0.2s"></div>
+                <div class="trace-node" style="animation-delay: 0.4s"></div>
+                <div class="trace-node" style="animation-delay: 0.6s"></div>
+                <p
+                    style="margin-top: 1rem; font-size: 0.8rem; color: var(--color-gold); text-transform: uppercase; letter-spacing: 3px;">
+                    Consulting Al-Mizan Graph...</p>
+            </div>
+
+            <div id="result" style="max-width: 800px; margin: 0 auto; padding-bottom: 4rem;"></div>
+        </div>
+    </main>
+
+    <script>
+        // Demo data for static site
+        const demoResponses = {
+            bitcoin: {
+                status: "Yellow",
+                consensus_score: 0.65,
+                primary_scholar: "Contemporary Fiqh Council",
+                scholar_avatar: "https://api.dicebear.com/7.x/initials/svg?seed=FC",
+                summary: "Bitcoin's permissibility remains a matter of scholarly debate (Khilaf). While it possesses characteristics of mal (wealth) and can be used as a medium of exchange, concerns exist regarding its volatility (Gharar) and speculative nature. Some scholars permit it for trading, while others advise caution. The consensus leans toward permissibility with conditions."
+            },
+            zakat: {
+                status: "Green",
+                consensus_score: 0.98,
+                primary_scholar: "Imam Al-Nawawi",
+                scholar_avatar: "https://api.dicebear.com/7.x/initials/svg?seed=AN",
+                summary: "Zakat is one of the Five Pillars of Islam with clear Quranic mandate (9:103) and scholarly consensus (Ijma). It is obligatory on Muslims who possess wealth above the Nisab threshold for one lunar year. The rulings are well-established across all madhabs with variations only in calculation details."
+            },
+            default: {
+                status: "Green",
+                consensus_score: 0.85,
+                primary_scholar: "Al-Mizan Knowledge Graph",
+                scholar_avatar: "https://api.dicebear.com/7.x/initials/svg?seed=AM",
+                summary: "This is a demonstration of the Certainty Engine. In the live application, this would query the Al-Mizan knowledge graph to synthesize rulings from authenticated sources, trace evidence chains, and calculate consensus scores across scholarly opinions."
+            }
+        };
+
+        document.getElementById('muftiForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const topic = document.getElementById('topicInput').value.toLowerCase();
+            const trace = document.getElementById('traceAnimation');
+            const result = document.getElementById('result');
+            const btn = document.getElementById('synthesizeBtn');
+
+            // UI Reset
+            trace.style.display = 'block';
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            result.innerHTML = '';
+
+            // Simulate API delay
+            await new Promise(r => setTimeout(r, 1500));
+
+            const data = demoResponses[topic] || demoResponses.default;
+            const disclaimer = 'Advisory only. Consult a local Mufti for binding fatwas.';
+
+            const colorMap = {
+                "Red": "#EF4444",
+                "Yellow": "#EAB308",
+                "Green": "#10B981"
+            };
+            const themeColor = colorMap[data.status] || "#D4AF37";
+
+            trace.style.display = 'none';
+
+            result.innerHTML = `
+        <div class="verdict-card glass-ultra">
+            <div class="gauge-wrapper">
+                <svg class="gauge-svg" width="140" height="140">
+                    <circle class="gauge-bg" cx="70" cy="70" r="65"></circle>
+                    <circle class="gauge-progress" id="gaugeCircle" cx="70" cy="70" r="65" style="stroke: ${themeColor}"></circle>
+                </svg>
+                <div class="gauge-text">${(data.consensus_score * 100).toFixed(0)}%</div>
+            </div>
+
+            <div class="scholar-header">
+                <img src="${data.scholar_avatar}" class="scholar-img" style="border-color: ${themeColor}">
+                <div class="scholar-info">
+                    <h4>Synthesis Authority</h4>
+                    <div class="name">${data.primary_scholar}</div>
+                </div>
+            </div>
+
+            <h2 style="text-align: center; color: ${themeColor}; font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem; text-shadow: 0 0 20px ${themeColor}40;">
+                ${data.status.toUpperCase()}
+            </h2>
+
+            <div class="verdict-summary">
+                ${data.summary}
+            </div>
+
+            <div class="verdict-disclaimer">
+                <strong>Protocol Notice:</strong> ${disclaimer}
+            </div>
+            
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 0.5rem; text-align: center;">
+                <span style="color: var(--color-gold); font-size: 0.8rem;">📡 Static Demo — Live API requires local server</span>
+            </div>
+        </div>
+    `;
+
+            // Trigger Gauge Animation
+            setTimeout(() => {
+                const circle = document.getElementById('gaugeCircle');
+                if (circle) {
+                    const offset = 408 - (data.consensus_score * 408);
+                    circle.style.strokeDashoffset = offset;
+                }
+            }, 100);
+
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        });
+    </script>
+
+</body>
+
+</html>

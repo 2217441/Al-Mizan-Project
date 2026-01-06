@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Governance Console | Al-Mizan</title>
+    <meta name="description" content="Majlis al-Shura - Decentralized Theological Governance Protocol">
+
+    <!-- Theme Script -->
+    <script src="static/js/theme.js"></script>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="static/css/tokens.css">
+    <link rel="stylesheet" href="static/css/effects.css">
+    <link rel="stylesheet" href="static/css/components.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/pages.css">
+
+    <style>
+        .gov-page {
+            min-height: calc(100vh - 70px);
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .gov-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .gov-header__title {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .gov-header__icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .gov-header h1 {
+            font-size: 2rem;
+            font-family: var(--font-heading);
+            margin: 0;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .gov-header__subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .gov-user-badge {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 999px;
+            padding: 0.75rem 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        [data-theme="light"] .gov-user-badge {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .gov-user-badge__avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .gov-user-badge__name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #e9d5ff;
+        }
+
+        [data-theme="light"] .gov-user-badge__name {
+            color: #7c3aed;
+        }
+
+        .gov-user-badge__role {
+            font-size: 0.7rem;
+            color: rgba(233, 213, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        [data-theme="light"] .gov-user-badge__role {
+            color: #a78bfa;
+        }
+
+        .gov-tabs {
+            display: flex;
+            gap: 3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        [data-theme="light"] .gov-tabs {
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .gov-tab {
+            padding-bottom: 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            background: none;
+            border: none;
+        }
+
+        .gov-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #a855f7;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .gov-tab:hover {
+            color: #e9d5ff;
+        }
+
+        .gov-tab.active {
+            color: #a855f7;
+        }
+
+        .gov-tab.active::after {
+            transform: scaleX(1);
+        }
+
+        .queue-card {
+            background: rgba(20, 20, 35, 0.6);
+            border-radius: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .queue-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .queue-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .queue-card__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .queue-type {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #a855f7;
+            font-weight: 700;
+            background: rgba(168, 85, 247, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .queue-time {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .queue-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .queue-excerpt {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .queue-meta {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        [data-theme="light"] .queue-meta {
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .meta-item label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-item span {
+            font-weight: 600;
+            color: #e9d5ff;
+        }
+
+        [data-theme="light"] .meta-item span {
+            color: #7c3aed;
+        }
+
+        .queue-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-reject {
+            background: rgba(220, 38, 38, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .demo-notice {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(168, 85, 247, 0.1);
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <a href="index.html" class="header-nav__brand">
+            <span class="header-nav__brand-icon">⚖️</span>
+            <span>AL-MIZAN</span>
+        </a>
+
+        <nav class="header-nav__links">
+            <a href="index.html" class="header-nav__link">Home</a>
+            <a href="certainty-engine.html" class="header-nav__link">Certainty Engine</a>
+            <a href="graph.html" class="header-nav__link">Graph</a>
+            <a href="governance.html" class="header-nav__link active">Governance</a>
+            <a href="playground.html" class="header-nav__link">Playground</a>
+        </nav>
+
+        <div class="header-nav__actions">
+            <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                ☀️
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-area">
+        <div class="gov-page noise-overlay">
+            <!-- Mesh Background (Purple Theme) -->
+            <div class="mesh-background" style="opacity: 0.2;">
+                <div class="mesh-blob mesh-blob--purple morph-blob"></div>
+                <div class="mesh-blob mesh-blob--blue morph-blob" style="animation-delay: -3s; top: 60%; right: 10%;">
+                </div>
+            </div>
+
+            <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+
+                <!-- Header -->
+                <header class="gov-header stagger-reveal">
+                    <div class="gov-header__title">
+                        <div class="gov-header__icon glow-pulse">⚖️</div>
+                        <div>
+                            <h1>Majlis al-Shura</h1>
+                            <p class="gov-header__subtitle">Decentralized Theological Governance Protocol</p>
+                        </div>
+                    </div>
+
+                    <div class="gov-user-badge hover-lift">
+                        <div class="gov-user-badge__avatar">MA</div>
+                        <div>
+                            <div class="gov-user-badge__name">Mufti Adam</div>
+                            <div class="gov-user-badge__role">Senior Verifier</div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="demo-notice">
+                    📡 Static Demo — Scholar authentication requires local server
+                </div>
+
+                <!-- Tabs -->
+                <nav class="gov-tabs stagger-reveal">
+                    <button class="gov-tab active">Pending Review (3)</button>
+                    <button class="gov-tab">Recently Approved</button>
+                    <button class="gov-tab">Consensus Analytics</button>
+                </nav>
+
+                <!-- Content -->
+                <main class="gov-content stagger-reveal">
+
+                    <!-- Sample Queue Item -->
+                    <div class="queue-card gradient-border">
+                        <div class="queue-card__header">
+                            <span class="queue-type">Fatwa Verification</span>
+                            <span class="queue-time">Submitted 2 hours ago</span>
+                        </div>
+
+                        <h2 class="queue-title">Permissibility of High-Frequency Trading Algorithms</h2>
+                        <div class="queue-excerpt">
+                            Analysis of HFT execution speeds and the requirement of 'Qabd' (possession) in commodities
+                            trading.
+                            The algorithm executes trades in microseconds, raising questions about constructive
+                            possession...
+                        </div>
+
+                        <div class="queue-meta">
+                            <div class="meta-item">
+                                <label>Author</label>
+                                <span>Dr. Ismail Faruqi</span>
+                            </div>
+                            <div class="meta-item">
+                                <label>Sources Cited</label>
+                                <span>14 Hadith, 3 Fiqh Manuals</span>
+                            </div>
+                            <div class="meta-item">
+                                <label>Confidence</label>
+                                <span style="color: #10B981;">92% (Strong)</span>
+                            </div>
+                        </div>
+
+                        <div class="queue-actions">
+                            <button class="btn-action btn-reject">Request Revision</button>
+                            <button class="btn-action btn-approve">Approve & Sign</button>
+                        </div>
+                    </div>
+
+                    <!-- Another Item -->
+                    <div class="queue-card gradient-border" style="opacity: 0.8;">
+                        <div class="queue-card__header">
+                            <span class="queue-type">Graph Alignment</span>
+                            <span class="queue-time">Submitted 5 hours ago</span>
+                        </div>
+                        <h2 class="queue-title">Linking 'Ribâ' Node to 'Inflationary Fiat' Concept</h2>
+                        <div class="queue-meta">
+                            <div class="meta-item"><label>Author</label><span>System AI</span></div>
+                            <div class="meta-item"><label>Certainty</label><span style="color: #EAB308;">68%
+                                    (Medium)</span></div>
+                        </div>
+                        <div class="queue-actions">
+                            <button class="btn-action btn-reject">Reject</button>
+                            <button class="btn-action btn-approve">Verify Link</button>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

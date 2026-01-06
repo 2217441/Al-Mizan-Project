@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Graph | Al-Mizan</title>
+    <meta name="description"
+        content="Explore the Tawhidic Knowledge Graph - visualize Islamic knowledge relationships.">
+
+    <!-- Theme Script -->
+    <script src="static/js/theme.js"></script>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="static/css/tokens.css">
+    <link rel="stylesheet" href="static/css/effects.css">
+    <link rel="stylesheet" href="static/css/components.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/pages.css">
+
+    <!-- vis-network for graph visualization -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <style>
+        .graph-wrapper {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+
+        #graph-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .controls-overlay {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(20, 20, 35, 0.8);
+            padding: 1.5rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 1rem;
+            z-index: 10;
+            backdrop-filter: blur(20px);
+            min-width: 280px;
+            color: var(--text-primary);
+        }
+
+        [data-theme="light"] .controls-overlay {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .controls-overlay h3 {
+            margin: 0 0 1.5rem 0;
+            color: var(--color-gold);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.75rem 0;
+            font-size: 0.85rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .info-box {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .demo-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            color: var(--color-gold);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <a href="index.html" class="header-nav__brand">
+            <span class="header-nav__brand-icon">⚖️</span>
+            <span>AL-MIZAN</span>
+        </a>
+
+        <nav class="header-nav__links">
+            <a href="index.html" class="header-nav__link">Home</a>
+            <a href="certainty-engine.html" class="header-nav__link">Certainty Engine</a>
+            <a href="graph.html" class="header-nav__link active">Graph</a>
+            <a href="governance.html" class="header-nav__link">Governance</a>
+            <a href="playground.html" class="header-nav__link">Playground</a>
+        </nav>
+
+        <div class="header-nav__actions">
+            <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                ☀️
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-area">
+        <div class="graph-page noise-overlay">
+            <div class="graph-wrapper">
+                <!-- Background -->
+                <div class="mesh-background" style="opacity: 0.15; z-index: 0;">
+                    <div class="mesh-blob mesh-blob--gold morph-blob"></div>
+                    <div class="mesh-blob mesh-blob--blue morph-blob" style="animation-delay: -7s;"></div>
+                </div>
+
+                <!-- Graph Container -->
+                <div id="graph-container"></div>
+
+                <!-- Controls Overlay -->
+                <div class="controls-overlay">
+                    <span class="demo-badge">📡 Demo Graph</span>
+                    <h3>🕸️ Knowledge Graph</h3>
+
+                    <div class="legend">
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #0f172a; box-shadow: 0 0 10px #0f172a;"></span>
+                            <span>Divine (Allah)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #D4AF37; box-shadow: 0 0 10px #D4AF37;"></span>
+                            <span>Wahi (Quran/Sunnah)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #2563eb; box-shadow: 0 0 10px #2563eb;"></span>
+                            <span>Usul (Methodology)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #64748b; box-shadow: 0 0 10px #64748b;"></span>
+                            <span>Fiqh (Rulings)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #0891b2; box-shadow: 0 0 10px #0891b2;"></span>
+                            <span>Modern Applications</span>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Interactive Demo</strong><br>
+                        Drag nodes to explore. Click to select. This is a sample of the Ar-Rahnu (Islamic Pawnbroking)
+                        ontology.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sample graph data (Ar-Rahnu example from playground)
+        const nodes = new vis.DataSet([
+            { id: 0, label: 'Allah', group: 'divine', title: 'The Ultimate Legislator' },
+            { id: 1, label: 'Quran 2:283', group: 'wahi', title: 'Verse of Collateral' },
+            { id: 2, label: 'Sunnah', group: 'wahi', title: 'Hadith: Armor Pawning' },
+            { id: 3, label: 'Maslahah', group: 'usul', title: 'Public Interest' },
+            { id: 4, label: 'Qiyas', group: 'usul', title: 'Analogy' },
+            { id: 10, label: 'Rahn', group: 'fiqh', title: 'Pledge' },
+            { id: 11, label: 'Qard Hasan', group: 'fiqh', title: 'Benevolent Loan' },
+            { id: 12, label: 'Wadiah', group: 'fiqh', title: 'Safekeeping' },
+            { id: 13, label: 'Ujrah', group: 'fiqh', title: 'Service Fee' },
+            { id: 14, label: 'Riba', group: 'fiqh', title: 'Usury (Prohibited)' },
+            { id: 20, label: 'Ar-Rahnu', group: 'modern', title: 'Islamic Pawnbroking' },
+            { id: 21, label: 'Gold Asset', group: 'modern', title: 'Collateral Object' },
+            { id: 22, label: 'Cash Loan', group: 'modern', title: 'Liquidity Provided' },
+        ]);
+
+        const edges = new vis.DataSet([
+            { from: 0, to: 1 }, { from: 0, to: 2 },
+            { from: 1, to: 10, label: 'source_of' },
+            { from: 2, to: 10, label: 'validates' },
+            { from: 0, to: 14, label: 'prohibits' },
+            { from: 2, to: 4, label: 'basis_for' },
+            { from: 4, to: 20, label: 'validates' },
+            { from: 10, to: 20, label: 'foundation' },
+            { from: 11, to: 20, label: 'contract_1' },
+            { from: 12, to: 20, label: 'contract_2' },
+            { from: 13, to: 20, label: 'revenue' },
+            { from: 14, to: 11, label: 'prohibits_excess' },
+            { from: 14, to: 20, label: 'avoided_by' },
+            { from: 3, to: 20, label: 'justifies' },
+            { from: 20, to: 22, label: 'provides' },
+            { from: 21, to: 20, label: 'secured_by' },
+        ]);
+
+        // Styling
+        const groupStyles = {
+            divine: { color: { background: '#0f172a', border: '#0f172a' }, shape: 'dot', size: 35 },
+            wahi: { color: { background: '#d97706', border: '#d97706' }, shape: 'dot', size: 25 },
+            usul: { color: { background: '#2563eb', border: '#2563eb' }, shape: 'diamond', size: 20 },
+            fiqh: { color: { background: '#64748b', border: '#64748b' }, shape: 'box', size: 18 },
+            modern: { color: { background: '#0891b2', border: '#0891b2' }, shape: 'box', size: 20 },
+        };
+
+        nodes.forEach(node => {
+            const style = groupStyles[node.group] || groupStyles.fiqh;
+            node.color = style.color;
+            node.shape = style.shape;
+            node.size = style.size;
+            node.font = { color: '#ffffff', size: 14, strokeWidth: 2, strokeColor: '#000000' };
+        });
+
+        // Initialize
+        const container = document.getElementById('graph-container');
+        const data = { nodes, edges };
+        const options = {
+            physics: {
+                enabled: true,
+                barnesHut: { gravitationalConstant: -2000, centralGravity: 0.1, springLength: 150 },
+                stabilization: { iterations: 100 }
+            },
+            interaction: { hover: true, tooltipDelay: 200 },
+            edges: { arrows: 'to', color: { color: '#94a3b8' }, width: 2 }
+        };
+
+        const network = new vis.Network(container, data, options);
+    </script>
+
+</body>
+
+</html>
