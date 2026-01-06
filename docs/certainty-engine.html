@@ -36,6 +36,11 @@
         </nav>
 
         <div class="header-nav__actions">
+            <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                 ☀️
             </button>
@@ -192,6 +197,16 @@
             btn.disabled = false;
             btn.style.opacity = '1';
         });
+
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const navLinks = document.querySelector('.header-nav__links');
+        if (menuBtn && navLinks) {
+            menuBtn.addEventListener('click', () => {
+                menuBtn.classList.toggle('active');
+                navLinks.classList.toggle('show');
+            });
+        }
     </script>
 
 </body>

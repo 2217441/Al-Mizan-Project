@@ -5,31 +5,32 @@
     .graph-wrapper {
         position: relative;
         width: 100%;
-        height: calc(100vh - 70px); /* Adjusted for header */
+        height: calc(100vh - 70px);
+        /* Adjusted for header */
         background: var(--bg-void);
         overflow: hidden;
     }
-    
+
     #graph-container {
         width: 100%;
         height: 100%;
         position: relative;
         z-index: 1;
     }
-    
+
     #graph-container svg {
         width: 100%;
         height: 100%;
     }
-    
+
     .node text {
         fill: #FFFFFF;
         font-family: var(--font-body);
         font-size: 13px;
         font-weight: 500;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     }
-    
+
     /* Premium Controls Overlay */
     .controls-overlay {
         position: absolute;
@@ -47,12 +48,19 @@
         color: var(--text-primary);
         animation: slideInRight 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    
+
     @keyframes slideInRight {
-        from { opacity: 0; transform: translateX(20px); }
-        to { opacity: 1; transform: translateX(0); }
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
-    
+
     .controls-overlay h3 {
         margin: 0 0 1.5rem 0;
         color: var(--color-gold);
@@ -67,7 +75,7 @@
         align-items: center;
         gap: 0.5rem;
     }
-    
+
     .filter-group label {
         display: flex;
         align-items: center;
@@ -81,13 +89,13 @@
         padding: 0.5rem;
         border-radius: 0.5rem;
     }
-    
+
     .filter-group label:hover {
         background: rgba(255, 255, 255, 0.05);
         color: var(--color-gold);
         transform: translateX(5px);
     }
-    
+
     /* Premium Inputs */
     .search-bar input {
         width: 100%;
@@ -101,20 +109,20 @@
         transition: all 0.3s ease;
         font-family: var(--font-body);
     }
-    
+
     .search-bar input:focus {
         border-color: var(--color-gold);
         box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
         outline: none;
     }
-    
+
     /* Legend Styling */
     .legend {
         margin-top: 2rem;
         padding-top: 1.5rem;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     .legend h4 {
         margin: 0 0 1rem 0;
         font-size: 0.75rem;
@@ -123,7 +131,7 @@
         color: var(--text-muted);
         font-weight: 700;
     }
-    
+
     .legend-item {
         display: flex;
         align-items: center;
@@ -132,14 +140,14 @@
         font-size: 0.9rem;
         color: var(--text-primary);
     }
-    
+
     .legend-dot {
         width: 10px;
         height: 10px;
         border-radius: 50%;
         box-shadow: 0 0 10px currentColor;
     }
-    
+
     /* Node Details Panel */
     .node-details {
         position: absolute;
@@ -157,26 +165,26 @@
         z-index: 20;
         padding: 2rem;
         overflow-y: auto;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         color: var(--text-primary);
     }
-    
+
     .node-details.active {
         transform: translateX(0);
     }
-    
+
     .node-details__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2rem;
         padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     .close-btn {
         background: transparent;
-        border: 1px solid rgba(255,255,255,0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         color: var(--text-muted);
         width: 32px;
         height: 32px;
@@ -188,14 +196,14 @@
         justify-content: center;
         font-size: 1.2rem;
     }
-    
+
     .close-btn:hover {
         background: var(--color-gold);
         color: #000;
         border-color: var(--color-gold);
         transform: rotate(90deg);
     }
-    
+
     .detail-row {
         margin: 1rem 0;
         padding: 1.25rem;
@@ -204,7 +212,7 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
         transition: all 0.2s;
     }
-    
+
     .detail-row:hover {
         background: rgba(255, 255, 255, 0.06);
         border-color: rgba(255, 255, 255, 0.1);
@@ -219,14 +227,14 @@
         display: block;
         font-weight: 700;
     }
-    
+
     .detail-value {
         font-size: 1.1rem;
         color: var(--text-primary);
         font-family: var(--font-heading);
         line-height: 1.5;
     }
-    
+
     /* Zoom Controls */
     .zoom-controls {
         display: flex;
@@ -237,7 +245,7 @@
         right: 2rem;
         z-index: 10;
     }
-    
+
     .zoom-btn {
         width: 40px;
         height: 40px;
@@ -253,11 +261,62 @@
         align-items: center;
         justify-content: center;
     }
-    
+
     .zoom-btn:hover {
         background: var(--color-gold);
         color: #000;
         transform: translateY(-2px);
+    }
+
+    /* Light Mode Styles */
+    [data-theme="light"] .controls-overlay {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    [data-theme="light"] .node-details {
+        background: rgba(255, 255, 255, 0.98);
+        border-color: rgba(212, 175, 55, 0.3);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    [data-theme="light"] .node-details__header {
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="light"] .detail-row {
+        background: rgba(0, 0, 0, 0.03);
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="light"] .detail-row:hover {
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    [data-theme="light"] .search-bar input {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(0, 0, 0, 0.15);
+        color: #1f2937;
+    }
+
+    [data-theme="light"] .zoom-btn {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(0, 0, 0, 0.15);
+        color: #1f2937;
+    }
+
+    [data-theme="light"] .filter-group label:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="light"] .legend {
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="light"] .close-btn {
+        border-color: rgba(0, 0, 0, 0.15);
+        color: #6b7280;
     }
 </style>
 
@@ -269,51 +328,52 @@
             <div class="mesh-blob mesh-blob--gold morph-blob"></div>
             <div class="mesh-blob mesh-blob--blue morph-blob" style="animation-delay: -7s;"></div>
         </div>
-        
+
         <!-- The Graph -->
         <div id="graph-container"></div>
-        
+
         <!-- Controls Overlay -->
         <div class="controls-overlay glass-ultra">
             <h3><span class="card__icon">🕸️</span> Graph Explorer</h3>
-            
+
             <div class="filter-group">
                 <label>
-                    <input type="checkbox" checked onchange="toggleFilter('verse', this.checked)"> 
+                    <input type="checkbox" checked onchange="toggleFilter('verse', this.checked)">
                     <span>Quran (Thabit)</span>
                 </label>
                 <label>
-                    <input type="checkbox" checked onchange="toggleFilter('hadith', this.checked)"> 
+                    <input type="checkbox" checked onchange="toggleFilter('hadith', this.checked)">
                     <span>Hadith (Thabit)</span>
                 </label>
                 <label>
-                    <input type="checkbox" checked onchange="toggleFilter('ruling', this.checked)"> 
+                    <input type="checkbox" checked onchange="toggleFilter('ruling', this.checked)">
                     <span>Rulings (Zanni)</span>
                 </label>
             </div>
-            
+
             <div class="search-bar">
-                <input type="text" placeholder="Search Node ID or Label..." id="search-input" oninput="searchGraph(this.value)">
+                <input type="text" placeholder="Search Node ID or Label..." id="search-input"
+                    oninput="searchGraph(this.value)">
             </div>
-            
+
             <!-- Legend -->
             <div class="legend">
                 <h4>Tawhidic Tiers</h4>
                 <div class="legend-item">
-                    <span class="legend-dot" style="background: #D4AF37; box-shadow: 0 0 10px #D4AF37;"></span> 
+                    <span class="legend-dot" style="background: #D4AF37; box-shadow: 0 0 10px #D4AF37;"></span>
                     Quran (Thabit)
                 </div>
                 <div class="legend-item">
-                    <span class="legend-dot" style="background: #C0C0C0; box-shadow: 0 0 10px #C0C0C0;"></span> 
+                    <span class="legend-dot" style="background: #C0C0C0; box-shadow: 0 0 10px #C0C0C0;"></span>
                     Hadith (Thabit)
                 </div>
                 <div class="legend-item">
-                    <span class="legend-dot" style="background: #DC143C; box-shadow: 0 0 10px #DC143C;"></span> 
+                    <span class="legend-dot" style="background: #DC143C; box-shadow: 0 0 10px #DC143C;"></span>
                     Ruling (Zanni)
                 </div>
             </div>
         </div>
-        
+
         <!-- Node Details Panel -->
         <div id="node-details" class="node-details glass-ultra">
             <div class="node-details__header">
@@ -323,7 +383,8 @@
             <div class="node-details__content">
                 <div class="detail-row">
                     <span class="detail-label">ID</span>
-                    <span class="detail-value" id="detail-id" style="font-family: var(--font-mono); font-size: 0.9rem;">-</span>
+                    <span class="detail-value" id="detail-id"
+                        style="font-family: var(--font-mono); font-size: 0.9rem;">-</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Label</span>
@@ -337,9 +398,14 @@
                     <span class="detail-label">Connections</span>
                     <span class="detail-value" id="detail-connections">-</span>
                 </div>
+                <div class="detail-row">
+                    <span class="detail-label">Reliability Score</span>
+                    <span class="detail-value" id="detail-reliability"
+                        style="display: flex; align-items: center; gap: 0.75rem;">-</span>
+                </div>
             </div>
         </div>
-        
+
         <!-- Zoom Controls -->
         <div class="zoom-controls">
             <button class="zoom-btn" onclick="window.graphZoom.zoomIn()" title="Zoom In (+)">+</button>
@@ -355,36 +421,36 @@
 <!-- Graph Visualization (v4 = search & filters) -->
 <script src="/static/js/graph.js?v=4"></script>
 <script>
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-    if (e.key === '+' || e.key === '=') {
-        e.preventDefault();
-        window.graphZoom?.zoomIn();
-    } else if (e.key === '-' || e.key === '_') {
-        e.preventDefault();
-        window.graphZoom?.zoomOut();
-    } else if (e.key === ' ') {
-        e.preventDefault();
-        window.graphZoom?.reset();
-    } else if (e.key === 'f' || e.key === 'F') {
-        e.preventDefault();
-        toggleFullscreen();
-    } else if (e.key === 'Escape') {
-        closeNodeDetails();
-        if (document.fullscreenElement) {
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '+' || e.key === '=') {
+            e.preventDefault();
+            window.graphZoom?.zoomIn();
+        } else if (e.key === '-' || e.key === '_') {
+            e.preventDefault();
+            window.graphZoom?.zoomOut();
+        } else if (e.key === ' ') {
+            e.preventDefault();
+            window.graphZoom?.reset();
+        } else if (e.key === 'f' || e.key === 'F') {
+            e.preventDefault();
+            toggleFullscreen();
+        } else if (e.key === 'Escape') {
+            closeNodeDetails();
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+        }
+    });
+
+    // Fullscreen toggle
+    function toggleFullscreen() {
+        const wrapper = document.querySelector('.graph-wrapper');
+        if (!document.fullscreenElement) {
+            wrapper.requestFullscreen();
+        } else {
             document.exitFullscreen();
         }
     }
-});
-
-// Fullscreen toggle
-function toggleFullscreen() {
-    const wrapper = document.querySelector('.graph-wrapper');
-    if (!document.fullscreenElement) {
-        wrapper.requestFullscreen();
-    } else {
-        document.exitFullscreen();
-    }
-}
 </script>
 {% endblock %}

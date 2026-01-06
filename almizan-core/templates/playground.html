@@ -8,95 +8,219 @@
         min-height: calc(100vh - 70px);
         padding: 2rem;
         position: relative;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 10, 20, 1) 100%);
+    }
+
+    [data-theme="light"] .playground-page {
+        background: var(--bg-gradient);
     }
 
     .premium-header {
         font-family: var(--font-heading);
         font-size: 2.5rem;
         margin-bottom: 2rem;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
         padding-bottom: 1rem;
         letter-spacing: 1px;
-        color: var(--color-gold);
-        text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        background: linear-gradient(135deg, var(--color-gold), #f5d78e);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: none;
+    }
+
+    [data-theme="light"] .premium-header {
+        background: linear-gradient(135deg, #1a1a2e, #333);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .action-btn {
-        background: rgba(20, 20, 35, 0.6);
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
         color: var(--color-gold);
-        border: 1px solid var(--color-gold);
+        border: 1px solid rgba(212, 175, 55, 0.4);
         transition: all 0.3s ease;
-        padding: 0.5rem 1.5rem;
-        border-radius: 8px;
+        padding: 0.6rem 1.5rem;
+        border-radius: 0.75rem;
         cursor: pointer;
-        font-weight: bold;
-        backdrop-filter: blur(4px);
+        font-weight: 600;
+        backdrop-filter: blur(8px);
+        font-size: 0.9rem;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        max-width: fit-content;
     }
 
     .action-btn:hover {
         background: var(--color-gold);
         color: #000;
-        box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+        transform: translateY(-2px);
     }
-    
+
     .playground-grid {
-        display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); 
-        gap: 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
         position: relative;
         z-index: 10;
     }
-    
+
     .graph-panel {
-        grid-column: 1 / -1; 
-        height: 600px; 
-        display: flex; 
+        grid-column: 1 / -1;
+        height: 550px;
+        display: flex;
         flex-direction: column;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1.25rem;
+        padding: 1.5rem;
     }
-    
+
+    [data-theme="light"] .graph-panel {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
     .input-group {
         display: flex;
+        flex-wrap: wrap;
         gap: 0.75rem;
-        margin: 1.5rem 0;
+        margin: 1.25rem 0;
+        align-items: center;
     }
-    
+
+    .input-group .glass-select {
+        min-width: 150px;
+    }
+
+    .glass-input,
+    .glass-select {
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        flex: 1 1 auto;
+        min-width: 60px;
+    }
+
+    [data-theme="light"] .glass-input,
+    [data-theme="light"] .glass-select {
+        background: #ffffff;
+        border: 2px solid #d1d5db;
+        color: #1f2937;
+    }
+
+    [data-theme="light"] .glass-input::placeholder {
+        color: #6b7280;
+    }
+
+    .glass-input:focus,
+    .glass-select:focus {
+        border-color: var(--color-gold);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
     .result-box {
-        background: rgba(0,0,0,0.3);
+        background: rgba(15, 23, 42, 0.6);
         padding: 1.5rem;
-        border-radius: 12px;
+        border-radius: 1rem;
         min-height: 120px;
-        border: 1px solid rgba(255,255,255,0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         transition: all 0.3s ease;
+        backdrop-filter: blur(8px);
     }
-    
+
     .result-box:hover {
-        border-color: rgba(255,255,255,0.1);
-        background: rgba(0,0,0,0.4);
+        border-color: rgba(212, 175, 55, 0.2);
     }
-    
+
+    [data-theme="light"] .result-box {
+        background: rgba(248, 250, 252, 0.9);
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+
     .names-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 1rem;
-        max-height: 250px;
+        max-height: 280px;
         overflow-y: auto;
         padding-right: 0.5rem;
     }
-    
+
     .name-card {
-        background: rgba(255,255,255,0.03); 
-        padding: 1.5rem; 
-        border-radius: 12px; 
-        text-align: center; 
-        border: 1px solid rgba(255,255,255,0.05);
-        transition: all 0.2s ease;
+        background: rgba(15, 23, 42, 0.5);
+        padding: 1.25rem;
+        border-radius: 1rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition: all 0.25s ease;
         animation: fadeIn 0.5s ease backwards;
+        backdrop-filter: blur(4px);
     }
-    
+
     .name-card:hover {
+        background: rgba(212, 175, 55, 0.15);
+        border-color: var(--color-gold);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.15);
+    }
+
+    [data-theme="light"] .name-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="light"] .name-card:hover {
         background: rgba(212, 175, 55, 0.1);
-        border-color: #D4AF37;
-        transform: translateY(-2px);
+    }
+
+    /* Light mode text fixes */
+    [data-theme="light"] .glass-panel h3 {
+        color: #1a1a2e !important;
+    }
+
+    [data-theme="light"] .result-box p,
+    [data-theme="light"] .glass-panel p {
+        color: #4b5563 !important;
+    }
+
+    [data-theme="light"] .glass-panel {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #e5e7eb;
+    }
+
+    [data-theme="light"] #cy {
+        background: #f8fafc !important;
+        border-color: #e5e7eb !important;
+    }
+
+    [data-theme="light"] .action-btn {
+        background: linear-gradient(135deg, #D4AF37, #e5c44c);
+        color: #000;
+        border: none;
+    }
+
+    /* Scrollbar styling */
+    .names-grid::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .names-grid::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+    }
+
+    .names-grid::-webkit-scrollbar-thumb {
+        background: rgba(212, 175, 55, 0.3);
+        border-radius: 3px;
     }
 </style>
 
@@ -113,31 +237,35 @@
         </h1>
 
         <div class="playground-grid">
-            
+
             <!-- 1. Graph Visualizer (The Hero) -->
             <div class="glass-panel graph-panel hover-lift">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="color: #eee; margin: 0;">🕸️ Neuro-Symbolic Graph</h3>
+                    <h3 style="color: var(--text-primary); margin: 0;">🕸️ Neuro-Symbolic Graph</h3>
                     <div style="display: flex; gap: 1rem; align-items: center;">
                         <span style="color: var(--color-gold); font-size: 0.8rem;">● Root (Thabit)</span>
                         <span style="color: var(--color-emerald); font-size: 0.8rem;">● Verse (Wahyu)</span>
                         <button onclick="loadGraph()" class="action-btn">Initialise Graph</button>
                     </div>
                 </div>
-                <div id="cy" style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;">
+                <div id="cy"
+                    style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;">
                     <div style="text-align: center; color: #666;">
                         <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">🕸️</div>
-                        <p style="margin: 0 0 1rem 0;">Click <strong style="color: var(--color-gold);">Initialise Graph</strong> to load knowledge graph</p>
+                        <p style="margin: 0 0 1rem 0;">Click <strong style="color: var(--color-gold);">Initialise
+                                Graph</strong> to load knowledge graph</p>
                     </div>
                 </div>
             </div>
 
             <!-- 2. Quran Verse Lookup -->
             <div class="glass-panel hover-lift" style="padding: 1.5rem;">
-                <h3 style="color: #eee; margin-top: 0;">📖 Verse Lookup</h3>
+                <h3 style="color: var(--text-primary); margin-top: 0;">📖 Verse Lookup</h3>
                 <div class="input-group">
-                    <input type="number" id="surahInput" class="glass-input" placeholder="Surah" value="1" style="flex: 1;">
-                    <input type="number" id="ayahInput" class="glass-input" placeholder="Ayah" value="1" style="flex: 1;">
+                    <input type="number" id="surahInput" class="glass-input" placeholder="Surah" value="1"
+                        style="flex: 1;">
+                    <input type="number" id="ayahInput" class="glass-input" placeholder="Ayah" value="1"
+                        style="flex: 1;">
                     <button onclick="fetchVerse()" class="action-btn">Seek</button>
                 </div>
                 <div id="verseResult" class="result-box">
@@ -147,7 +275,7 @@
 
             <!-- 3. Hadith Explorer -->
             <div class="glass-panel hover-lift" style="padding: 1.5rem;">
-                <h3 style="color: #eee; margin-top: 0;">📜 Hadith Explorer</h3>
+                <h3 style="color: var(--text-primary); margin-top: 0;">📜 Hadith Explorer</h3>
                 <div class="input-group">
                     <select id="collectionSelect" class="glass-select" style="flex: 2;">
                         <option value="bukhari">Sahih al-Bukhari</option>
@@ -155,7 +283,8 @@
                         <option value="nasai">Sunan an-Nasai</option>
                         <option value="abudawud">Sunan Abi Dawud</option>
                     </select>
-                    <input type="number" id="hadithInput" class="glass-input" placeholder="#" value="1" style="flex: 1;">
+                    <input type="number" id="hadithInput" class="glass-input" placeholder="#" value="1"
+                        style="flex: 1;">
                     <button onclick="fetchHadith()" class="action-btn">Trace</button>
                 </div>
                 <div id="hadithResult" class="result-box">
@@ -166,11 +295,12 @@
             <!-- 4. Divine Names -->
             <div class="glass-panel hover-lift" style="grid-column: 1 / -1; padding: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="color: #eee; margin: 0;">✨ Divine Attributes (Ontology Root)</h3>
+                    <h3 style="color: var(--text-primary); margin: 0;">✨ Divine Attributes (Ontology Root)</h3>
                     <button onclick="loadNames()" class="action-btn">Manifest Names</button>
                 </div>
                 <div id="namesGrid" class="names-grid">
-                    <p style="color: #666; font-style: italic; grid-column: 1/-1; text-align: center; padding: 2rem;">Awaiting invocation...</p>
+                    <p style="color: #666; font-style: italic; grid-column: 1/-1; text-align: center; padding: 2rem;">
+                        Awaiting invocation...</p>
                 </div>
             </div>
 
@@ -186,14 +316,14 @@
     async function loadGraph() {
         const container = document.getElementById('cy');
         container.innerHTML = '<p style="color:#666; text-align:center; padding-top:200px;">Booting Neuro-Symbolic Engine...</p>';
-        
+
         try {
             const res = await fetch('/api/v1/graph');
             const data = await res.json();
-            
+
             // Clear loading text
             container.innerHTML = '';
-            
+
             const cy = cytoscape({
                 container: container,
                 elements: data,
@@ -297,26 +427,26 @@
                         }
                     }
                 ],
-                layout: { 
-                    name: 'cose', 
+                layout: {
+                    name: 'cose',
                     animate: true,
                     componentSpacing: 100,
-                    nodeRepulsion: 400000 
+                    nodeRepulsion: 400000
                 }
             });
-            
+
             // Premium Interaction: Hover Effects
-            cy.on('mouseover', 'node', function(evt){
+            cy.on('mouseover', 'node', function (evt) {
                 evt.target.style('border-color', '#fff');
                 evt.target.style('border-width', 4);
                 document.body.style.cursor = 'pointer';
             });
-            cy.on('mouseout', 'node', function(evt){
+            cy.on('mouseout', 'node', function (evt) {
                 evt.target.style('border-width', 0);
-                if(evt.target.hasClass('root_word')) evt.target.style('border-width', 2);
+                if (evt.target.hasClass('root_word')) evt.target.style('border-width', 2);
                 document.body.style.cursor = 'default';
             });
-            
+
         } catch (e) {
             console.error(e);
             container.innerHTML = `<p style="color:#ff6b6b; text-align:center; padding-top:200px;">✖ Connection Lost: Is SurrealDB running?</p>`;
@@ -328,13 +458,13 @@
         const s = document.getElementById('surahInput').value;
         const a = document.getElementById('ayahInput').value;
         const div = document.getElementById('verseResult');
-        
+
         div.innerHTML = '<span style="color:#D4AF37;">Decrypting...</span>';
         try {
             const res = await fetch(`/api/v1/verse/${s}/${a}`);
-            
+
             if (!res.ok) throw new Error("Not Found");
-            
+
             const data = await res.json();
             div.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem; margin-bottom:1rem;">
@@ -353,13 +483,13 @@
         const c = document.getElementById('collectionSelect').value;
         const n = document.getElementById('hadithInput').value;
         const div = document.getElementById('hadithResult');
-        
+
         div.innerHTML = '<span style="color:#D4AF37;">Tracing Isnad...</span>';
         try {
             const res = await fetch(`/api/v1/hadith/${c}/${n}`);
-            
+
             if (!res.ok) throw new Error("Not Found");
-            
+
             const data = await res.json();
             div.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem; margin-bottom:1rem;">
@@ -377,11 +507,11 @@
     async function loadNames() {
         const grid = document.getElementById('namesGrid');
         grid.innerHTML = '<span style="color:#D4AF37; padding:1rem;">Invoking...</span>';
-        
+
         try {
             const res = await fetch('/api/v1/names');
             const data = await res.json();
-            
+
             grid.innerHTML = data.names.map((n, i) => `
                 <div class="name-card" style="animation-delay: ${i * 0.05}s;"
                     onmouseover="this.style.background='rgba(212, 175, 55, 0.1)';this.style.borderColor='#D4AF37'" 
@@ -391,7 +521,7 @@
                     <div style="font-size: 0.75rem; color: #888; margin-top:0.5rem;">${n.meaning}</div>
                 </div>
             `).join('');
-            
+
             // Add keyframes if not exists
             if (!document.getElementById('animStyles')) {
                 const style = document.createElement('style');
@@ -404,7 +534,7 @@
                 `;
                 document.head.appendChild(style);
             }
-            
+
         } catch (e) {
             grid.innerHTML = `<span style="color: #ff6b6b; padding:1rem;">✖ Failed to retrieve names.</span>`;
         }

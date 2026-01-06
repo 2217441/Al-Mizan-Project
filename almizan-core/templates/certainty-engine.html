@@ -33,7 +33,56 @@
                 </svg>
             </button>
         </form>
+
+        <!-- Sample Queries -->
+        <div style="margin-top: 1.5rem; text-align: center;">
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Try these sample queries:</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
+                <button class="sample-query" onclick="fillQuery('Bitcoin')">Bitcoin</button>
+                <button class="sample-query" onclick="fillQuery('Zakat')">Zakat</button>
+                <button class="sample-query" onclick="fillQuery('Inheritance')">Inheritance</button>
+                <button class="sample-query" onclick="fillQuery('Riba')">Riba</button>
+                <button class="sample-query" onclick="fillQuery('Cryptocurrency')">Cryptocurrency</button>
+                <button class="sample-query" onclick="fillQuery('Music')">Music</button>
+                <button class="sample-query" onclick="fillQuery('Insurance')">Insurance</button>
+                <button class="sample-query" onclick="fillQuery('Stock Trading')">Stock Trading</button>
+                <button class="sample-query" onclick="fillQuery('Mortgage')">Mortgage</button>
+                <button class="sample-query" onclick="fillQuery('Islamic Finance')">Islamic Finance</button>
+            </div>
+        </div>
     </div>
+
+    <style>
+        .sample-query {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--color-gold);
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .sample-query:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--color-gold);
+            transform: translateY(-2px);
+        }
+
+        [data-theme="light"] .sample-query {
+            background: #ffffff;
+            border: 2px solid #1f2937;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        [data-theme="light"] .sample-query:hover {
+            background: #1f2937;
+            color: #ffffff;
+        }
+    </style>
 
     <div id="traceAnimation" class="trace-container">
         <div class="trace-node" style="animation-delay: 0s"></div>
@@ -49,6 +98,13 @@
 </div>
 
 <script>
+    // Fill input with sample query and submit
+    function fillQuery(query) {
+        const input = document.getElementById('topicInput');
+        input.value = query;
+        document.getElementById('muftiForm').dispatchEvent(new Event('submit'));
+    }
+
     document.getElementById('muftiForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 

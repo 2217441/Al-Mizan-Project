@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('/api/v1/graph');
         graphData = await response.json();
-        
+
         // Transform API response (nodes are wrapped in { data: {} })
         const nodes = graphData.nodes.map(n => ({
             id: n.data.id,
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Allah and Prophets are 'thabit' (fixed/foundation)
             tier: ['allah', 'prophet', 'verse'].includes(n.data.type) ? 'thabit' : 'context'
         }));
-        
+
         const edges = graphData.edges.map(e => ({
             source: e.data.source,
             target: e.data.target
@@ -68,12 +68,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Remove loading text
         loadingText.remove();
-        
+
         renderGraph(nodes, edges);
     } catch (error) {
         loadingText.text("Error loading graph. Using sample data.");
         console.error('Graph API error:', error);
-        
+
         // Fallback to sample data
         setTimeout(() => {
             loadingText.remove();
@@ -124,22 +124,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended))
-            .on("mouseenter", function(event, d) {
+            .on("mouseenter", function (event, d) {
                 d3.select(this).select("circle")
                     .transition().duration(200)
                     .attr("r", d.type === 'allah' ? 24 : (d.tier === 'thabit' ? 16 : 12))
                     .attr("stroke-width", 4);
-                
+
                 // Highlight connected nodes
                 const connectedIds = new Set();
                 links.forEach(l => {
                     const sourceId = typeof l.source === 'object' ? l.source.id : l.source;
                     const targetId = typeof l.target === 'object' ? l.target.id : l.target;
-                    
+
                     if (sourceId === d.id) connectedIds.add(targetId);
                     if (targetId === d.id) connectedIds.add(sourceId);
                 });
-                
+
                 node.style("opacity", n => connectedIds.has(n.id) || n.id === d.id ? 1 : 0.2);
                 link.style("opacity", l => {
                     const sourceId = typeof l.source === 'object' ? l.source.id : l.source;
@@ -147,18 +147,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return (sourceId === d.id || targetId === d.id) ? 1 : 0.05;
                 });
             })
-            .on("mouseleave", function(event, d) {
+            .on("mouseleave", function (event, d) {
                 d3.select(this).select("circle")
                     .transition().duration(200)
                     .attr("r", d.type === 'allah' ? 20 : (d.tier === 'thabit' ? 12 : 8))
                     .attr("stroke-width", 2);
-                
+
                 node.style("opacity", 1);
                 link.style("opacity", 0.4);
             })
-            .on("click", function(event, d) {
+            .on("click", function (event, d) {
                 graphState.selectedNode = d;
-                
+
                 // Pulse animation on click
                 d3.select(this).select("circle")
                     .transition()
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .transition()
                     .duration(300)
                     .attr("r", d.type === 'allah' ? 20 : (d.tier === 'thabit' ? 12 : 8));
-                
+
                 showNodeDetails(d, links);
             });
 
@@ -222,26 +222,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         // Search functionality
-        window.searchGraph = function(term) {
+        window.searchGraph = function (term) {
             graphState.searchTerm = term.toLowerCase();
-            
+
             if (!term) {
                 node.style("opacity", 1);
                 node.selectAll("circle").attr("stroke", "#fff").attr("stroke-width", 2);
                 return;
             }
-            
-            const matches = nodes.filter(n => 
+
+            const matches = nodes.filter(n =>
                 n.id.toLowerCase().includes(term) || n.label.toLowerCase().includes(term)
             );
-            
+
             if (matches.length > 0) {
                 // Highlight matches
                 node.style("opacity", n => matches.find(m => m.id === n.id) ? 1 : 0.2);
                 node.selectAll("circle")
                     .attr("stroke", d => matches.find(m => m.id === d.id) ? "#D4AF37" : "#fff")
                     .attr("stroke-width", d => matches.find(m => m.id === d.id) ? 4 : 2);
-                
+
                 // Center on first match
                 const firstMatch = matches[0];
                 const transform = d3.zoomIdentity
@@ -255,17 +255,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         // Filter functionality
-        window.toggleFilter = function(type, isChecked) {
+        window.toggleFilter = function (type, isChecked) {
             if (isChecked) {
                 graphState.activeFilters.add(type);
             } else {
                 graphState.activeFilters.delete(type);
             }
-            
+
             node.transition().duration(300)
                 .style("opacity", d => graphState.activeFilters.has(d.type) ? 1 : 0)
                 .style("pointer-events", d => graphState.activeFilters.has(d.type) ? "all" : "none");
-            
+
             link.transition().duration(300)
                 .style("opacity", l => {
                     const sourceVisible = graphState.activeFilters.has(l.source.type);
@@ -294,23 +294,65 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- UI OVERRIDES FOR HOTFIX ---
     const originalShow = window.showNodeDetails;
-    window.showNodeDetails = function(node, links) {
+    window.showNodeDetails = function (node, links) {
         const panel = document.getElementById('node-details');
         if (panel) {
             panel.classList.add('active');
             panel.style.left = '0';
             panel.style.right = 'auto';
         }
-        // Call original if it exists and we haven't broken anything
-        // Actually, let's just re-implement the part we need to be safe
+
         const connections = links.filter(l => l.source.id === node.id || l.target.id === node.id);
         document.getElementById('detail-id').textContent = node.id;
         document.getElementById('detail-label').textContent = node.label;
         document.getElementById('detail-type').textContent = node.type.toUpperCase();
         document.getElementById('detail-connections').textContent = connections.length;
+
+        // Calculate reliability score based on Islamic epistemology
+        let reliability, reliabilityColor, reliabilityLabel;
+        switch (node.type) {
+            case 'allah':
+            case 'verse':
+                reliability = 100;
+                reliabilityColor = '#10B981'; // Emerald
+                reliabilityLabel = 'Qat\'i (Definitive)';
+                break;
+            case 'prophet':
+                reliability = 100;
+                reliabilityColor = '#10B981';
+                reliabilityLabel = 'Thabit (Established)';
+                break;
+            case 'hadith':
+                reliability = 92;
+                reliabilityColor = '#10B981';
+                reliabilityLabel = 'Sahih (Authentic)';
+                break;
+            case 'narrator':
+                reliability = 85;
+                reliabilityColor = '#EAB308'; // Yellow
+                reliabilityLabel = 'Thiqa (Trustworthy)';
+                break;
+            case 'ruling':
+                reliability = 75;
+                reliabilityColor = '#EAB308';
+                reliabilityLabel = 'Zanni (Interpretive)';
+                break;
+            default:
+                reliability = 70;
+                reliabilityColor = '#94a3b8';
+                reliabilityLabel = 'Ungraded';
+        }
+
+        const reliabilityEl = document.getElementById('detail-reliability');
+        if (reliabilityEl) {
+            reliabilityEl.innerHTML = `
+                <span style="font-size: 1.5rem; font-weight: 700; color: ${reliabilityColor};">${reliability}%</span>
+                <span style="font-size: 0.8rem; color: ${reliabilityColor}; opacity: 0.9;">${reliabilityLabel}</span>
+            `;
+        }
     };
 
-    window.closeNodeDetails = function() {
+    window.closeNodeDetails = function () {
         const panel = document.getElementById('node-details');
         if (panel) {
             panel.classList.remove('active');
@@ -323,18 +365,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     function applyUIHotfix() {
         const overlay = document.querySelector('.controls-overlay');
         const details = document.getElementById('node-details');
-        
+
         if (overlay) {
             // 1. Scrub literal \n
             overlay.innerHTML = overlay.innerHTML.replace(/\\n/g, '');
-            
+
             // 2. Force Theme Parity for Sidebar
             const observer = new MutationObserver(() => {
                 const isLight = document.documentElement.getAttribute('data-theme') === 'light';
                 overlay.style.background = isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(20, 20, 35, 0.9)';
                 overlay.style.color = isLight ? '#1a1a2e' : '#E0E0E0';
                 overlay.style.borderColor = isLight ? '#b8860b' : '#D4AF37';
-                
+
                 if (details) {
                     details.style.background = isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(20, 20, 35, 0.9)';
                     details.style.color = isLight ? '#1a1a2e' : '#E0E0E0';
@@ -362,7 +404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     }
-    
+
     // Run hotfix after the graph starts rendering
     setTimeout(applyUIHotfix, 100);
 });

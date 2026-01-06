@@ -9,7 +9,7 @@
         padding: 2rem 0;
         position: relative;
     }
-    
+
     /* Header Section */
     .gov-header {
         display: flex;
@@ -21,13 +21,13 @@
         position: relative;
         z-index: 10;
     }
-    
+
     .gov-header__title {
         display: flex;
         align-items: center;
         gap: 1.5rem;
     }
-    
+
     .gov-header__icon {
         width: 56px;
         height: 56px;
@@ -40,7 +40,7 @@
         font-size: 1.75rem;
         box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
     }
-    
+
     .gov-header h1 {
         font-size: 2rem;
         font-family: var(--font-heading);
@@ -49,14 +49,14 @@
         font-weight: 700;
         text-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
     }
-    
+
     .gov-header__subtitle {
         font-size: 0.9rem;
         color: var(--text-muted);
         margin-top: 0.5rem;
         letter-spacing: 0.5px;
     }
-    
+
     /* User Badge */
     .gov-user-badge {
         display: flex;
@@ -69,13 +69,13 @@
         backdrop-filter: blur(10px);
         transition: all 0.3s ease;
     }
-    
+
     .gov-user-badge:hover {
         border-color: rgba(168, 85, 247, 0.5);
         box-shadow: 0 0 15px rgba(168, 85, 247, 0.15);
         transform: translateY(-2px);
     }
-    
+
     .gov-user-badge__avatar {
         width: 40px;
         height: 40px;
@@ -87,32 +87,32 @@
         color: white;
         font-weight: 700;
         font-size: 1rem;
-        border: 2px solid rgba(255,255,255,0.2);
+        border: 2px solid rgba(255, 255, 255, 0.2);
     }
-    
+
     .gov-user-badge__name {
         font-size: 0.9rem;
         font-weight: 700;
         color: #e9d5ff;
     }
-    
+
     .gov-user-badge__role {
         font-size: 0.7rem;
         color: rgba(233, 213, 255, 0.6);
         text-transform: uppercase;
         letter-spacing: 1px;
     }
-    
+
     /* Tabs */
     .gov-tabs {
         display: flex;
         gap: 3rem;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: 3rem;
         position: relative;
         z-index: 10;
     }
-    
+
     .gov-tab {
         padding-bottom: 1.25rem;
         font-size: 0.9rem;
@@ -126,7 +126,7 @@
         background: none;
         border: none;
     }
-    
+
     .gov-tab::after {
         content: '';
         position: absolute;
@@ -138,25 +138,25 @@
         transform: scaleX(0);
         transition: transform 0.3s ease;
     }
-    
+
     .gov-tab:hover {
         color: #e9d5ff;
     }
-    
+
     .gov-tab.active {
         color: #a855f7;
     }
-    
+
     .gov-tab.active::after {
         transform: scaleX(1);
     }
-    
+
     /* Content Area */
     .gov-content {
         position: relative;
         z-index: 10;
     }
-    
+
     /* Queue Card */
     .queue-card {
         background: rgba(20, 20, 35, 0.6);
@@ -169,20 +169,20 @@
         backdrop-filter: blur(10px);
         transition: all 0.3s ease;
     }
-    
+
     .queue-card:hover {
         transform: translateY(-4px);
         border-color: rgba(168, 85, 247, 0.3);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     }
-    
+
     .queue-card__header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 1.5rem;
     }
-    
+
     .queue-type {
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -194,13 +194,13 @@
         border-radius: 99px;
         border: 1px solid rgba(168, 85, 247, 0.2);
     }
-    
+
     .queue-time {
         font-size: 0.85rem;
         color: var(--text-muted);
         font-family: var(--font-mono);
     }
-    
+
     .queue-title {
         font-size: 1.4rem;
         margin-bottom: 0.75rem;
@@ -208,23 +208,23 @@
         font-weight: 600;
         color: var(--text-primary);
     }
-    
+
     .queue-excerpt {
         color: var(--text-muted);
         line-height: 1.6;
         margin-bottom: 2rem;
         font-size: 1rem;
     }
-    
+
     .queue-meta {
         display: flex;
         gap: 2rem;
         padding: 1rem 0;
-        border-top: 1px solid rgba(255,255,255,0.05);
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         margin-bottom: 2rem;
     }
-    
+
     .meta-item label {
         display: block;
         font-size: 0.7rem;
@@ -232,18 +232,18 @@
         color: var(--text-muted);
         margin-bottom: 0.25rem;
     }
-    
+
     .meta-item span {
         font-weight: 600;
         color: #e9d5ff;
     }
-    
+
     .queue-actions {
         display: flex;
         gap: 1rem;
         justify-content: flex-end;
     }
-    
+
     .btn-action {
         padding: 0.75rem 2rem;
         border-radius: 0.75rem;
@@ -255,26 +255,62 @@
         align-items: center;
         gap: 0.5rem;
     }
-    
+
     .btn-approve {
         background: linear-gradient(135deg, #10B981, #059669);
         color: white;
         box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
     }
-    
+
     .btn-approve:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
     }
-    
+
     .btn-reject {
         background: rgba(220, 38, 38, 0.1);
         color: #ef4444;
         border: 1px solid rgba(220, 38, 38, 0.3);
     }
-    
+
     .btn-reject:hover {
         background: rgba(220, 38, 38, 0.2);
+    }
+
+    /* Light Mode Styles */
+    [data-theme="light"] .queue-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(168, 85, 247, 0.15);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="light"] .queue-card:hover {
+        box-shadow: 0 10px 40px rgba(168, 85, 247, 0.15);
+    }
+
+    [data-theme="light"] .gov-user-badge {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(168, 85, 247, 0.2);
+    }
+
+    [data-theme="light"] .gov-user-badge__name {
+        color: #1f2937;
+    }
+
+    [data-theme="light"] .gov-user-badge__role {
+        color: #6b7280;
+    }
+
+    [data-theme="light"] .meta-item span {
+        color: #4c1d95;
+    }
+
+    [data-theme="light"] .gov-tabs {
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="light"] .queue-meta {
+        border-color: rgba(0, 0, 0, 0.08);
     }
 </style>
 
@@ -284,9 +320,9 @@
         <div class="mesh-blob mesh-blob--purple morph-blob"></div>
         <div class="mesh-blob mesh-blob--blue morph-blob" style="animation-delay: -3s; top: 60%; right: 10%;"></div>
     </div>
-    
+
     <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
-        
+
         <!-- Header -->
         <header class="gov-header stagger-reveal">
             <div class="gov-header__title">
@@ -298,7 +334,7 @@
                     <p class="gov-header__subtitle">Decentralized Theological Governance Protocol</p>
                 </div>
             </div>
-            
+
             <div class="gov-user-badge hover-lift">
                 <div class="gov-user-badge__avatar">MA</div>
                 <div>
@@ -307,17 +343,17 @@
                 </div>
             </div>
         </header>
-        
+
         <!-- Tabs -->
         <nav class="gov-tabs stagger-reveal" style="animation-delay: 0.1s;">
-            <button class="gov-tab active">Pending Review (3)</button>
-            <button class="gov-tab">Recently Approved</button>
-            <button class="gov-tab">Consensus Analytics</button>
+            <button class="gov-tab active" data-tab="pending">Pending Review (3)</button>
+            <button class="gov-tab" data-tab="approved">Recently Approved</button>
+            <button class="gov-tab" data-tab="analytics">Consensus Analytics</button>
         </nav>
-        
-        <!-- Content -->
-        <main class="gov-content stagger-reveal" style="animation-delay: 0.2s;">
-            
+
+        <!-- Tab Content: Pending Review -->
+        <main id="pending" class="gov-content tab-content stagger-reveal" style="animation-delay: 0.2s;">
+
             <!-- Sample Queue Item -->
             <div class="queue-card gradient-border">
                 <div class="card__hover-gradient"></div>
@@ -325,13 +361,13 @@
                     <span class="queue-type">Fatwa Verification</span>
                     <span class="queue-time">Submitted 2 hours ago</span>
                 </div>
-                
+
                 <h2 class="queue-title">Permissibility of High-Frequency Trading Algorithms</h2>
                 <div class="queue-excerpt">
-                    Analysis of HFT execution speeds and the requirement of 'Qabd' (possession) in commodities trading. 
+                    Analysis of HFT execution speeds and the requirement of 'Qabd' (possession) in commodities trading.
                     The algorithm executes trades in microseconds, raising questions about constructive possession...
                 </div>
-                
+
                 <div class="queue-meta">
                     <div class="meta-item">
                         <label>Author</label>
@@ -346,7 +382,7 @@
                         <span style="color: #10B981;">92% (Strong)</span>
                     </div>
                 </div>
-                
+
                 <div class="queue-actions">
                     <button class="btn-action btn-reject">
                         Request Revision
@@ -356,7 +392,7 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- Another Item -->
             <div class="queue-card gradient-border" style="opacity: 0.8;">
                 <div class="card__hover-gradient"></div>
@@ -367,15 +403,131 @@
                 <h2 class="queue-title">Linking 'Ribâ' Node to 'Inflationary Fiat' Concept</h2>
                 <div class="queue-meta">
                     <div class="meta-item"><label>Author</label><span>System AI</span></div>
-                    <div class="meta-item"><label>Certainty</label><span style="color: #EAB308;">68% (Medium)</span></div>
+                    <div class="meta-item"><label>Certainty</label><span style="color: #EAB308;">68% (Medium)</span>
+                    </div>
                 </div>
                 <div class="queue-actions">
                     <button class="btn-action btn-reject">Reject</button>
                     <button class="btn-action btn-approve">Verify Link</button>
                 </div>
             </div>
-            
+
         </main>
+
+        <!-- Tab Content: Recently Approved -->
+        <main id="approved" class="gov-content tab-content" style="display: none;">
+
+            <div class="queue-card gradient-border" style="border-left: 4px solid #10B981;">
+                <div class="queue-card__header">
+                    <span class="queue-type"
+                        style="background: rgba(16, 185, 129, 0.1); color: #10B981; border-color: rgba(16, 185, 129, 0.2);">✓
+                        Approved</span>
+                    <span class="queue-time">Approved 1 day ago</span>
+                </div>
+                <h2 class="queue-title">Zakat on Cryptocurrency Holdings</h2>
+                <div class="queue-excerpt">
+                    Ruling on the obligation of Zakat on digital assets including Bitcoin and Ethereum, with calculation
+                    methodology based on market value.
+                </div>
+                <div class="queue-meta">
+                    <div class="meta-item"><label>Author</label><span>Sheikh Ahmad Kutty</span></div>
+                    <div class="meta-item"><label>Verifiers</label><span>5 Scholars</span></div>
+                    <div class="meta-item"><label>Consensus</label><span style="color: #10B981;">100% (Ijma')</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="queue-card gradient-border" style="border-left: 4px solid #10B981;">
+                <div class="queue-card__header">
+                    <span class="queue-type"
+                        style="background: rgba(16, 185, 129, 0.1); color: #10B981; border-color: rgba(16, 185, 129, 0.2);">✓
+                        Approved</span>
+                    <span class="queue-time">Approved 3 days ago</span>
+                </div>
+                <h2 class="queue-title">Digital Waqf Smart Contract Standards</h2>
+                <div class="queue-meta">
+                    <div class="meta-item"><label>Author</label><span>Al-Mizan Foundation</span></div>
+                    <div class="meta-item"><label>Verifiers</label><span>8 Scholars</span></div>
+                    <div class="meta-item"><label>Consensus</label><span style="color: #10B981;">87.5%</span></div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Tab Content: Consensus Analytics -->
+        <main id="analytics" class="gov-content tab-content" style="display: none;">
+
+            <div class="queue-card gradient-border">
+                <h3 style="color: var(--text-primary); margin: 0 0 1.5rem 0; font-size: 1.2rem;">📊 Governance Metrics
+                </h3>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div
+                        style="text-align: center; padding: 1.5rem; background: rgba(168, 85, 247, 0.1); border-radius: 1rem;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #a855f7;">47</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;">Total Rulings</div>
+                    </div>
+                    <div
+                        style="text-align: center; padding: 1.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 1rem;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #10B981;">89%</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;">Consensus Rate</div>
+                    </div>
+                    <div
+                        style="text-align: center; padding: 1.5rem; background: rgba(234, 179, 8, 0.1); border-radius: 1rem;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #EAB308;">12</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;">Active Verifiers</div>
+                    </div>
+                    <div
+                        style="text-align: center; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border-radius: 1rem;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #3B82F6;">2.3 days</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;">Avg. Review Time</div>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--text-primary); margin: 2rem 0 1rem 0;">Recent Activity</h4>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem;">
+                        <span style="color: var(--text-muted);">Sheikh Ahmad verified <strong
+                                style="color: var(--text-primary);">Zakat on Crypto</strong></span>
+                        <span style="color: #10B981;">✓</span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem;">
+                        <span style="color: var(--text-muted);">Mufti Adam submitted new <strong
+                                style="color: var(--text-primary);">HFT Analysis</strong></span>
+                        <span style="color: #a855f7;">⏳</span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem;">
+                        <span style="color: var(--text-muted);">System AI proposed <strong
+                                style="color: var(--text-primary);">Ribâ-Fiat Link</strong></span>
+                        <span style="color: #EAB308;">🔍</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
     </div>
 </div>
+
+<script>
+    // Tab switching logic
+    document.querySelectorAll('.gov-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active from all tabs
+            document.querySelectorAll('.gov-tab').forEach(t => t.classList.remove('active'));
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+
+            // Activate clicked tab
+            tab.classList.add('active');
+            // Show corresponding content
+            const tabId = tab.dataset.tab;
+            document.getElementById(tabId).style.display = 'block';
+        });
+    });
+</script>
 {% endblock %}

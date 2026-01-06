@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
     <link rel="stylesheet" href="/static/css/tokens.css?v=2">
     <!-- Premium Effects -->
     <link rel="stylesheet" href="/static/css/effects.css?v=2">
-    
+
     <style>
         /* Presentation Base */
         .pres-container {
@@ -20,7 +21,7 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .pres-slide {
             min-height: 100vh;
             display: flex;
@@ -33,13 +34,13 @@
             position: relative;
             z-index: 2;
         }
-        
+
         .pres-slide__content {
             max-width: 1000px;
             width: 100%;
             z-index: 3;
         }
-        
+
         .pres-slide h1 {
             font-family: var(--font-heading);
             font-size: 4rem;
@@ -52,7 +53,7 @@
             letter-spacing: 0.1em;
             filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
         }
-        
+
         .pres-slide h2 {
             font-size: 2.5rem;
             color: var(--text-primary);
@@ -60,7 +61,7 @@
             position: relative;
             display: inline-block;
         }
-        
+
         .pres-slide h2::after {
             content: '';
             position: absolute;
@@ -72,7 +73,7 @@
             background: var(--color-gold);
             box-shadow: 0 0 10px var(--color-gold);
         }
-        
+
         .pres-slide h3 {
             color: #10b981;
             font-size: 1.5rem;
@@ -80,7 +81,7 @@
             text-transform: uppercase;
             letter-spacing: 0.15em;
         }
-        
+
         .pres-slide p {
             font-size: 1.35rem;
             line-height: 1.8;
@@ -88,7 +89,7 @@
             margin-bottom: 1.5rem;
             font-weight: 300;
         }
-        
+
         .pres-slide__icon {
             width: 100px;
             height: 100px;
@@ -103,12 +104,19 @@
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
             animation: pulse 3s infinite;
         }
-        
+
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.2); }
-            50% { box-shadow: 0 0 60px rgba(212, 175, 55, 0.4); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 60px rgba(212, 175, 55, 0.4);
+            }
         }
-        
+
         .pres-slide__badge {
             display: inline-block;
             font-size: 0.85rem;
@@ -122,7 +130,7 @@
             margin-top: 3rem;
             background: rgba(212, 175, 55, 0.1);
         }
-        
+
         .pres-card-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -130,7 +138,7 @@
             text-align: left;
             margin-top: 3rem;
         }
-        
+
         .pres-card {
             background: rgba(20, 20, 35, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -139,30 +147,35 @@
             backdrop-filter: blur(12px);
             transition: all 0.3s ease;
         }
-        
+
         .pres-card:hover {
             transform: translateY(-5px);
             background: rgba(255, 255, 255, 0.05);
             border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
-        
-        .pres-card--danger { border-left: 4px solid #ef4444; }
-        .pres-card--success { border-left: 4px solid #10b981; }
-        
+
+        .pres-card--danger {
+            border-left: 4px solid #ef4444;
+        }
+
+        .pres-card--success {
+            border-left: 4px solid #10b981;
+        }
+
         .pres-card h4 {
             color: #fff;
             font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 0.75rem;
         }
-        
+
         .pres-card p {
             font-size: 1rem;
             margin: 0;
             color: #bbb;
         }
-        
+
         /* Timeline */
         .phase-timeline {
             display: grid;
@@ -170,7 +183,7 @@
             gap: 1.5rem;
             margin-top: 3rem;
         }
-        
+
         .phase-card {
             background: rgba(20, 20, 35, 0.6);
             border-radius: 1rem;
@@ -179,12 +192,23 @@
             backdrop-filter: blur(10px);
             transition: all 0.3s;
         }
-        
-        .phase-card:hover { transform: translateY(-5px); }
-        .phase-card:nth-child(1) { border-color: var(--text-muted); }
-        .phase-card:nth-child(2) { border-color: var(--color-gold); }
-        .phase-card:nth-child(3) { border-color: #10b981; }
-        
+
+        .phase-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .phase-card:nth-child(1) {
+            border-color: var(--text-muted);
+        }
+
+        .phase-card:nth-child(2) {
+            border-color: var(--color-gold);
+        }
+
+        .phase-card:nth-child(3) {
+            border-color: #10b981;
+        }
+
         .phase-card__num {
             font-size: 3rem;
             font-weight: 700;
@@ -193,14 +217,14 @@
             top: 1rem;
             right: 1.5rem;
         }
-        
+
         .phase-card__title {
             font-size: 1.5rem;
             font-weight: 700;
             margin: 1.5rem 0 0.5rem;
             color: #fff;
         }
-        
+
         /* Navigation */
         .pres-nav {
             position: fixed;
@@ -216,7 +240,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
         }
-        
+
         .pres-nav__dot {
             width: 12px;
             height: 12px;
@@ -225,14 +249,14 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        
+
         .pres-nav__dot:hover,
         .pres-nav__dot.active {
             background: var(--color-gold);
             transform: scale(1.2);
             box-shadow: 0 0 10px var(--color-gold);
         }
-        
+
         .pres-exit {
             position: fixed;
             bottom: 2rem;
@@ -251,7 +275,7 @@
             transition: all 0.3s;
             z-index: 100;
         }
-        
+
         .pres-exit:hover {
             color: #fff;
             border-color: var(--color-gold);
@@ -269,13 +293,13 @@
             align-items: flex-start;
             gap: 1.5rem;
             padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-
     </style>
 </head>
-<body class="theme-dark noise-overlay" style="margin: 0; overflow: hidden;">
-    
+
+<body data-theme="dark" class="noise-overlay" style="margin: 0; overflow: hidden; background: #0a0a14;">
+
     <!-- Animated Mesh Background -->
     <div class="mesh-background" style="opacity: 0.6; z-index: 0;">
         <div class="mesh-blob mesh-blob--gold morph-blob"></div>
@@ -284,10 +308,11 @@
     </div>
 
     <!-- Particle Constellation -->
-    <div id="particles" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index: 0; opacity: 0.3;"></div>
+    <div id="particles" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index: 0; opacity: 0.3;">
+    </div>
 
     <div class="pres-container" id="container">
-        
+
         <!-- Slide 1: Title -->
         <section class="pres-slide">
             <div class="pres-slide__content stagger-reveal">
@@ -298,7 +323,7 @@
                 <span class="pres-slide__badge">Final Year Project Proposal</span>
             </div>
         </section>
-        
+
         <!-- Slide 2: The Challenge -->
         <section class="pres-slide">
             <div class="pres-slide__content">
@@ -306,35 +331,41 @@
                 <div class="pres-card-grid">
                     <div class="pres-card pres-card--danger">
                         <h4>1. Fragmentation</h4>
-                        <p>Current digital tools treat Islamic knowledge as isolated strings of text, severing the link between <em>Hukm</em> (Ruling) and <em>Usul</em> (Methodology).</p>
+                        <p>Current digital tools treat Islamic knowledge as isolated strings of text, severing the link
+                            between <em>Hukm</em> (Ruling) and <em>Usul</em> (Methodology).</p>
                     </div>
                     <div class="pres-card pres-card--danger">
                         <h4>2. Loss of Isnad</h4>
                         <p>Algorithms prioritize engagement over authority, flattening the hierarchy of knowledge.</p>
                     </div>
                 </div>
-                <p style="margin-top: 3rem; font-size: 1.1rem;"><strong style="color: #ef4444;">The Consequence:</strong> Interpretive anarchy. Without structural context, knowledge becomes susceptible to distortion.</p>
+                <p style="margin-top: 3rem; font-size: 1.1rem;"><strong style="color: #ef4444;">The
+                        Consequence:</strong> Interpretive anarchy. Without structural context, knowledge becomes
+                    susceptible to distortion.</p>
             </div>
         </section>
-        
+
         <!-- Slide 3: The Solution -->
         <section class="pres-slide">
             <div class="pres-slide__content">
                 <h2>The Solution: Digital Tawhid</h2>
-                <p style="font-style: italic; color: var(--text-muted);">"To digitize knowledge without its connections is to corrupt it."</p>
+                <p style="font-style: italic; color: var(--text-muted);">"To digitize knowledge without its connections
+                    is to corrupt it."</p>
                 <div class="pres-card-grid">
                     <div class="pres-card" style="opacity: 0.6;">
                         <h4>Relational Database</h4>
                         <p>Rigid tables. Rows and Columns. Cannot model the organic complexity of scholarship.</p>
                     </div>
-                    <div class="pres-card pres-card--success" style="transform: scale(1.05); border-color: #10b981; box-shadow: 0 0 30px rgba(16, 185, 129, 0.1);">
+                    <div class="pres-card pres-card--success"
+                        style="transform: scale(1.05); border-color: #10b981; box-shadow: 0 0 30px rgba(16, 185, 129, 0.1);">
                         <h4>Knowledge Graph ✓</h4>
-                        <p>Living nodes. Fluid edges. Maps the <strong>Genealogy of Ideas</strong> exactly as scholars transmitted them.</p>
+                        <p>Living nodes. Fluid edges. Maps the <strong>Genealogy of Ideas</strong> exactly as scholars
+                            transmitted them.</p>
                     </div>
                 </div>
             </div>
         </section>
-        
+
         <!-- Slide 4: Independence -->
         <section class="pres-slide">
             <div class="pres-slide__content">
@@ -344,20 +375,22 @@
                         <span style="font-size: 2rem;">🛡️</span>
                         <div>
                             <strong style="font-size: 1.25rem; color: #fff;">Sovereign Infrastructure</strong><br>
-                            <span style="color: var(--text-muted);">Building a "Waqf-Grade" system not dependent on secular algorithm biases.</span>
+                            <span style="color: var(--text-muted);">Building a "Waqf-Grade" system not dependent on
+                                secular algorithm biases.</span>
                         </div>
                     </li>
                     <li>
                         <span style="font-size: 2rem;">✅</span>
                         <div>
                             <strong style="font-size: 1.25rem; color: #fff;">Verification Layer</strong><br>
-                            <span style="color: var(--text-muted);">A B2B model providing "Halal Compliance" APIs to sustain the open-source core.</span>
+                            <span style="color: var(--text-muted);">A B2B model providing "Halal Compliance" APIs to
+                                sustain the open-source core.</span>
                         </div>
                     </li>
                 </ul>
             </div>
         </section>
-        
+
         <!-- Slide 5: Future Scope -->
         <section class="pres-slide">
             <div class="pres-slide__content">
@@ -382,18 +415,18 @@
                 <p style="margin-top: 5rem; font-weight: 700; font-size: 2rem; color: var(--color-gold);">Q & A</p>
             </div>
         </section>
-        
+
     </div>
-    
+
     <nav class="pres-nav" id="nav"></nav>
     <a href="/landing" class="pres-exit">← Exit Presentation</a>
-    
+
     <script>
         // Simple slide navigation
         const container = document.getElementById('container');
         const slides = document.querySelectorAll('.pres-slide');
         const nav = document.getElementById('nav');
-        
+
         // Generate nav dots
         slides.forEach((_, i) => {
             const dot = document.createElement('span');
@@ -401,7 +434,7 @@
             dot.onclick = () => slides[i].scrollIntoView({ behavior: 'smooth' });
             nav.appendChild(dot);
         });
-        
+
         // Update active dot on scroll
         const dots = document.querySelectorAll('.pres-nav__dot');
         const observer = new IntersectionObserver((entries) => {
@@ -412,8 +445,9 @@
                 }
             });
         }, { threshold: 0.5 });
-        
+
         slides.forEach(s => observer.observe(s));
     </script>
 </body>
+
 </html>
