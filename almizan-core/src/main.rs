@@ -17,8 +17,8 @@ use api::auth;
 use repository::db::Database;
 
 #[derive(Template)]
-#[template(path = "index.html")]
-struct IndexTemplate;
+#[template(path = "certainty-engine.html")]
+struct CertaintyEngineTemplate;
 
 #[derive(Template)]
 #[template(path = "landing.html")]
@@ -63,7 +63,8 @@ async fn main() {
 
     // Build our application
     let app = Router::new()
-        .route("/", get(index_handler))
+        .route("/", get(landing_handler))
+        .route("/certainty-engine", get(certainty_engine_handler))
         .route("/auth/signup", post(auth::signup))
         .route("/auth/signin", post(auth::signin))
         .route(
@@ -162,8 +163,8 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn index_handler() -> impl axum::response::IntoResponse {
-    let template = IndexTemplate;
+async fn certainty_engine_handler() -> impl axum::response::IntoResponse {
+    let template = CertaintyEngineTemplate;
     Html(template.render().unwrap())
 }
 

@@ -298,6 +298,33 @@
             font-size: 0.85rem;
             color: var(--text-muted);
         }
+
+        /* Light Mode Overrides */
+        [data-theme="light"] .gov-page {
+            background: var(--bg-gradient);
+        }
+
+        [data-theme="light"] .gov-tabs {
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .gov-tab:hover {
+            color: #7c3aed;
+        }
+
+        [data-theme="light"] .queue-meta {
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] .meta-item span {
+            color: #7c3aed;
+        }
+
+        [data-theme="light"] .network-header {
+            background: linear-gradient(135deg, #1a1a2e, #333);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
     </style>
 </head>
 
@@ -314,6 +341,7 @@
             <a href="certainty-engine.html" class="header-nav__link">Certainty Engine</a>
             <a href="graph.html" class="header-nav__link">Graph</a>
             <a href="governance.html" class="header-nav__link active">Governance</a>
+            <a href="network.html" class="header-nav__link">Network</a>
             <a href="playground.html" class="header-nav__link">Playground</a>
         </nav>
 

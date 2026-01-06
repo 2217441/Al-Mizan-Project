@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Dashboard | Al-Mizan</title>
+    <meta name="description" content="Al-Mizan P2P Network Node - Local-First, Uncensorable Knowledge">
+
+    <!-- Theme Script -->
+    <script src="static/js/theme.js"></script>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="static/css/tokens.css">
+    <link rel="stylesheet" href="static/css/effects.css">
+    <link rel="stylesheet" href="static/css/components.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/pages.css">
+
+    <style>
+        .network-page {
+            min-height: calc(100vh - 70px);
+            padding: 4rem 2rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .network-container {
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .status-card {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem;
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] .status-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .network-header {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 0.5rem 1.25rem;
+            border-radius: 999px;
+            color: #10B981;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            font-size: 0.9rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #10B981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10B981;
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .action-card {
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="light"] .action-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-card h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--color-gold);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.25);
+        }
+
+        .demo-notice {
+            text-align: center;
+            padding: 0.75rem;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            color: var(--color-gold);
+        }
+
+        /* Light Mode Overrides */
+        [data-theme="light"] .network-header {
+            background: linear-gradient(135deg, #1a1a2e, #333);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="light"] .network-page {
+            background: var(--bg-gradient);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <a href="index.html" class="header-nav__brand">
+            <span class="header-nav__brand-icon">⚖️</span>
+            <span>AL-MIZAN</span>
+        </a>
+
+        <nav class="header-nav__links">
+            <a href="index.html" class="header-nav__link">Home</a>
+            <a href="certainty-engine.html" class="header-nav__link">Certainty Engine</a>
+            <a href="graph.html" class="header-nav__link">Graph</a>
+            <a href="governance.html" class="header-nav__link">Governance</a>
+            <a href="network.html" class="header-nav__link active">Network</a>
+            <a href="playground.html" class="header-nav__link">Playground</a>
+        </nav>
+
+        <div class="header-nav__actions">
+            <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                ☀️
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-area">
+        <div class="network-page noise-overlay">
+            <!-- Mesh Background -->
+            <div class="mesh-background" style="opacity: 0.2;">
+                <div class="mesh-blob mesh-blob--blue morph-blob"></div>
+                <div class="mesh-blob mesh-blob--gold morph-blob" style="animation-delay: -5s;"></div>
+            </div>
+
+            <div class="network-container">
+                <div class="demo-notice">
+                    📡 Static Demo — Full P2P functionality requires local server
+                </div>
+
+                <!-- Status Card -->
+                <div class="status-card hover-lift">
+                    <h1 class="network-header">Al-Mizan Network Node</h1>
+                    <p style="color: var(--text-muted); font-size: 1.1rem;">Local-First. P2P. Uncensorable.</p>
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        ONLINE (Demo Mode)
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <!-- Export Section -->
+                    <div class="action-card">
+                        <h3><span>📦</span> Export Snapshot</h3>
+                        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
+                            Create a cryptographically signed backup of your local Knowledge Graph.
+                            Use this to share data via USB or IPFS.
+                        </p>
+                        <button class="action-btn btn-primary" onclick="alert('Snapshot Exported! (Demo)')">
+                            Download Snapshot
+                        </button>
+                    </div>
+
+                    <!-- Import Section -->
+                    <div class="action-card">
+                        <h3><span>📥</span> Ingest Snapshot</h3>
+                        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
+                            Merge a snapshot from another peer. The "Mizan" algorithm will resolve conflicts based on
+                            weight.
+                        </p>
+                        <button class="action-btn btn-secondary" onclick="alert('Snapshot Ingested! (Demo)')">
+                            Ingest from File
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>
