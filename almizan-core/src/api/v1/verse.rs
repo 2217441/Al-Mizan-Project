@@ -120,22 +120,21 @@ pub async fn get_verse(
 /// GET /api/v1/verse/{surah}
 /// Get all verses in a surah
 pub async fn get_surah(State(db): State<Database>, Path(surah): Path<i32>) -> impl IntoResponse {
-    // Query all verse IDs for this surah (e.g., quran_verse:1_1 to quran_verse:1_286)
-    // We'll fetch up to 300 verses per surah (max is 286 in Al-Baqarah)
-    let mut verses: Vec<DbVerse> = Vec::new();
-
-    for ayah in 1..=300 {
-        let result: Result<Option<DbVerse>, _> = db
-            .client
-            .select(("quran_verse", format!("{}_{}", surah, ayah)))
-            .await;
-
-        match result {
-            Ok(Some(v)) => verses.push(v),
-            Ok(None) => break, // No more verses in this surah
-            Err(_) => break,
+    // Query all verse IDs for this surah in a single batch
+    // Replaced N+1 query loop with single efficient SELECT
+    let sql = "SELECT * FROM quran_verse WHERE surah_number = $surah ORDER BY ayah_number ASC";
+    let mut response = match db.client.query(sql).bind(("surah", surah)).await {
+        Ok(r) => r,
+        Err(e) => {
+            return (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": e.to_string()})),
+            )
+                .into_response()
         }
-    }
+    };
+
+    let verses: Vec<DbVerse> = response.take(0).unwrap_or_default();
 
     let response: Vec<VerseResponse> = verses
         .into_iter()

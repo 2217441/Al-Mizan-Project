@@ -35,12 +35,16 @@ pub async fn get_hadith(
     Path((collection, number)): Path<(String, f64)>,
 ) -> impl IntoResponse {
     // Try direct ID lookup first (e.g., hadith:bukhari_1_1)
-    let sql = format!(
-        "SELECT id, collection, book_number, hadith_number, matn_en, matn_ar, grade FROM hadith WHERE collection = '{}' AND hadith_number = {} LIMIT 1",
-        collection, number
-    );
+    // Vulnerability Fix: Use parameterized queries to prevent SQL injection
+    let sql = "SELECT id, collection, book_number, hadith_number, matn_en, matn_ar, grade FROM hadith WHERE collection = $collection AND hadith_number = $number LIMIT 1";
 
-    let result: Result<Vec<DbHadith>, _> = db.client.query(&sql).await.and_then(|mut r| r.take(0));
+    let result: Result<Vec<DbHadith>, _> = db
+        .client
+        .query(sql)
+        .bind(("collection", collection))
+        .bind(("number", number))
+        .await
+        .and_then(|mut r| r.take(0));
 
     match result {
         Ok(hadiths) if !hadiths.is_empty() => {
@@ -79,12 +83,15 @@ pub async fn list_collection(
     State(db): State<Database>,
     Path(collection): Path<String>,
 ) -> impl IntoResponse {
-    let sql = format!(
-        "SELECT id, collection, book_number, hadith_number, matn_en, matn_ar, grade FROM hadith WHERE collection = '{}' ORDER BY hadith_number LIMIT 50",
-        collection
-    );
+    // Vulnerability Fix: Use parameterized queries to prevent SQL injection
+    let sql = "SELECT id, collection, book_number, hadith_number, matn_en, matn_ar, grade FROM hadith WHERE collection = $collection ORDER BY hadith_number LIMIT 50";
 
-    let result: Result<Vec<DbHadith>, _> = db.client.query(&sql).await.and_then(|mut r| r.take(0));
+    let result: Result<Vec<DbHadith>, _> = db
+        .client
+        .query(sql)
+        .bind(("collection", collection.clone()))
+        .await
+        .and_then(|mut r| r.take(0));
 
     match result {
         Ok(hadiths) => {
