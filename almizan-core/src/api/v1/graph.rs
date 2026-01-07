@@ -62,9 +62,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     });
 
     // 2. Get Prophets chosen by Allah
-    let prophets_sql = r#"
+    let prophets_sql = r"
         SELECT id, name_ar FROM prophet LIMIT 25
-    "#;
+    ";
 
     #[derive(Deserialize, Debug)]
     struct DbProphet {
@@ -109,11 +109,11 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     }
 
     // 3. Get sample verses narrated by Prophet Muhammad (using available Juz 30 data)
-    let verses_sql = r#"
+    let verses_sql = r"
         SELECT id, surah_number, ayah_number 
         FROM quran_verse 
         LIMIT 20
-    "#;
+    ";
 
     let verses: Vec<DbVerse> = db
         .client
@@ -154,9 +154,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         display_text: Option<String>,
     }
 
-    let hadith_sql = r#"
+    let hadith_sql = r"
         SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50
-    "#;
+    ";
 
     let hadiths: Vec<DbSemanticHadith> = db
         .client
@@ -196,9 +196,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         generation: Option<i32>,
     }
 
-    let narrator_sql = r#"
+    let narrator_sql = r"
         SELECT id, name_ar, generation FROM narrator LIMIT 30
-    "#;
+    ";
 
     let narrators_list: Vec<DbNarrator> = db
         .client

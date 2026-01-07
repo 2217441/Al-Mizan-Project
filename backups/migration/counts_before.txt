@@ -1,0 +1,7 @@
+# Pre-migration counts - 20260107_111127
+quran_verse:6236
+semantic_hadith:22756
+narrator:6624
+prophet:25
+divine_name:0
+topic:27

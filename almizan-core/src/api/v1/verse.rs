@@ -55,12 +55,16 @@ pub async fn get_verse(
     Path((surah, ayah)): Path<(i32, i32)>,
     Query(params): Query<VerseQuery>,
 ) -> impl IntoResponse {
-    let sql = format!(
-        "SELECT id, surah_number, ayah_number, text_uthmani, juz_number, revelation_place FROM quran_verse WHERE surah_number = {} AND ayah_number = {}",
-        surah, ayah
-    );
+    // Use parameterized query to prevent SQL injection
+    let sql = "SELECT id, surah_number, ayah_number, text_uthmani, juz_number, revelation_place FROM quran_verse WHERE surah_number = $surah AND ayah_number = $ayah";
 
-    let result: Result<Vec<DbVerse>, _> = db.client.query(&sql).await.and_then(|mut r| r.take(0));
+    let result: Result<Vec<DbVerse>, _> = db
+        .client
+        .query(sql)
+        .bind(("surah", surah))
+        .bind(("ayah", ayah))
+        .await
+        .and_then(|mut r| r.take(0));
 
     match result {
         Ok(verses) if !verses.is_empty() => {

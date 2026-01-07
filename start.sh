@@ -44,7 +44,7 @@ echo "[3/4] Ingesting 'Air-Gapped' Data..."
 # We mount the etl output to the container in a real setup, or just push it via API.
 # For this demo, we assume the user might need to install 'surreal' CLI or we skip this step if not present.
 if command -v surreal &> /dev/null; then
-    surreal import --conn http://localhost:8000 --user root --pass root --ns idc --db main almizan-etl/output/ingest.surql
+    surreal import --conn http://localhost:8000 --user root --pass root --ns almizan --db main almizan-etl/output/ingest.surql
     echo "    > Ingestion Complete."
 else
     echo "    > 'surreal' CLI not found. Skipping auto-import (Run manual import from UI)."

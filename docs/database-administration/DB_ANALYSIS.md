@@ -1,4 +1,4 @@
-er# Database Analysis
+# Database Analysis
 
 ## Executive Summary
 The Al-Mizan project utilizes **SurrealDB** as its primary data store. The database architecture is closely tied to an ETL pipeline (`almizan-etl`) that generates SurrealQL (`.surql`) scripts for data ingestion. Current orchestration is handled via Docker Compose for local development, with a specific production deployment strategy that appears to decouple the database or use an external instance (based on `deploy/docker-compose.prod.yml`).
@@ -7,7 +7,7 @@ The Al-Mizan project utilizes **SurrealDB** as its primary data store. The datab
 
 | Component | Technology | Version | Status | Notes |
 |-----------|------------|---------|--------|-------|
-| **Core Database** | SurrealDB | `v2.1.4` | Active | Defined in `docker-compose.yml`. |
+| **Core Database** | SurrealDB | `v2.4.0` | Active | Defined in `docker-compose.yml`. |
 | **ETL Pipeline** | Python (Implied) | - | Active | Outputting `.surql` files to `almizan-etl/output`. |
 | **Persistence** | Docker Volume | - | Verified | Volume `surreal_data` mapped to `/mydata`. |
 
@@ -16,9 +16,13 @@ The Al-Mizan project utilizes **SurrealDB** as its primary data store. The datab
 ### Local Development
 - **Service Name**: `almizan-db`
 - **Port**: 8000 (Exposed)
+- **Namespace**: `idc` (via `DB_NS` in `.env`)
+- **Database**: `main` (via `DB_NAME` in `.env`)
 - **Credentials**: Injected via `DB_USER` and `DB_PASS`.
 - **Healthcheck**: Configured to test `/surreal isready`.
 - **Persistence**: `surreal_data` volume ensures data survives container restarts.
+
+> **⚠️ Warning**: When using `start.sh` without Docker, SurrealDB runs in **in-memory mode** (`memory`). All data is lost on restart. Use Docker for persistent development.
 
 ### Production
 - **Configuration**: `deploy/docker-compose.prod.yml` defines the core application (`almizan-core`) but **does not** explicitly define the database service.

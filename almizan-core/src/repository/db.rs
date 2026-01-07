@@ -23,7 +23,10 @@ impl Database {
             })
             .await?;
 
-        client.use_ns("idc").use_db("main").await?;
+        // Namespace configurable via environment (unified to 'almizan')
+        let db_ns = std::env::var("DB_NS").unwrap_or("almizan".to_string());
+        let db_name = std::env::var("DB_DB").unwrap_or("main".to_string());
+        client.use_ns(&db_ns).use_db(&db_name).await?;
 
         let db = Self {
             client: Arc::new(client),

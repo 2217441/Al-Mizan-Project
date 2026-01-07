@@ -16,9 +16,8 @@ mkdir -p "$BACKUP_DIR"
 
 echo "Starting backup for NS:$NS DB:$DB at $TIMESTAMP..."
 
-# Perform Export
-# Note: We execute the export command inside the container and pipe the output to a local file
-docker exec "$CONTAINER_NAME" /surreal export --user "$DB_USER" --pass "$DB_PASS" --ns "$NS" --db "$DB" > "$BACKUP_DIR/backup_$TIMESTAMP.surql"
+# Perform Export using docker-compose (uses service name, not container name)
+docker-compose exec -T almizan-db /surreal export --user "$DB_USER" --pass "$DB_PASS" --ns "$NS" --db "$DB" > "$BACKUP_DIR/backup_$TIMESTAMP.surql"
 
 if [ $? -eq 0 ]; then
   echo "Backup created successfully: $BACKUP_DIR/backup_$TIMESTAMP.surql"
