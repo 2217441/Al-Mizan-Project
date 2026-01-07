@@ -24,6 +24,7 @@ struct DbHadith {
     book_number: Option<i32>,
     hadith_number: f64,
     matn_en: Option<String>,
+    matn_ar: Option<String>,
     grade: Option<String>,
 }
 
@@ -35,7 +36,7 @@ pub async fn get_hadith(
 ) -> impl IntoResponse {
     // Try direct ID lookup first (e.g., hadith:bukhari_1_1)
     let sql = format!(
-        "SELECT id, collection, book_number, hadith_number, matn_en, grade FROM hadith WHERE collection = '{}' AND hadith_number = {} LIMIT 1",
+        "SELECT id, collection, book_number, hadith_number, matn_en, matn_ar, grade FROM hadith WHERE collection = '{}' AND hadith_number = {} LIMIT 1",
         collection, number
     );
 
@@ -44,12 +45,17 @@ pub async fn get_hadith(
     match result {
         Ok(hadiths) if !hadiths.is_empty() => {
             let h = &hadiths[0];
+            // Use English text if available, otherwise fallback to Arabic
+            let text = h.matn_en.clone()
+                .filter(|s| !s.is_empty())
+                .or_else(|| h.matn_ar.clone())
+                .unwrap_or_default();
             Json(HadithResponse {
                 id: h.id.to_string(),
                 collection: h.collection.clone(),
                 book_number: h.book_number,
                 hadith_number: h.hadith_number,
-                text: h.matn_en.clone().unwrap_or_default(),
+                text,
                 grade: h.grade.clone(),
             })
             .into_response()
@@ -74,7 +80,7 @@ pub async fn list_collection(
     Path(collection): Path<String>,
 ) -> impl IntoResponse {
     let sql = format!(
-        "SELECT id, collection, book_number, hadith_number, matn_en, grade FROM hadith WHERE collection = '{}' ORDER BY hadith_number LIMIT 50",
+        "SELECT id, collection, book_number, hadith_number, matn_en, matn_ar, grade FROM hadith WHERE collection = '{}' ORDER BY hadith_number LIMIT 50",
         collection
     );
 
@@ -84,13 +90,19 @@ pub async fn list_collection(
         Ok(hadiths) => {
             let response: Vec<HadithResponse> = hadiths
                 .into_iter()
-                .map(|h| HadithResponse {
-                    id: h.id.to_string(),
-                    collection: h.collection,
-                    book_number: h.book_number,
-                    hadith_number: h.hadith_number,
-                    text: h.matn_en.unwrap_or_default(),
-                    grade: h.grade,
+                .map(|h| {
+                    let text = h.matn_en
+                        .filter(|s| !s.is_empty())
+                        .or(h.matn_ar)
+                        .unwrap_or_default();
+                    HadithResponse {
+                        id: h.id.to_string(),
+                        collection: h.collection,
+                        book_number: h.book_number,
+                        hadith_number: h.hadith_number,
+                        text,
+                        grade: h.grade,
+                    }
                 })
                 .collect();
 
