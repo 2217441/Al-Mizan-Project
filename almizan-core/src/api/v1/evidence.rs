@@ -14,14 +14,12 @@ pub async fn get_evidence(
 ) -> (StatusCode, Json<Value>) {
     // 1. Construct the Graph Query
     // "Select the nodes that this ruling is derived from"
-    let sql = format!(
-        "SELECT * FROM ->DERIVED_FROM->(quran_verse, hadith) WHERE in = {}",
-        ruling_id
-    );
+    // Vulnerability Fix: Use parameterized queries to prevent SQL injection
+    let sql = "SELECT * FROM ->DERIVED_FROM->(quran_verse, hadith) WHERE in = $ruling_id";
 
     // 2. Execute via DB Client
     // Ideally we usage execute_query or similar helper
-    let mut response = match db.client.query(sql).await {
+    let mut response = match db.client.query(sql).bind(("ruling_id", ruling_id.clone())).await {
         Ok(r) => r,
         Err(e) => {
             return (
