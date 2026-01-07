@@ -106,11 +106,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             .data(links)
             .enter().append("line")
             .attr("stroke", d => {
-                if (d.source.type === 'allah') return '#D4AF37'; // Gold links from Allah
-                return '#888';
+                const sourceType = typeof d.source === 'object' ? d.source.type :
+                    nodes.find(n => n.id === d.source)?.type;
+                if (sourceType === 'allah') return '#FFD700'; // Gold from Allah
+                if (sourceType === 'verse') return '#D4AF37'; // Gold from Quran
+                if (sourceType === 'prophet') return '#50C878'; // Emerald from Prophets
+                if (sourceType === 'hadith') return '#C0C0C0'; // Silver from Hadith
+                return '#8888AA'; // Default purple-gray
             })
-            .attr("stroke-width", d => d.source.type === 'allah' ? 2 : 1.5)
-            .attr("stroke-opacity", 0.4);
+            .attr("stroke-width", d => {
+                const sourceType = typeof d.source === 'object' ? d.source.type :
+                    nodes.find(n => n.id === d.source)?.type;
+                if (sourceType === 'allah') return 4;
+                if (sourceType === 'verse' || sourceType === 'prophet') return 3;
+                return 2;
+            })
+            .attr("stroke-opacity", 0.7)
+            .style("filter", d => {
+                const sourceType = typeof d.source === 'object' ? d.source.type :
+                    nodes.find(n => n.id === d.source)?.type;
+                return sourceType === 'allah' ? 'drop-shadow(0 0 3px #FFD700)' : 'none';
+            });
 
         // Draw nodes (add to zoom group)
         const node = g.append("g")
@@ -154,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .attr("stroke-width", 2);
 
                 node.style("opacity", 1);
-                link.style("opacity", 0.4);
+                link.style("opacity", 0.7);
             })
             .on("click", function (event, d) {
                 graphState.selectedNode = d;

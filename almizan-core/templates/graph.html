@@ -416,11 +416,173 @@
     </div>
 </div>
 
-<!-- D3.js Library -->
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<!-- Graph Visualization (v4 = search & filters) -->
-<script src="/static/js/graph.js?v=4"></script>
+<!-- vis-network for better graph visualization -->
+<script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 <script>
+    // Initialize graph with vis-network
+    document.addEventListener('DOMContentLoaded', async () => {
+        const container = document.getElementById('graph-container');
+
+        // Try to fetch real data from API
+        let graphNodes = [];
+        let graphEdges = [];
+
+        try {
+            const response = await fetch('/api/v1/graph');
+            const graphData = await response.json();
+
+            // Transform API data to vis-network format
+            graphNodes = graphData.nodes.map(n => ({
+                id: n.data.id,
+                label: n.data.label,
+                group: n.data.type,
+                title: `${n.data.type.toUpperCase()}: ${n.data.label}`
+            }));
+
+            graphEdges = graphData.edges.map((e, i) => ({
+                id: i,
+                from: e.data.source,
+                to: e.data.target,
+                label: e.data.relationship || '',
+                arrows: 'to'
+            }));
+        } catch (error) {
+            console.log('Using sample data for graph:', error);
+            // Fallback sample data
+            graphNodes = [
+                { id: 'allah:tawhid', label: 'Allah (الله)', group: 'allah', title: 'The Ultimate Source' },
+                { id: 'quran:2_283', label: 'Quran 2:283', group: 'verse', title: 'Verse of Collateral' },
+                { id: 'hadith:armor', label: 'Hadith: Armor', group: 'hadith', title: 'Prophet pawned armor' },
+                { id: 'prophet:muhammad', label: 'محمد ﷺ', group: 'prophet', title: 'Prophet Muhammad' },
+                { id: 'ruling:rahn', label: 'Rahn', group: 'ruling', title: 'Islamic Pledge' },
+                { id: 'ruling:riba', label: 'Riba', group: 'ruling', title: 'Usury (Prohibited)' },
+                { id: 'narrator:1', label: 'Anas ibn Malik', group: 'narrator', title: 'Companion Narrator' }
+            ];
+
+            graphEdges = [
+                { from: 'allah:tawhid', to: 'quran:2_283', label: 'revealed', arrows: 'to' },
+                { from: 'allah:tawhid', to: 'prophet:muhammad', label: 'sent', arrows: 'to' },
+                { from: 'prophet:muhammad', to: 'hadith:armor', label: 'enacted', arrows: 'to' },
+                { from: 'quran:2_283', to: 'ruling:rahn', label: 'source_of', arrows: 'to' },
+                { from: 'hadith:armor', to: 'ruling:rahn', label: 'validates', arrows: 'to' },
+                { from: 'narrator:1', to: 'hadith:armor', label: 'narrated', arrows: 'to' },
+                { from: 'allah:tawhid', to: 'ruling:riba', label: 'prohibits', arrows: 'to' }
+            ];
+        }
+
+        // Define group styles (matching Tawhidic hierarchy)
+        const groupStyles = {
+            allah: { color: { background: '#0f172a', border: '#FFD700' }, shape: 'dot', size: 40, borderWidth: 3 },
+            prophet: { color: { background: '#50C878', border: '#50C878' }, shape: 'dot', size: 30 },
+            verse: { color: { background: '#D4AF37', border: '#D4AF37' }, shape: 'dot', size: 25 },
+            hadith: { color: { background: '#C0C0C0', border: '#C0C0C0' }, shape: 'dot', size: 22 },
+            narrator: { color: { background: '#9370DB', border: '#9370DB' }, shape: 'dot', size: 18 },
+            ruling: { color: { background: '#DC143C', border: '#DC143C' }, shape: 'box', size: 20 }
+        };
+
+        // Apply styles to nodes
+        const nodes = new vis.DataSet(graphNodes.map(node => {
+            const style = groupStyles[node.group] || groupStyles.ruling;
+            return {
+                ...node,
+                color: style.color,
+                shape: style.shape,
+                size: style.size,
+                borderWidth: style.borderWidth || 2,
+                font: { color: '#ffffff', size: 14, strokeWidth: 3, strokeColor: '#000000' }
+            };
+        }));
+
+        const edges = new vis.DataSet(graphEdges);
+
+        // vis-network options
+        const options = {
+            physics: {
+                enabled: true,
+                barnesHut: {
+                    gravitationalConstant: -3000,
+                    centralGravity: 0.2,
+                    springLength: 120,
+                    springConstant: 0.04
+                },
+                stabilization: { iterations: 150 }
+            },
+            interaction: {
+                hover: true,
+                tooltipDelay: 200,
+                zoomView: true,
+                dragView: true
+            },
+            edges: {
+                arrows: { to: { enabled: true, scaleFactor: 0.8 } },
+                color: { color: '#94a3b8', highlight: '#D4AF37', hover: '#D4AF37' },
+                width: 2,
+                smooth: { type: 'continuous', roundness: 0.3 },
+                font: { color: '#ffffff', size: 10, strokeWidth: 2, strokeColor: '#000000', align: 'middle' }
+            },
+            nodes: {
+                shadow: { enabled: true, color: 'rgba(0,0,0,0.3)', size: 10, x: 3, y: 3 }
+            }
+        };
+
+        const network = new vis.Network(container, { nodes, edges }, options);
+
+        // Expose zoom controls globally
+        window.graphZoom = {
+            zoomIn: () => network.moveTo({ scale: network.getScale() * 1.3 }),
+            zoomOut: () => network.moveTo({ scale: network.getScale() * 0.7 }),
+            reset: () => network.fit()
+        };
+
+        // Handle node selection for details panel
+        network.on('selectNode', (params) => {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const node = nodes.get(nodeId);
+                const connectedEdges = edges.get().filter(e => e.from === nodeId || e.to === nodeId);
+                showNodeDetails(node, connectedEdges);
+            }
+        });
+
+        network.on('deselectNode', () => {
+            closeNodeDetails();
+        });
+    });
+
+    // Node details panel
+    function showNodeDetails(node, edges) {
+        const panel = document.getElementById('node-details');
+        if (panel) {
+            panel.classList.add('active');
+
+            document.getElementById('detail-id').textContent = node.id;
+            document.getElementById('detail-label').textContent = node.label;
+            document.getElementById('detail-type').textContent = node.group.toUpperCase();
+            document.getElementById('detail-connections').textContent = edges.length;
+
+            // Reliability based on type
+            const reliabilityMap = {
+                allah: { score: 100, color: '#10B981', label: "Qat'i (Definitive)" },
+                verse: { score: 100, color: '#10B981', label: "Qat'i (Definitive)" },
+                prophet: { score: 100, color: '#10B981', label: "Thabit (Established)" },
+                hadith: { score: 92, color: '#10B981', label: "Sahih (Authentic)" },
+                narrator: { score: 85, color: '#EAB308', label: "Thiqa (Trustworthy)" },
+                ruling: { score: 75, color: '#EAB308', label: "Zanni (Interpretive)" }
+            };
+
+            const rel = reliabilityMap[node.group] || { score: 70, color: '#94a3b8', label: 'Ungraded' };
+            document.getElementById('detail-reliability').innerHTML = `
+                <span style="font-size: 1.5rem; font-weight: 700; color: ${rel.color};">${rel.score}%</span>
+                <span style="font-size: 0.8rem; color: ${rel.color};">${rel.label}</span>
+            `;
+        }
+    }
+
+    function closeNodeDetails() {
+        const panel = document.getElementById('node-details');
+        if (panel) panel.classList.remove('active');
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (e.key === '+' || e.key === '=') {

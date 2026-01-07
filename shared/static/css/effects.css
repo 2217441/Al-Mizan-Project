@@ -178,6 +178,7 @@
     animation: gradient-flow 4s linear infinite;
     opacity: 0;
     transition: opacity 0.3s;
+    pointer-events: none;
 }
 
 .gradient-border:hover::before {

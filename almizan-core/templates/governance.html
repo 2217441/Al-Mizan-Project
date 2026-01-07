@@ -513,6 +513,26 @@
     </div>
 </div>
 
+<!-- Toast Notification -->
+<div id="toast" style="
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 2rem;
+    background: #10B981;
+    color: white;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+"></div>
+
 <script>
     // Tab switching logic
     document.querySelectorAll('.gov-tab').forEach(tab => {
@@ -529,5 +549,82 @@
             document.getElementById(tabId).style.display = 'block';
         });
     });
+
+    // Toast notification
+    function showToast(message, icon = '✓', color = '#10B981') {
+        const toast = document.getElementById('toast');
+        toast.innerHTML = `<span style="font-size: 1.25rem;">${icon}</span> ${message}`;
+        toast.style.background = color;
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+
+        setTimeout(() => {
+            toast.style.transform = 'translateY(100px)';
+            toast.style.opacity = '0';
+        }, 3000);
+    }
+
+    // Attach button handlers
+    document.querySelectorAll('.btn-approve').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const card = this.closest('.queue-card');
+            const title = card.querySelector('.queue-title')?.textContent || 'Item';
+
+            this.textContent = 'Signing...';
+            this.disabled = true;
+
+            setTimeout(() => {
+                this.textContent = '✓ Approved';
+                this.style.background = '#10B981';
+                this.style.color = 'white';
+
+                // Fade out the card
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '0.3';
+                card.style.transform = 'scale(0.98)';
+
+                showToast(`"${title.substring(0, 30)}..." approved and signed!`, '⚖️');
+
+                // Update pending count
+                updatePendingCount(-1);
+            }, 800);
+        });
+    });
+
+    document.querySelectorAll('.btn-reject').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const card = this.closest('.queue-card');
+            const title = card.querySelector('.queue-title')?.textContent || 'Item';
+
+            this.textContent = 'Sending...';
+            this.disabled = true;
+
+            setTimeout(() => {
+                this.textContent = '↩ Returned';
+                this.style.background = '#EF4444';
+                this.style.color = 'white';
+
+                // Fade out the card
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '0.3';
+                card.style.transform = 'scale(0.98)';
+
+                showToast(`"${title.substring(0, 30)}..." returned for revision`, '📝', '#EAB308');
+
+                // Update pending count
+                updatePendingCount(-1);
+            }, 600);
+        });
+    });
+
+    // Update pending count in tab
+    function updatePendingCount(delta) {
+        const pendingTab = document.querySelector('[data-tab="pending"]');
+        const match = pendingTab.textContent.match(/\((\d+)\)/);
+        if (match) {
+            const newCount = Math.max(0, parseInt(match[1]) + delta);
+            pendingTab.textContent = `Pending Review (${newCount})`;
+        }
+    }
 </script>
 {% endblock %}
