@@ -72,12 +72,19 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         name_ar: String,
     }
 
-    let prophets: Vec<DbProphet> = db
-        .client
-        .query(prophets_sql)
-        .await
-        .and_then(|mut r| r.take(0))
-        .unwrap_or_default();
+    let prophets: Vec<DbProphet> = match db.client.query(prophets_sql).await {
+        Ok(mut response) => match response.take(0) {
+            Ok(data) => data,
+            Err(e) => {
+                tracing::error!("Failed to deserialize prophets: {}", e);
+                Vec::new()
+            }
+        },
+        Err(e) => {
+            tracing::error!("Failed to execute prophets query: {}", e);
+            Vec::new()
+        }
+    };
 
     for prophet in &prophets {
         let prophet_id = sanitize_id(prophet.id.to_string());
