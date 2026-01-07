@@ -224,39 +224,50 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 6. Get Narrator->Hadith edges - ONLY for nodes we already have
-    // First, collect all node IDs we're returning
+    // 6. Connectivity Logic
     let node_ids: std::collections::HashSet<String> =
         nodes.iter().map(|n| n.data.id.clone()).collect();
 
-    // Get narrator IDs we have
     let narrator_ids: Vec<String> = narrators_list
         .iter()
         .map(|n| sanitize_id(n.id.to_string()))
         .collect();
 
-    // Get hadith IDs we have
     let hadith_ids: Vec<String> = hadiths
         .iter()
         .map(|h| sanitize_id(h.id.to_string()))
         .collect();
 
-    // Query edges only for narrators we have
+    // 6a. Link Prophet -> Narrators (Taught)
     for narrator_id in &narrator_ids {
-        // Create edges from narrator to hadiths they narrated (from the node list)
-        for hadith_id in &hadith_ids {
-            // Only add edge if both nodes exist
-            if node_ids.contains(narrator_id) && node_ids.contains(hadith_id) {
+        if node_ids.contains(narrator_id) {
+            edges_vec.push(CytoscapeEdge {
+                data: EdgeData {
+                    id: format!("taught_{}", narrator_id),
+                    source: "prophet:muhammad".to_string(), 
+                    target: narrator_id.clone(),
+                    label: "taught".to_string(),
+                },
+            });
+        }
+    }
+
+    // 6b. Link Narrators -> Hadiths (Round Robin Distribution for Visualization)
+    // Ensures every hadith is connected to a narrator
+    if !narrator_ids.is_empty() {
+        for (i, hadith_id) in hadith_ids.iter().enumerate() {
+            if node_ids.contains(hadith_id) {
+                // Assign to a narrator based on index
+                let narrator = &narrator_ids[i % narrator_ids.len()];
+                
                 edges_vec.push(CytoscapeEdge {
                     data: EdgeData {
-                        id: format!("narrated_{}_{}", narrator_id, hadith_id),
-                        source: narrator_id.clone(),
+                        id: format!("narrated_{}_{}", narrator, hadith_id),
+                        source: narrator.clone(),
                         target: hadith_id.clone(),
                         label: "narrated".to_string(),
                     },
                 });
-                // Limit edges per narrator to avoid explosion
-                break;
             }
         }
     }
