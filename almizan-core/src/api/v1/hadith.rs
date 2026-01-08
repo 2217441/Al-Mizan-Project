@@ -40,7 +40,7 @@ pub async fn get_hadith(
     let result: Result<Vec<DbHadith>, _> = db
         .client
         .query(sql)
-        .bind(("collection", &collection))
+        .bind(("collection", collection.clone()))
         .bind(("number", number))
         .await
         .and_then(|mut r| r.take(0));
@@ -88,7 +88,7 @@ pub async fn list_collection(
     let result: Result<Vec<DbHadith>, _> = db
         .client
         .query(sql)
-        .bind(("collection", &collection))
+        .bind(("collection", collection.clone()))
         .await
         .and_then(|mut r| r.take(0));
 

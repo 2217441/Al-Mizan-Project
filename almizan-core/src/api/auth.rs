@@ -91,9 +91,10 @@ pub async fn signin(
 
             // SECURITY: JWT_SECRET must be set in production
             let jwt_secret = std::env::var("JWT_SECRET").unwrap_or_else(|_| {
-                if std::env::var("RUST_ENV").unwrap_or_default() == "production" {
-                    panic!("JWT_SECRET must be set in production environment");
-                }
+                assert!(
+                    std::env::var("RUST_ENV").unwrap_or_default() != "production",
+                    "JWT_SECRET must be set in production environment"
+                );
                 tracing::warn!("Using insecure dev JWT secret - DO NOT USE IN PRODUCTION");
                 "INSECURE_DEV_SECRET_CHANGE_ME_32CH".to_string()
             });

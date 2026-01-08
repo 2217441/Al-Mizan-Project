@@ -22,14 +22,12 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
     // Enterprise Integration: Calculate Trust Metrics
     // In a real scenario, this would aggregate across the network.
     let metric = crate::enterprise::analytics::calculate_trust_metrics("scholar_sys_001");
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let system_trust = format!("{}%", (metric.reliability_score * 100.0) as u32);
 
     let (title, modules) = if is_mujtahid {
         (
-            format!(
-                "Theological Depth Dashboard (Admin) - Trust: {}",
-                system_trust
-            ),
+            format!("Theological Depth Dashboard (Admin) - Trust: {system_trust}"),
             vec![
                 "Narrative Trend Analysis".to_string(),
                 "Source Reliability Index".to_string(),
@@ -38,7 +36,7 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
         )
     } else {
         (
-            format!("Public Research Dashboard - Trust: {}", system_trust),
+            format!("Public Research Dashboard - Trust: {system_trust}"),
             vec![
                 "Dataset Statistics".to_string(),
                 "Ontology Coverage Map".to_string(),
