@@ -55,12 +55,15 @@ pub async fn get_verse(
     Path((surah, ayah)): Path<(i32, i32)>,
     Query(params): Query<VerseQuery>,
 ) -> impl IntoResponse {
-    let sql = format!(
-        "SELECT id, surah_number, ayah_number, text_uthmani, juz_number, revelation_place FROM quran_verse WHERE surah_number = {} AND ayah_number = {}",
-        surah, ayah
-    );
+    let sql = "SELECT id, surah_number, ayah_number, text_uthmani, juz_number, revelation_place FROM quran_verse WHERE surah_number = $surah AND ayah_number = $ayah";
 
-    let result: Result<Vec<DbVerse>, _> = db.client.query(&sql).await.and_then(|mut r| r.take(0));
+    let result: Result<Vec<DbVerse>, _> = db
+        .client
+        .query(sql)
+        .bind(("surah", surah))
+        .bind(("ayah", ayah))
+        .await
+        .and_then(|mut r| r.take(0));
 
     match result {
         Ok(verses) if !verses.is_empty() => {
@@ -68,13 +71,12 @@ pub async fn get_verse(
 
             // Optionally get roots
             let roots = if params.include_roots {
-                let roots_sql = format!(
-                    "SELECT ->has_root->root_word.root_ar AS roots FROM quran_verse:{}_{}",
-                    surah, ayah
-                );
+                let verse_id_str = format!("{}_{}", surah, ayah);
+                let roots_sql = "SELECT ->has_root->root_word.root_ar AS roots FROM type::thing('quran_verse', $verse_id)";
                 let roots_result: Vec<serde_json::Value> = db
                     .client
-                    .query(&roots_sql)
+                    .query(roots_sql)
+                    .bind(("verse_id", verse_id_str))
                     .await
                     .and_then(|mut r| r.take(0))
                     .unwrap_or_default();
