@@ -83,34 +83,44 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         },
     });
 
-    // Prepare clients for concurrent execution
-    let c1 = db.client.clone();
-    let c2 = db.client.clone();
-    let c3 = db.client.clone();
-    let c4 = db.client.clone();
+    // 2. Define queries
+    let prophets_sql = r#"
+        SELECT id, name_ar FROM prophet LIMIT 25
+    "#;
 
-    // Execute queries concurrently
-    // Optimization: Run independent queries in parallel using tokio::join! to reduce total latency
-    let (prophets, verses, hadiths, narrators_list) = tokio::join!(
-        async move {
-            let sql = "SELECT id, name_ar FROM prophet LIMIT 25";
-            let res: Vec<DbProphet> = match c1.query(sql).await {
-                Ok(mut response) => response.take(0).unwrap_or_default(),
-                Err(e) => {
-                    tracing::error!("Failed to execute prophets query: {}", e);
-                    Vec::new()
-                }
-            };
-            res
-        },
-        async move {
-            let sql = "SELECT id, surah_number, ayah_number FROM quran_verse LIMIT 20";
-            let res: Vec<DbVerse> = c2
-                .query(sql)
-                .await
-                .and_then(|mut r| r.take(0))
-                .unwrap_or_default();
-            res
+    let verses_sql = r#"
+        SELECT id, surah_number, ayah_number
+        FROM quran_verse
+        LIMIT 20
+    "#;
+
+    let hadith_sql = r#"
+        SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50
+    "#;
+
+    let narrator_sql = r#"
+        SELECT id, name_ar, generation FROM narrator LIMIT 30
+    "#;
+
+    // 3. Create futures
+    let prophets_future = db.client.query(prophets_sql);
+    let verses_future = db.client.query(verses_sql);
+    let hadith_future = db.client.query(hadith_sql);
+    let narrators_future = db.client.query(narrator_sql);
+
+    // 4. Execute concurrently
+    // Parallelize 4 independent DB queries to reduce total latency
+    let (prophets_res, verses_res, hadith_res, narrators_res) =
+        tokio::join!(prophets_future, verses_future, hadith_future, narrators_future);
+
+    // 5. Process Prophets
+    let prophets: Vec<DbProphet> = match prophets_res {
+        Ok(mut response) => match response.take(0) {
+            Ok(data) => data,
+            Err(e) => {
+                tracing::error!("Failed to deserialize prophets: {}", e);
+                Vec::new()
+            }
         },
         async move {
             let sql = "SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50";
@@ -155,7 +165,11 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 3. Process Verses
+    // 6. Process Verses
+    let verses: Vec<DbVerse> = verses_res
+        .and_then(|mut r| r.take(0))
+        .unwrap_or_default();
+
     for verse in &verses {
         let verse_id = sanitize_id(verse.id.to_string());
 
@@ -178,7 +192,11 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 4. Process Hadiths
+    // 7. Process Hadiths
+    let hadiths: Vec<DbSemanticHadith> = hadith_res
+        .and_then(|mut r| r.take(0))
+        .unwrap_or_default();
+
     for hadith in &hadiths {
         let hadith_id = sanitize_id(hadith.id.to_string());
 
@@ -202,7 +220,11 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 5. Process Narrators
+    // 8. Process Narrators
+    let narrators_list: Vec<DbNarrator> = narrators_res
+        .and_then(|mut r| r.take(0))
+        .unwrap_or_default();
+
     for narrator in &narrators_list {
         let narrator_id = sanitize_id(narrator.id.to_string());
         let label = narrator
@@ -220,7 +242,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 6. Connectivity Logic
+    // 9. Connectivity Logic
     let node_ids: std::collections::HashSet<String> =
         nodes.iter().map(|n| n.data.id.clone()).collect();
 
@@ -234,7 +256,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         .map(|h| sanitize_id(h.id.to_string()))
         .collect();
 
-    // 6a. Link Prophet -> Narrators (Taught)
+    // 9a. Link Prophet -> Narrators (Taught)
     for narrator_id in &narrator_ids {
         if node_ids.contains(narrator_id) {
             edges_vec.push(CytoscapeEdge {
@@ -248,7 +270,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         }
     }
 
-    // 6b. Link Narrators -> Hadiths (Round Robin Distribution for Visualization)
+    // 9b. Link Narrators -> Hadiths (Round Robin Distribution for Visualization)
     // Ensures every hadith is connected to a narrator
     if !narrator_ids.is_empty() {
         for (i, hadith_id) in hadith_ids.iter().enumerate() {

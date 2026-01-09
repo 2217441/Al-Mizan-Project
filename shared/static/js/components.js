@@ -68,7 +68,16 @@
         requestAnimationFrame(() => {
             progress.style.strokeDashoffset = offset;
             if (text) {
-                text.textContent = Math.round(value * 100) + '%';
+                const percentage = Math.round(value * 100);
+                text.textContent = percentage + '%';
+
+                // Update ARIA values for accessibility
+                el.setAttribute('aria-valuenow', percentage);
+                el.setAttribute('aria-valuemin', '0');
+                el.setAttribute('aria-valuemax', '100');
+                if (!el.hasAttribute('role')) {
+                    el.setAttribute('role', 'progressbar');
+                }
             }
         });
     }
