@@ -228,21 +228,21 @@ Examiners scan abstracts. Add keywords line:
 
 ## Implementation Priority
 
-| Priority | Action | Impact | Effort |
+| Priority | Action | Impact | Status |
 |----------|--------|--------|--------|
-| **P0** | Add Results/Evaluation chapter | Critical | 2-3 hrs |
-| **P0** | Add Testing section with evidence | Critical | 1-2 hrs |
-| **P1** | Expand literature review with comparison table | High | 1 hr |
-| **P1** | Add Limitations section | High | 30 min |
-| **P1** | Expand Conclusion (achievements, future work) | High | 1 hr |
-| **P2** | Define Fitna Defense Protocol formally | Medium | 30 min |
-| **P2** | Expand Division of Work table | Medium | 15 min |
-| **P2** | Add screenshots/figures | Medium | 1 hr |
-| **P3** | Number figures, add keywords | Polish | 15 min |
+| **P0** | Add Results/Evaluation chapter | Critical | ✅ Done (Ch4: Progress & Preliminary Results) |
+| **P0** | Add Testing section with evidence | Critical | ✅ Done (benchmarks, query examples) |
+| **P1** | Expand literature review with comparison table | High | ✅ Done (6 systems, Table 2) |
+| **P1** | Add Limitations section | High | ✅ Done (Section 4.5: Challenges) |
+| **P1** | Expand Conclusion (achievements, future work) | High | ✅ Done (FYP 2 Roadmap) |
+| **P2** | Define Fitna Defense Protocol formally | Medium | ✅ Done (concept + query example) |
+| **P2** | Expand Division of Work table | Medium | ✅ Done (Table 3) |
+| **P2** | Add screenshots/figures | Medium | 🟡 Placeholder added |
+| **P3** | Number figures, add keywords | Polish | ✅ Done |
 
 ---
 
-## Grade Projection
+## Grade Projection (Updated)
 
 | If You Add... | Expected Grade |
 |---------------|----------------|

@@ -57,69 +57,93 @@ The core contribution of this work is the **"Fitna Defense" Protocol**: a comput
 
 [***CHAPTER ONE 11***](#chapter-one)
 
-[***INTRODUCTION (System Development Project) 11***](#introduction-\(system-development-project\))
+[***INTRODUCTION 11***](#introduction)
 
 [**1.1 Background of the Study 11**](#1.1-background-of-the-study)
 
-[**1.2 Problem Description 11**](#1.2-problem-description)
+[**1.2 Problem Description 12**](#1.2-problem-description)
 
-[**1.3 Project Objectives 11**](#1.3-project-objectives)
+[**1.3 Project Objectives 13**](#1.3-project-objectives)
 
-[**1.4 Scope of the Project 11**](#1.4-scope-of-the-project)
+[**1.4 Scope of the Project 13**](#1.4-scope-of-the-project)
 
-[**1.5 Engineering Challenges 11**](#1.5-engineering-challenges)
+[**1.5 Engineering Challenges 14**](#1.5-engineering-challenges)
 
-[**1.6 Project Stages 11**](#1.6-project-stages)
+[**1.6 Project Stages 14**](#1.6-project-stages)
 
-[**1.7 Significance of the Project 11**](#1.7-significance-of-the-project)
+[**1.7 Significance of the Project 15**](#1.7-significance-of-the-project)
 
-[**1.8 Summary 11**](#1.8-summary)
+[**1.8 Summary 15**](#1.8-summary)
 
-[***CHAPTER TWO 12***](#chapter-two)
+[***CHAPTER TWO 16***](#chapter-two)
 
-[***REVIEW OF PREVIOUS WORK 12***](#review-of-previous-work)
+[***REVIEW OF PREVIOUS WORK 16***](#review-of-previous-work)
 
-[**2.1 Introduction 12**](#2.1-introduction)
+[**2.1 Introduction 16**](#2.1-introduction)
 
-[**2.2 Theoretical Framework 12**](#2.2-theoretical-framework)
+[**2.2 Theoretical Framework 16**](#2.2-theoretical-framework)
 
-[**2.3 Overview of Related Systems 12**](#2.3-overview-of-related-systems)
+[**2.3 Overview of Related Systems 18**](#2.3-overview-of-related-systems)
 
-[**2.4 Discussion 12**](#2.4-discussion)
+[**2.4 Discussion 20**](#2.4-discussion)
 
-[**2.5 Summary 12**](#2.5-summary)
+[**2.5 Summary 21**](#2.5-summary)
 
-[***CHAPTER THREE 13***](#chapter-three)
+[***CHAPTER THREE 22***](#chapter-three)
 
-[***METHODOLOGY 13***](#methodology)
+[***METHODOLOGY 22***](#methodology)
 
-[**3.1 Introduction 13**](#3.1-introduction)
+[**3.1 Introduction 22**](#3.1-introduction)
 
-[**3.2 Development Approach 13**](#3.2-development-approach)
+[**3.2 Development Approach 22**](#3.2-development-approach)
 
-[**3.3 Requirements Specification 13**](#3.3-requirements-specification)
+[**3.3 Requirements Specification 23**](#3.3-requirements-specification)
 
-[**3.4 Logical Design 13**](#3.4-logical-design)
+[**3.4 Logical Design 24**](#3.4-logical-design)
 
-[**3.5 Database Design 13**](#3.5-database-design)
+[**3.5 Database Design 25**](#3.5-database-design)
 
-[**3.6 Prototype** 13](#3.6-prototype)
+[**3.6 Prototype 26**](#3.6-prototype)
 
-[***CHAPTER FOUR 14***](#chapter-four)
+[***CHAPTER FOUR 27***](#chapter-four)
 
-[***CONCLUSION 14***](#conclusion)
+[***PROGRESS AND PRELIMINARY RESULTS 27***](#progress-and-preliminary-results)
 
-[***REFERENCES 14***](#references)
+[**4.1 Introduction 27**](#4.1-introduction)
+
+[**4.2 Implementation Progress 27**](#4.2-implementation-progress)
+
+[**4.3 Preliminary Results 28**](#4.3-preliminary-results)
+
+[**4.4 Objective Achievement Status 29**](#4.4-objective-achievement-status)
+
+[**4.5 Challenges Encountered 30**](#4.5-challenges-encountered)
+
+[**4.6 FYP 2 Roadmap 30**](#4.6-fyp-2-roadmap)
+
+[**4.7 Conclusion 31**](#4.7-conclusion)
+
+[***REFERENCES 32***](#references)
+
+[***APPENDICES 34***](#appendices)
 
 # **LIST OF TABLES** {#list-of-tables}
 
 TABLE NO.     TITLE     PAGE  
-1\.  Comparison of Knowledge Graph Technologies                14  
+1\.  Non-Functional Requirements Benchmarks                23  
+2\.  Comparison of Islamic Knowledge Systems                19  
+3\.  Division of Work                                       35  
 
 # **LIST OF FIGURES** {#list-of-figures}
 
 FIGURE NO.    TITLE    PAGE NO.  
-1\.  Al-Mizan System Architecture           12  
+1\.  Fitna Defense Protocol Sequence Diagram           17  
+2\.  Al-Mizan System Architecture                      25  
+3\.  Implemented System Architecture                   28  
+4\.  Project Timeline (Gantt Chart)                    34  
+5\.  Entity-Relationship Diagram                       26  
+6\.  ETL Data Flow Diagram                             27  
+7\.  Use Case Diagram                                  14  
 
 # **LIST OF ABBREVIATIONS** {#list-of-abbreviations}
 
@@ -174,6 +198,39 @@ The specific goals of the Al-Mizan project are:
     * **Frontend:** A prototype web interface (HTMX/Tera templates) for visualizing the graph nodes.
 2. **Target Audience:** Researchers of Islamic data, AI developers building "Halal" agents, and students of knowledge requiring verified data structures.
 3. **Specific Platform:** Web-based application deployed on Linux environments (Docker support).
+
+### **Use Case Overview**
+
+Figure 7 illustrates the primary actors and their interactions with the Al-Mizan system.
+
+```mermaid
+graph TB
+    subgraph Actors
+        R["👤 Researcher"]
+        D["👤 Developer"]
+        A["🤖 AI Agent"]
+        M["👤 Admin"]
+    end
+    
+    subgraph "Al-Mizan System"
+        UC1["Browse Knowledge Graph"]
+        UC2["Search Verses/Hadith"]
+        UC3["Trace Isnad Chain"]
+        UC4["Query API"]
+        UC5["Verify Source Lineage"]
+        UC6["Manage Data"]
+    end
+    
+    R --> UC1
+    R --> UC2
+    R --> UC3
+    D --> UC4
+    A --> UC4
+    A --> UC5
+    M --> UC6
+```
+
+*Figure 7: Use Case Diagram*
 
 ## **1.5 Engineering Challenges** {#1.5-engineering-challenges}
 
@@ -407,6 +464,56 @@ graph TD
     DEFINE INDEX verse_idx ON TABLE word COLUMNS verse_link;
     ```
 
+### **Entity-Relationship Diagram**
+
+Figure 5 illustrates the core entities and their relationships in the Al-Mizan Knowledge Graph.
+
+```mermaid
+erDiagram
+    VERSE {
+        string id PK
+        string text_uthmani
+        string text_simple
+        int chapter_id
+        int verse_number
+    }
+    
+    WORD {
+        string id PK
+        string text
+        string pos
+        string features
+    }
+    
+    ROOT {
+        string id PK
+        string letters
+        string meaning
+    }
+    
+    SCHOLAR {
+        string id PK
+        string name
+        string death_date
+        string madhab
+    }
+    
+    HADITH {
+        string id PK
+        string text_arabic
+        string grade
+        string source
+    }
+    
+    WORD ||--o{ VERSE : "part_of"
+    WORD }o--|| ROOT : "derived_from"
+    SCHOLAR ||--o{ HADITH : "narrated"
+    HADITH }o--o{ VERSE : "references"
+    SCHOLAR ||--o{ TAFSIR : "authored"
+```
+
+*Figure 5: Entity-Relationship Diagram of the Tawhidic Knowledge Graph*
+
 * **Normalization Strategy:** To handle searching complexities:
   * `text_uthmani`: Stored for accurate display (scriptural fidelity).
   * `text_simple`: A normalized field (stripping diacritics, unifying Alif) used for indexing and fuzzy search.
@@ -426,6 +533,55 @@ The initial prototype implements a **"Vertical Slice" architecture**:
 3. **Presentation Layer:**
     * **Stack:** HTML5 + HTMX (Hypermedia) + Cytoscape.js (Graph Visualization).
     * **Feature:** "Interactive Isnad" — clicking a narrator dynamically loads their teacher/student connections via AJAX.
+
+### **ETL Data Flow**
+
+Figure 6 illustrates the data transformation pipeline from raw sources to the Knowledge Graph.
+
+```mermaid
+flowchart LR
+    subgraph Sources["External Sources"]
+        A1[("Tanzil.net\nXML")]
+        A2[("Quranic Corpus\nMorphology")]
+        A3[("Hadith\nCollections")]
+    end
+    
+    subgraph ETL["ETL Pipeline (Python)"]
+        B1["download_sources.py"]
+        B2["transform_tanzil.py"]
+        B3["transform_morphology.py"]
+        B4["transform_hadith.py"]
+    end
+    
+    subgraph Process["Processing"]
+        C1["Text Normalization"]
+        C2["Arabic Stemming"]
+        C3["Relationship\nExtraction"]
+    end
+    
+    subgraph Output["SurrealDB"]
+        D1[("Verses\n6,236")]
+        D2[("Words\n77,430")]
+        D3[("Roots\n1,827")]
+        D4[("Hadith\n7,605")]
+    end
+    
+    A1 --> B1
+    A2 --> B1
+    A3 --> B1
+    B1 --> B2 & B3 & B4
+    B2 --> C1
+    B3 --> C1 & C2
+    B4 --> C3
+    C1 & C2 & C3 --> D1 & D2 & D3 & D4
+```
+
+*Figure 6: ETL Data Flow Diagram*
+
+## **3.7 Summary**
+
+This chapter outlined the Type-Driven Development methodology, detailed the functional and non-functional requirements, and presented the logical and database designs. The prototype demonstrates a complete vertical slice from data ingestion to interactive visualization, establishing the foundation for FYP 2 development.
+
 # **CHAPTER FOUR** {#chapter-four}
 
 # **PROGRESS AND PRELIMINARY RESULTS**
