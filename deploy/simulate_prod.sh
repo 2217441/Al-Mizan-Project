@@ -11,7 +11,7 @@ echo "=== 🧪 Initializing Local Production Simulation ==="
 export DB_URL="almizan-db:8000"
 export DB_USER="root"
 export DB_PASS="root"
-export DB_NS="idc"
+export DB_NS="almizan"
 export DB_DB="main"
 export JWT_SECRET="dev_secret_local_simulation"
 export repo_owner_lower=$REPO_OWNER

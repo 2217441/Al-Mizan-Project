@@ -13,7 +13,7 @@ To access the SurrealDB instance running in Docker:
 
 2.  **Via Curl**:
     ```bash
-    curl -X POST -u "root:root" -H "NS: test" -H "DB: test" -d "INFO FOR DB;" http://localhost:8000/sql
+    curl -X POST -u "root:root" -H "NS: idc" -H "DB: main" -d "INFO FOR DB;" http://localhost:8000/sql
     ```
 
 ## Backup & Restore
@@ -24,7 +24,7 @@ To export the current database state to a file:
 ```bash
 
 # Export specific namespace/database
-docker exec -it almizan-db /surreal export --user root --pass root --ns almizan --db main output.surql
+docker exec -it almizan-db /surreal export --user root --pass root --ns idc --db main output.surql
 ```
 
 ### Automated Backup
@@ -55,7 +55,7 @@ To run daily at 2 AM:
 To import a `.surql` file:
 
 ```bash
-cat backup.surql | docker exec -i almizan-db /surreal import --user root --pass root --ns almizan --db main
+cat backup.surql | docker exec -i almizan-db /surreal import --user root --pass root --ns idc --db main
 ```
 
 ## Troubleshooting
@@ -69,3 +69,10 @@ If `almizan-db` is unhealthy:
 ### Connection Refused
 1. Ensure the port `8000` is mapped in `docker-compose.yml`.
 2. Check if another service is using port 8000.
+3. Verify SurrealDB is actually running: `ss -tlnp | grep 8000`.
+
+### Port 8000 Not Listening
+If using the local binary via `start.sh`:
+1. Kill any existing process: `pkill -f "surreal start"`
+2. Restart with Docker: `docker-compose up -d almizan-db`
+3. Wait for healthcheck: `docker-compose ps` should show "healthy"

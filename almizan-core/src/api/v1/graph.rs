@@ -83,10 +83,10 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         },
     });
 
-    // 2. Define queries
-    let prophets_sql = r#"
+    // 2. Get Prophets chosen by Allah
+    let prophets_sql = r"
         SELECT id, name_ar FROM prophet LIMIT 25
-    "#;
+    ";
 
     let verses_sql = r#"
         SELECT id, surah_number, ayah_number
@@ -165,8 +165,17 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 6. Process Verses
-    let verses: Vec<DbVerse> = verses_res
+    // 3. Get sample verses narrated by Prophet Muhammad (using available Juz 30 data)
+    let verses_sql = r"
+        SELECT id, surah_number, ayah_number 
+        FROM quran_verse 
+        LIMIT 20
+    ";
+
+    let verses: Vec<DbVerse> = db
+        .client
+        .query(verses_sql)
+        .await
         .and_then(|mut r| r.take(0))
         .unwrap_or_default();
 
@@ -192,8 +201,24 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 7. Process Hadiths
-    let hadiths: Vec<DbSemanticHadith> = hadith_res
+    // 4. Get Hadiths (SemanticHadith V2)
+    #[derive(Deserialize, Debug)]
+    struct DbSemanticHadith {
+        id: surrealdb::sql::Thing,
+        ref_no: i32,
+        collection: String,
+        #[allow(dead_code)]
+        display_text: Option<String>,
+    }
+
+    let hadith_sql = r"
+        SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50
+    ";
+
+    let hadiths: Vec<DbSemanticHadith> = db
+        .client
+        .query(hadith_sql)
+        .await
         .and_then(|mut r| r.take(0))
         .unwrap_or_default();
 
@@ -220,8 +245,22 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 8. Process Narrators
-    let narrators_list: Vec<DbNarrator> = narrators_res
+    // 5. Get Top Narrators (from semantic hadith narrator chains)
+    #[derive(Deserialize, Debug)]
+    struct DbNarrator {
+        id: surrealdb::sql::Thing,
+        name_ar: Option<String>,
+        generation: Option<i32>,
+    }
+
+    let narrator_sql = r"
+        SELECT id, name_ar, generation FROM narrator LIMIT 30
+    ";
+
+    let narrators_list: Vec<DbNarrator> = db
+        .client
+        .query(narrator_sql)
+        .await
         .and_then(|mut r| r.take(0))
         .unwrap_or_default();
 

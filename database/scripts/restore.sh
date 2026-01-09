@@ -14,7 +14,7 @@ fi
 
 DB_USER=${DB_USER:-root}
 DB_PASS=${DB_PASS:-root}
-DB_NS=${DB_NS:-idc}
+DB_NS=${DB_NS:-almizan}
 DB_NAME=${DB_NAME:-main}
 # Resolve absolute path for backup file
 BACKUP_FILE="$(realpath "$1")"

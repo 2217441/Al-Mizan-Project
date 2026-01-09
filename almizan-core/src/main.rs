@@ -1,6 +1,12 @@
+#![warn(clippy::pedantic)]
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::missing_errors_doc)]
+#![allow(clippy::missing_panics_doc)]
+
 use askama::Template;
 use axum::{
-    response::Html,
+    http::StatusCode,
+    response::{Html, IntoResponse},
     routing::{get, post},
     Router,
 };
@@ -163,37 +169,73 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn certainty_engine_handler() -> impl axum::response::IntoResponse {
+async fn certainty_engine_handler() -> impl IntoResponse {
     let template = CertaintyEngineTemplate;
-    Html(template.render().unwrap())
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            tracing::error!("Template render error: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
 }
 
 #[derive(Template)]
 #[template(path = "graph.html")]
-// Graph Handler
 struct GraphTemplate;
 
-async fn graph_handler() -> Html<String> {
+async fn graph_handler() -> impl IntoResponse {
     let template = GraphTemplate;
-    Html(template.render().unwrap())
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            tracing::error!("Template render error: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
 }
 
-async fn landing_handler() -> Html<String> {
+async fn landing_handler() -> impl IntoResponse {
     let template = LandingTemplate;
-    Html(template.render().unwrap())
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            tracing::error!("Template render error: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
 }
 
-async fn presentation_handler() -> Html<String> {
+async fn presentation_handler() -> impl IntoResponse {
     let template = PresentationTemplate;
-    Html(template.render().unwrap())
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            tracing::error!("Template render error: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
 }
 
-async fn governance_handler() -> Html<String> {
+async fn governance_handler() -> impl IntoResponse {
     let template = GovernanceTemplate;
-    Html(template.render().unwrap())
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            tracing::error!("Template render error: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
 }
 
-async fn components_handler() -> Html<String> {
+async fn components_handler() -> impl IntoResponse {
     let template = ComponentsTemplate;
-    Html(template.render().unwrap())
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            tracing::error!("Template render error: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
 }
+

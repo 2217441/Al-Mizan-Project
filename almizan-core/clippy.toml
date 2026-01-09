@@ -1,0 +1,8 @@
+# Clippy Configuration for Al-Mizan Core
+# Enforces pedantic lints for long-term stability
+
+# Allow some pedantic lints that are too noisy for this codebase
+avoid-breaking-exported-api = true
+
+# These lints are allowed project-wide (override pedantic)
+allow-unwrap-in-tests = true

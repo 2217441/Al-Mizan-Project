@@ -55,7 +55,7 @@ pub async fn get_verse(
     Path((surah, ayah)): Path<(i32, i32)>,
     Query(params): Query<VerseQuery>,
 ) -> impl IntoResponse {
-    // Vulnerability Fix: Use parameterized queries to prevent SQL injection
+    // Use parameterized query to prevent SQL injection
     let sql = "SELECT id, surah_number, ayah_number, text_uthmani, juz_number, revelation_place FROM quran_verse WHERE surah_number = $surah AND ayah_number = $ayah";
 
     let result: Result<Vec<DbVerse>, _> = db
