@@ -371,8 +371,8 @@
         <div class="docs-grid">
             <div class="docs-example">
                 <div class="docs-example__preview">
-                    <div class="gauge" id="demo-gauge-1">
-                        <svg class="gauge__svg" width="120" height="120">
+                    <div class="gauge" id="demo-gauge-1" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" aria-label="Completion status">
+                        <svg class="gauge__svg" width="120" height="120" aria-hidden="true">
                             <circle class="gauge__bg" cx="60" cy="60" r="45"></circle>
                             <circle class="gauge__progress" cx="60" cy="60" r="45" style="stroke-dashoffset: 85;"></circle>
                         </svg>
@@ -386,8 +386,8 @@
             </div>
             <div class="docs-example">
                 <div class="docs-example__preview">
-                    <div class="gauge">
-                        <svg class="gauge__svg" width="120" height="120">
+                    <div class="gauge" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" aria-label="System health">
+                        <svg class="gauge__svg" width="120" height="120" aria-hidden="true">
                             <circle class="gauge__bg" cx="60" cy="60" r="45"></circle>
                             <circle class="gauge__progress" cx="60" cy="60" r="45" style="stroke: #10b981; stroke-dashoffset: 28;"></circle>
                         </svg>
