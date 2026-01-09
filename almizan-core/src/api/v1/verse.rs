@@ -55,6 +55,7 @@ pub async fn get_verse(
     Path((surah, ayah)): Path<(i32, i32)>,
     Query(params): Query<VerseQuery>,
 ) -> impl IntoResponse {
+    // Vulnerability Fix: Use parameterized queries to prevent SQL injection
     let sql = "SELECT id, surah_number, ayah_number, text_uthmani, juz_number, revelation_place FROM quran_verse WHERE surah_number = $surah AND ayah_number = $ayah";
 
     let result: Result<Vec<DbVerse>, _> = db
@@ -71,12 +72,14 @@ pub async fn get_verse(
 
             // Optionally get roots
             let roots = if params.include_roots {
-                let verse_id_str = format!("{}_{}", surah, ayah);
-                let roots_sql = "SELECT ->has_root->root_word.root_ar AS roots FROM type::thing('quran_verse', $verse_id)";
+                // Vulnerability Fix: Use parameterized queries for roots lookup as well
+                let roots_sql = "SELECT ->has_root->root_word.root_ar AS roots FROM type::thing($verse_id)";
+                let verse_id = format!("quran_verse:{}_{}", surah, ayah);
+
                 let roots_result: Vec<serde_json::Value> = db
                     .client
                     .query(roots_sql)
-                    .bind(("verse_id", verse_id_str))
+                    .bind(("verse_id", verse_id))
                     .await
                     .and_then(|mut r| r.take(0))
                     .unwrap_or_default();

@@ -42,6 +42,28 @@ struct DbVerse {
     ayah_number: i32,
 }
 
+#[derive(Deserialize, Debug)]
+struct DbProphet {
+    id: surrealdb::sql::Thing,
+    name_ar: String,
+}
+
+#[derive(Deserialize, Debug)]
+struct DbSemanticHadith {
+    id: surrealdb::sql::Thing,
+    ref_no: i32,
+    collection: String,
+    #[allow(dead_code)]
+    display_text: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+struct DbNarrator {
+    id: surrealdb::sql::Thing,
+    name_ar: Option<String>,
+    generation: Option<i32>,
+}
+
 /// GET /api/v1/graph
 /// Returns the tawhidic knowledge graph showing epistemological chains.
 /// Shows: Allah → Prophets → Quran Verses (via chosen_by and narrated_quran edges)
@@ -61,18 +83,38 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         },
     });
 
-    // 2. Get Prophets chosen by Allah
+    // 2. Define queries
     let prophets_sql = r#"
         SELECT id, name_ar FROM prophet LIMIT 25
     "#;
 
-    #[derive(Deserialize, Debug)]
-    struct DbProphet {
-        id: surrealdb::sql::Thing,
-        name_ar: String,
-    }
+    let verses_sql = r#"
+        SELECT id, surah_number, ayah_number
+        FROM quran_verse
+        LIMIT 20
+    "#;
 
-    let prophets: Vec<DbProphet> = match db.client.query(prophets_sql).await {
+    let hadith_sql = r#"
+        SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50
+    "#;
+
+    let narrator_sql = r#"
+        SELECT id, name_ar, generation FROM narrator LIMIT 30
+    "#;
+
+    // 3. Create futures
+    let prophets_future = db.client.query(prophets_sql);
+    let verses_future = db.client.query(verses_sql);
+    let hadith_future = db.client.query(hadith_sql);
+    let narrators_future = db.client.query(narrator_sql);
+
+    // 4. Execute concurrently
+    // Parallelize 4 independent DB queries to reduce total latency
+    let (prophets_res, verses_res, hadith_res, narrators_res) =
+        tokio::join!(prophets_future, verses_future, hadith_future, narrators_future);
+
+    // 5. Process Prophets
+    let prophets: Vec<DbProphet> = match prophets_res {
         Ok(mut response) => match response.take(0) {
             Ok(data) => data,
             Err(e) => {
@@ -108,17 +150,8 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 3. Get sample verses narrated by Prophet Muhammad (using available Juz 30 data)
-    let verses_sql = r#"
-        SELECT id, surah_number, ayah_number 
-        FROM quran_verse 
-        LIMIT 20
-    "#;
-
-    let verses: Vec<DbVerse> = db
-        .client
-        .query(verses_sql)
-        .await
+    // 6. Process Verses
+    let verses: Vec<DbVerse> = verses_res
         .and_then(|mut r| r.take(0))
         .unwrap_or_default();
 
@@ -144,24 +177,8 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 4. Get Hadiths (SemanticHadith V2)
-    #[derive(Deserialize, Debug)]
-    struct DbSemanticHadith {
-        id: surrealdb::sql::Thing,
-        ref_no: i32,
-        collection: String,
-        #[allow(dead_code)]
-        display_text: Option<String>,
-    }
-
-    let hadith_sql = r#"
-        SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50
-    "#;
-
-    let hadiths: Vec<DbSemanticHadith> = db
-        .client
-        .query(hadith_sql)
-        .await
+    // 7. Process Hadiths
+    let hadiths: Vec<DbSemanticHadith> = hadith_res
         .and_then(|mut r| r.take(0))
         .unwrap_or_default();
 
@@ -188,22 +205,8 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 5. Get Top Narrators (from semantic hadith narrator chains)
-    #[derive(Deserialize, Debug)]
-    struct DbNarrator {
-        id: surrealdb::sql::Thing,
-        name_ar: Option<String>,
-        generation: Option<i32>,
-    }
-
-    let narrator_sql = r#"
-        SELECT id, name_ar, generation FROM narrator LIMIT 30
-    "#;
-
-    let narrators_list: Vec<DbNarrator> = db
-        .client
-        .query(narrator_sql)
-        .await
+    // 8. Process Narrators
+    let narrators_list: Vec<DbNarrator> = narrators_res
         .and_then(|mut r| r.take(0))
         .unwrap_or_default();
 
@@ -224,7 +227,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 6. Connectivity Logic
+    // 9. Connectivity Logic
     let node_ids: std::collections::HashSet<String> =
         nodes.iter().map(|n| n.data.id.clone()).collect();
 
@@ -238,7 +241,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         .map(|h| sanitize_id(h.id.to_string()))
         .collect();
 
-    // 6a. Link Prophet -> Narrators (Taught)
+    // 9a. Link Prophet -> Narrators (Taught)
     for narrator_id in &narrator_ids {
         if node_ids.contains(narrator_id) {
             edges_vec.push(CytoscapeEdge {
@@ -252,7 +255,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         }
     }
 
-    // 6b. Link Narrators -> Hadiths (Round Robin Distribution for Visualization)
+    // 9b. Link Narrators -> Hadiths (Round Robin Distribution for Visualization)
     // Ensures every hadith is connected to a narrator
     if !narrator_ids.is_empty() {
         for (i, hadith_id) in hadith_ids.iter().enumerate() {
