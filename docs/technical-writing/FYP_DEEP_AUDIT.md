@@ -237,7 +237,7 @@ Examiners scan abstracts. Add keywords line:
 | **P1** | Expand Conclusion (achievements, future work) | High | ✅ Done (FYP 2 Roadmap) |
 | **P2** | Define Fitna Defense Protocol formally | Medium | ✅ Done (concept + query example) |
 | **P2** | Expand Division of Work table | Medium | ✅ Done (Table 3) |
-| **P2** | Add screenshots/figures | Medium | 🟡 Placeholder added |
+| **P2** | Add screenshots/figures | Medium | ✅ Done (3 high-quality screenshots added) |
 | **P3** | Number figures, add keywords | Polish | ✅ Done |
 
 ---

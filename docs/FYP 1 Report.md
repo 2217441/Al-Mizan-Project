@@ -678,13 +678,31 @@ SELECT ->references->hadith FROM verse:1_1;
 
 ### **4.3.3 User Interface Screenshots**
 
-*[Note: Screenshots to be inserted during final formatting]*
+The prototype includes multiple functional interfaces. Figures 8-10 demonstrate the implemented UI components.
+
+**Figure 8: Certainty Engine — Search Interface**
+
+![Certainty Engine Interface](images/screenshot_certainty_engine.png)
+
+*The main search interface allows researchers to query theological topics with the tagline "Trace every ruling back to its primary source with mathematical certainty."*
+
+**Figure 9: Knowledge Graph Playground — Neuro-Symbolic Visualization**
+
+![Knowledge Graph Playground](images/screenshot_graph_playground.png)
+
+*The Playground interface displays the Cytoscape.js-powered graph showing Quranic knowledge tiers (Thabit/Wahyu nodes) with interactive exploration capabilities.*
+
+**Figure 10: Presentation Landing — Project Overview**
+
+![Presentation Page](images/screenshot_presentation.png)
+
+*The presentation mode showcases the project theme: "Architecting the Unity of Knowledge — From Epistemological Fragmentation to Digital Ontology."*
 
 The prototype UI includes:
-1. **Knowledge Graph Explorer** — Interactive Cytoscape.js visualization
-2. **Verse Detail View** — Morphological breakdown with root links
-3. **Query Playground** — Direct SurQL query interface for researchers
-4. **API Documentation** — Auto-generated OpenAPI spec
+1. **Certainty Engine** — Theological query synthesis with source verification
+2. **Knowledge Graph Playground** — Interactive Cytoscape.js visualization
+3. **Presentation Mode** — Showcase-ready project overview
+4. **API Playground** — Direct SurQL query interface for researchers
 
 ## **4.4 Objective Achievement Status**
 
