@@ -42,6 +42,28 @@ struct DbVerse {
     ayah_number: i32,
 }
 
+#[derive(Deserialize, Debug)]
+struct DbProphet {
+    id: surrealdb::sql::Thing,
+    name_ar: String,
+}
+
+#[derive(Deserialize, Debug)]
+struct DbSemanticHadith {
+    id: surrealdb::sql::Thing,
+    ref_no: i32,
+    collection: String,
+    #[allow(dead_code)]
+    display_text: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+struct DbNarrator {
+    id: surrealdb::sql::Thing,
+    name_ar: Option<String>,
+    generation: Option<i32>,
+}
+
 /// GET /api/v1/graph
 /// Returns the tawhidic knowledge graph showing epistemological chains.
 /// Shows: Allah → Prophets → Quran Verses (via chosen_by and narrated_quran edges)
@@ -66,13 +88,33 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         SELECT id, name_ar FROM prophet LIMIT 25
     ";
 
-    #[derive(Deserialize, Debug)]
-    struct DbProphet {
-        id: surrealdb::sql::Thing,
-        name_ar: String,
-    }
+    let verses_sql = r#"
+        SELECT id, surah_number, ayah_number
+        FROM quran_verse
+        LIMIT 20
+    "#;
 
-    let prophets: Vec<DbProphet> = match db.client.query(prophets_sql).await {
+    let hadith_sql = r#"
+        SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50
+    "#;
+
+    let narrator_sql = r#"
+        SELECT id, name_ar, generation FROM narrator LIMIT 30
+    "#;
+
+    // 3. Create futures
+    let prophets_future = db.client.query(prophets_sql);
+    let verses_future = db.client.query(verses_sql);
+    let hadith_future = db.client.query(hadith_sql);
+    let narrators_future = db.client.query(narrator_sql);
+
+    // 4. Execute concurrently
+    // Parallelize 4 independent DB queries to reduce total latency
+    let (prophets_res, verses_res, hadith_res, narrators_res) =
+        tokio::join!(prophets_future, verses_future, hadith_future, narrators_future);
+
+    // 5. Process Prophets
+    let prophets: Vec<DbProphet> = match prophets_res {
         Ok(mut response) => match response.take(0) {
             Ok(data) => data,
             Err(e) => {
@@ -80,12 +122,27 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
                 Vec::new()
             }
         },
-        Err(e) => {
-            tracing::error!("Failed to execute prophets query: {}", e);
-            Vec::new()
+        async move {
+            let sql = "SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50";
+            let res: Vec<DbSemanticHadith> = c3
+                .query(sql)
+                .await
+                .and_then(|mut r| r.take(0))
+                .unwrap_or_default();
+            res
+        },
+        async move {
+            let sql = "SELECT id, name_ar, generation FROM narrator LIMIT 30";
+            let res: Vec<DbNarrator> = c4
+                .query(sql)
+                .await
+                .and_then(|mut r| r.take(0))
+                .unwrap_or_default();
+            res
         }
-    };
+    );
 
+    // 2. Process Prophets
     for prophet in &prophets {
         let prophet_id = sanitize_id(prophet.id.to_string());
 
@@ -224,7 +281,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 6. Connectivity Logic
+    // 9. Connectivity Logic
     let node_ids: std::collections::HashSet<String> =
         nodes.iter().map(|n| n.data.id.clone()).collect();
 
@@ -238,7 +295,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         .map(|h| sanitize_id(h.id.to_string()))
         .collect();
 
-    // 6a. Link Prophet -> Narrators (Taught)
+    // 9a. Link Prophet -> Narrators (Taught)
     for narrator_id in &narrator_ids {
         if node_ids.contains(narrator_id) {
             edges_vec.push(CytoscapeEdge {
@@ -252,7 +309,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         }
     }
 
-    // 6b. Link Narrators -> Hadiths (Round Robin Distribution for Visualization)
+    // 9b. Link Narrators -> Hadiths (Round Robin Distribution for Visualization)
     // Ensures every hadith is connected to a narrator
     if !narrator_ids.is_empty() {
         for (i, hadith_id) in hadith_ids.iter().enumerate() {

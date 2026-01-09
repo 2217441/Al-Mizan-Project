@@ -72,13 +72,14 @@ pub async fn get_verse(
 
             // Optionally get roots
             let roots = if params.include_roots {
-                let roots_sql = format!(
-                    "SELECT ->has_root->root_word.root_ar AS roots FROM quran_verse:{}_{}",
-                    surah, ayah
-                );
+                // Vulnerability Fix: Use parameterized queries for roots lookup as well
+                let roots_sql = "SELECT ->has_root->root_word.root_ar AS roots FROM type::thing($verse_id)";
+                let verse_id = format!("quran_verse:{}_{}", surah, ayah);
+
                 let roots_result: Vec<serde_json::Value> = db
                     .client
-                    .query(&roots_sql)
+                    .query(roots_sql)
+                    .bind(("verse_id", verse_id))
                     .await
                     .and_then(|mut r| r.take(0))
                     .unwrap_or_default();
