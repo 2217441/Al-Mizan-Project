@@ -122,25 +122,53 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
                 Vec::new()
             }
         },
-        async move {
-            let sql = "SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50";
-            let res: Vec<DbSemanticHadith> = c3
-                .query(sql)
-                .await
-                .and_then(|mut r| r.take(0))
-                .unwrap_or_default();
-            res
-        },
-        async move {
-            let sql = "SELECT id, name_ar, generation FROM narrator LIMIT 30";
-            let res: Vec<DbNarrator> = c4
-                .query(sql)
-                .await
-                .and_then(|mut r| r.take(0))
-                .unwrap_or_default();
-            res
+        Err(e) => {
+            tracing::error!("Failed to query prophets: {}", e);
+            Vec::new()
         }
-    );
+    };
+
+    let verses: Vec<DbVerse> = match verses_res {
+        Ok(mut response) => match response.take(0) {
+            Ok(data) => data,
+            Err(e) => {
+                tracing::error!("Failed to deserialize verses: {}", e);
+                Vec::new()
+            }
+        },
+        Err(e) => {
+            tracing::error!("Failed to query verses: {}", e);
+            Vec::new()
+        }
+    };
+
+    let hadiths: Vec<DbSemanticHadith> = match hadith_res {
+        Ok(mut response) => match response.take(0) {
+            Ok(data) => data,
+            Err(e) => {
+                tracing::error!("Failed to deserialize hadiths: {}", e);
+                Vec::new()
+            }
+        },
+        Err(e) => {
+            tracing::error!("Failed to query hadiths: {}", e);
+            Vec::new()
+        }
+    };
+
+    let narrators_list: Vec<DbNarrator> = match narrators_res {
+        Ok(mut response) => match response.take(0) {
+            Ok(data) => data,
+            Err(e) => {
+                tracing::error!("Failed to deserialize narrators: {}", e);
+                Vec::new()
+            }
+        },
+        Err(e) => {
+            tracing::error!("Failed to query narrators: {}", e);
+            Vec::new()
+        }
+    };
 
     // 2. Process Prophets
     for prophet in &prophets {
@@ -166,18 +194,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     }
 
     // 3. Get sample verses narrated by Prophet Muhammad (using available Juz 30 data)
-    let verses_sql = r"
-        SELECT id, surah_number, ayah_number 
-        FROM quran_verse 
-        LIMIT 20
-    ";
-
-    let verses: Vec<DbVerse> = db
-        .client
-        .query(verses_sql)
-        .await
-        .and_then(|mut r| r.take(0))
-        .unwrap_or_default();
+    // Already fetched in parallel above as `verses`
 
     for verse in &verses {
         let verse_id = sanitize_id(verse.id.to_string());
@@ -202,25 +219,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     }
 
     // 4. Get Hadiths (SemanticHadith V2)
-    #[derive(Deserialize, Debug)]
-    struct DbSemanticHadith {
-        id: surrealdb::sql::Thing,
-        ref_no: i32,
-        collection: String,
-        #[allow(dead_code)]
-        display_text: Option<String>,
-    }
-
-    let hadith_sql = r"
-        SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50
-    ";
-
-    let hadiths: Vec<DbSemanticHadith> = db
-        .client
-        .query(hadith_sql)
-        .await
-        .and_then(|mut r| r.take(0))
-        .unwrap_or_default();
+    // Already fetched in parallel above as `hadiths`
 
     for hadith in &hadiths {
         let hadith_id = sanitize_id(hadith.id.to_string());
@@ -246,23 +245,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     }
 
     // 5. Get Top Narrators (from semantic hadith narrator chains)
-    #[derive(Deserialize, Debug)]
-    struct DbNarrator {
-        id: surrealdb::sql::Thing,
-        name_ar: Option<String>,
-        generation: Option<i32>,
-    }
-
-    let narrator_sql = r"
-        SELECT id, name_ar, generation FROM narrator LIMIT 30
-    ";
-
-    let narrators_list: Vec<DbNarrator> = db
-        .client
-        .query(narrator_sql)
-        .await
-        .and_then(|mut r| r.take(0))
-        .unwrap_or_default();
+    // Already fetched in parallel above as `narrators_list`
 
     for narrator in &narrators_list {
         let narrator_id = sanitize_id(narrator.id.to_string());
