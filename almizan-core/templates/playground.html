@@ -263,9 +263,9 @@
                 <h3 style="color: var(--text-primary); margin-top: 0;">📖 Verse Lookup</h3>
                 <div class="input-group">
                     <input type="number" id="surahInput" class="glass-input" placeholder="Surah" value="1"
-                        style="flex: 1;">
+                        style="flex: 1;" aria-label="Surah Number" min="1" max="114">
                     <input type="number" id="ayahInput" class="glass-input" placeholder="Ayah" value="1"
-                        style="flex: 1;">
+                        style="flex: 1;" aria-label="Ayah Number" min="1">
                     <button onclick="fetchVerse()" class="action-btn">Seek</button>
                 </div>
                 <div id="verseResult" class="result-box">
@@ -277,7 +277,7 @@
             <div class="glass-panel hover-lift" style="padding: 1.5rem;">
                 <h3 style="color: var(--text-primary); margin-top: 0;">📜 Hadith Explorer</h3>
                 <div class="input-group">
-                    <select id="collectionSelect" class="glass-select" style="flex: 2;">
+                    <select id="collectionSelect" class="glass-select" style="flex: 2;" aria-label="Hadith Collection">
                         <option value="Nawawi 40">Nawawi 40</option>
                         <option value="bukhari">Sahih al-Bukhari</option>
                         <option value="muslim">Sahih Muslim</option>
@@ -285,7 +285,7 @@
                         <option value="abudawud">Sunan Abi Dawud</option>
                     </select>
                     <input type="number" id="hadithInput" class="glass-input" placeholder="#" value="1"
-                        style="flex: 1;">
+                        style="flex: 1;" aria-label="Hadith Number" min="1">
                     <button onclick="fetchHadith()" class="action-btn">Trace</button>
                 </div>
                 <div id="hadithResult" class="result-box">
