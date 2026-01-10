@@ -206,8 +206,15 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // 4. Get Hadiths (SemanticHadith V2)
     // Already fetched in parallel above as `hadiths`
 
+    // Optimization: Pre-allocate ID vectors to avoid redundant iterations and sanitizations later
+    let mut hadith_ids: Vec<String> = Vec::with_capacity(hadiths.len());
+    let mut narrator_ids: Vec<String> = Vec::with_capacity(narrators_list.len());
+
     for hadith in &hadiths {
         let hadith_id = sanitize_id(hadith.id.to_string());
+
+        // Collect ID for edge creation later
+        hadith_ids.push(hadith_id.clone());
 
         // Use Arabic collection names for labels
         let collection_label = match hadith.collection.as_str() {
@@ -234,6 +241,10 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
     for narrator in &narrators_list {
         let narrator_id = sanitize_id(narrator.id.to_string());
+
+        // Collect ID for edge creation later
+        narrator_ids.push(narrator_id.clone());
+
         let label = narrator
             .name_ar
             .clone()
@@ -250,49 +261,35 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     }
 
     // 9. Connectivity Logic
-    let node_ids: std::collections::HashSet<String> =
-        nodes.iter().map(|n| n.data.id.clone()).collect();
-
-    let narrator_ids: Vec<String> = narrators_list
-        .iter()
-        .map(|n| sanitize_id(n.id.to_string()))
-        .collect();
-
-    let hadith_ids: Vec<String> = hadiths
-        .iter()
-        .map(|h| sanitize_id(h.id.to_string()))
-        .collect();
+    // Optimization: Removed redundant O(N) node_ids set construction and ID re-sanitization loops.
+    // We already collected valid IDs in the loops above.
 
     // 9a. Link Prophet -> Narrators (Taught)
     for narrator_id in &narrator_ids {
-        if node_ids.contains(narrator_id) {
-            edges_vec.push(CytoscapeEdge {
-                data: EdgeData {
-                    id: format!("taught_{}", narrator_id),
-                    source: "prophet:muhammad".to_string(),
-                    target: narrator_id.clone(),
-                    label: "taught".to_string(),
-                },
-            });
-        }
+        edges_vec.push(CytoscapeEdge {
+            data: EdgeData {
+                id: format!("taught_{narrator_id}"),
+                source: "prophet:muhammad".to_string(),
+                target: narrator_id.clone(),
+                label: "taught".to_string(),
+            },
+        });
     }
 
     // 9b. Link Narrators -> Hadiths (Round Robin Distribution for Visualization)
     if !narrator_ids.is_empty() {
         for (i, hadith_id) in hadith_ids.iter().enumerate() {
-            if node_ids.contains(hadith_id) {
-                // Assign to a narrator based on index
-                let narrator = &narrator_ids[i % narrator_ids.len()];
+            // Assign to a narrator based on index
+            let narrator = &narrator_ids[i % narrator_ids.len()];
 
-                edges_vec.push(CytoscapeEdge {
-                    data: EdgeData {
-                        id: format!("narrated_{}_{}", narrator, hadith_id),
-                        source: narrator.clone(),
-                        target: hadith_id.clone(),
-                        label: "narrated".to_string(),
-                    },
-                });
-            }
+            edges_vec.push(CytoscapeEdge {
+                data: EdgeData {
+                    id: format!("narrated_{narrator}_{hadith_id}"),
+                    source: narrator.clone(),
+                    target: hadith_id.clone(),
+                    label: "narrated".to_string(),
+                },
+            });
         }
     }
 
