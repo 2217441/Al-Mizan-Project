@@ -100,45 +100,57 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
     // 4. Unpack Results with Error Logging
     let prophets: Vec<DbProphet> = match prophets_res {
-        Ok(mut r) => r.take(0).unwrap_or_else(|e| {
-            tracing::error!("Failed to deserialize prophets: {}", e);
-            Vec::new()
-        }),
+        Ok(mut response) => match response.take(0) {
+            Ok(data) => data,
+            Err(e) => {
+                tracing::error!("Failed to deserialize prophets: {}", e);
+                Vec::new()
+            }
+        },
         Err(e) => {
-            tracing::error!("Failed to execute prophets query: {}", e);
+            tracing::error!("Failed to query prophets: {}", e);
             Vec::new()
         }
     };
 
     let verses: Vec<DbVerse> = match verses_res {
-        Ok(mut r) => r.take(0).unwrap_or_else(|e| {
-            tracing::error!("Failed to deserialize verses: {}", e);
-            Vec::new()
-        }),
+        Ok(mut response) => match response.take(0) {
+            Ok(data) => data,
+            Err(e) => {
+                tracing::error!("Failed to deserialize verses: {}", e);
+                Vec::new()
+            }
+        },
         Err(e) => {
-            tracing::error!("Failed to execute verses query: {}", e);
+            tracing::error!("Failed to query verses: {}", e);
             Vec::new()
         }
     };
 
     let hadiths: Vec<DbSemanticHadith> = match hadith_res {
-        Ok(mut r) => r.take(0).unwrap_or_else(|e| {
-            tracing::error!("Failed to deserialize hadiths: {}", e);
-            Vec::new()
-        }),
+        Ok(mut response) => match response.take(0) {
+            Ok(data) => data,
+            Err(e) => {
+                tracing::error!("Failed to deserialize hadiths: {}", e);
+                Vec::new()
+            }
+        },
         Err(e) => {
-            tracing::error!("Failed to execute hadiths query: {}", e);
+            tracing::error!("Failed to query hadiths: {}", e);
             Vec::new()
         }
     };
 
     let narrators_list: Vec<DbNarrator> = match narrators_res {
-        Ok(mut r) => r.take(0).unwrap_or_else(|e| {
-            tracing::error!("Failed to deserialize narrators: {}", e);
-            Vec::new()
-        }),
+        Ok(mut response) => match response.take(0) {
+            Ok(data) => data,
+            Err(e) => {
+                tracing::error!("Failed to deserialize narrators: {}", e);
+                Vec::new()
+            }
+        },
         Err(e) => {
-            tracing::error!("Failed to execute narrators query: {}", e);
+            tracing::error!("Failed to query narrators: {}", e);
             Vec::new()
         }
     };
@@ -166,7 +178,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 6. Process Verses
+    // 3. Get sample verses narrated by Prophet Muhammad (using available Juz 30 data)
+    // Already fetched in parallel above as `verses`
+
     for verse in &verses {
         let verse_id = sanitize_id(verse.id.to_string());
 
@@ -189,7 +203,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 7. Process Hadiths
+    // 4. Get Hadiths (SemanticHadith V2)
+    // Already fetched in parallel above as `hadiths`
+
     for hadith in &hadiths {
         let hadith_id = sanitize_id(hadith.id.to_string());
 
@@ -213,7 +229,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         });
     }
 
-    // 8. Process Narrators
+    // 5. Get Top Narrators (from semantic hadith narrator chains)
+    // Already fetched in parallel above as `narrators_list`
+
     for narrator in &narrators_list {
         let narrator_id = sanitize_id(narrator.id.to_string());
         let label = narrator
