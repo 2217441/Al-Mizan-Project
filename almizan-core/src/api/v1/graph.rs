@@ -122,25 +122,11 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
                 Vec::new()
             }
         },
-        async move {
-            let sql = "SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50";
-            let res: Vec<DbSemanticHadith> = c3
-                .query(sql)
-                .await
-                .and_then(|mut r| r.take(0))
-                .unwrap_or_default();
-            res
-        },
-        async move {
-            let sql = "SELECT id, name_ar, generation FROM narrator LIMIT 30";
-            let res: Vec<DbNarrator> = c4
-                .query(sql)
-                .await
-                .and_then(|mut r| r.take(0))
-                .unwrap_or_default();
-            res
+        Err(e) => {
+            tracing::error!("Failed to query prophets: {}", e);
+            Vec::new()
         }
-    );
+    };
 
     // 2. Process Prophets
     for prophet in &prophets {
