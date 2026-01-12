@@ -80,14 +80,16 @@ def process_file():
                         f_jsonl.write(json.dumps(hadith_obj, ensure_ascii=False) + "\n")
                         
                         # Write SurrealQL - escape quotes properly
-                        body_ar_escaped = hadith_obj["body_ar"].replace("'", "\\'").replace('"', '\\"')
                         ref_no = hadith_obj.get("ref_no", hadith_count + 1)
+                        # Use json.dumps to safely serialize string content (handles quotes, backslashes, etc.)
+                        body_ar_json = json.dumps(hadith_obj["body_ar"], ensure_ascii=False)
                         narrator = hadith_obj.get("narrator_id", "unknown")
+                        narrator_json = json.dumps(narrator, ensure_ascii=False)
                         
                         f_surql.write(f"CREATE semantic_hadith:{ref_no} SET ")
                         f_surql.write(f"ref_no = {ref_no}, ")
-                        f_surql.write(f"body_ar = '{body_ar_escaped}', ")
-                        f_surql.write(f"narrator_id = '{narrator}', ")
+                        f_surql.write(f"body_ar = {body_ar_json}, ")
+                        f_surql.write(f"narrator_id = {narrator_json}, ")
                         f_surql.write(f"collection = 'ibn_majah';\n")
                         
                         hadith_count += 1
