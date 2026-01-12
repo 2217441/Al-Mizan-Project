@@ -127,7 +127,8 @@ pub async fn get_verse(
 pub async fn get_surah(State(db): State<Database>, Path(surah): Path<i32>) -> impl IntoResponse {
     // Query all verse IDs for this surah in a single batch
     // Replaced N+1 query loop with single efficient SELECT
-    let sql = "SELECT * FROM quran_verse WHERE surah_number = $surah ORDER BY ayah_number ASC";
+    // Optimization: Use explicit column selection to prevent over-fetching and reduce payload size
+    let sql = "SELECT id, surah_number, ayah_number, text_uthmani, juz_number, revelation_place FROM quran_verse WHERE surah_number = $surah ORDER BY ayah_number ASC";
     let mut response = match db.client.query(sql).bind(("surah", surah)).await {
         Ok(r) => r,
         Err(e) => {
@@ -139,7 +140,17 @@ pub async fn get_surah(State(db): State<Database>, Path(surah): Path<i32>) -> im
         }
     };
 
-    let verses: Vec<DbVerse> = response.take(0).unwrap_or_default();
+    let verses: Vec<DbVerse> = match response.take(0) {
+        Ok(v) => v,
+        Err(e) => {
+            tracing::error!("Failed to deserialize verses: {}", e);
+            return (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": "Failed to process verses"})),
+            )
+                .into_response();
+        }
+    };
 
     let response: Vec<VerseResponse> = verses
         .into_iter()
