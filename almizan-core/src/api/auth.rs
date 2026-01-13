@@ -11,9 +11,9 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 pub struct AuthPayload {
-    #[validate(email(message = "Invalid email format"))]
+    #[validate(email)]
     email: String,
-    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
+    #[validate(length(min = 8))]
     password: String,
 }
 
@@ -31,10 +31,10 @@ struct Claims {
 pub async fn signup(
     State(db): State<Database>,
     Json(payload): Json<AuthPayload>,
-) -> impl IntoResponse {
+) -> Result<StatusCode, StatusCode> {
     // 0. Validate Input
-    if let Err(e) = payload.validate() {
-        return (StatusCode::BAD_REQUEST, Json(serde_json::json!({"error": "Validation failed", "details": e}))).into_response();
+    if payload.validate().is_err() {
+        return Err(StatusCode::BAD_REQUEST);
     }
 
     // 1. Hash Password

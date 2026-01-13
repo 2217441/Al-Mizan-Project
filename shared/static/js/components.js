@@ -152,13 +152,30 @@
         if (!toastContainer) {
             toastContainer = document.createElement('div');
             toastContainer.className = 'toast-container';
+            toastContainer.setAttribute('role', 'region');
+            toastContainer.setAttribute('aria-label', 'Notifications');
             document.body.appendChild(toastContainer);
         }
 
         // Create toast element
         const toastEl = document.createElement('div');
         toastEl.className = `toast toast--${type}`;
+
+        // Accessibility: Set role and aria-live based on type
+        if (type === 'error') {
+            toastEl.setAttribute('role', 'alert');
+            toastEl.setAttribute('aria-live', 'assertive');
+        } else {
+            toastEl.setAttribute('role', 'status');
+            toastEl.setAttribute('aria-live', 'polite');
+        }
+
         toastEl.textContent = message;
+
+        // Accessibility attributes
+        const isError = type === 'error' || type === 'warning';
+        toastEl.setAttribute('role', isError ? 'alert' : 'status');
+        toastEl.setAttribute('aria-live', isError ? 'assertive' : 'polite');
 
         // Add to container
         toastContainer.appendChild(toastEl);
