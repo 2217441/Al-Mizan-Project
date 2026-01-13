@@ -3,14 +3,17 @@ use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{extract::State, http::StatusCode, Json, response::IntoResponse};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct AuthPayload {
+    #[validate(email(message = "Invalid email format"))]
     email: String,
+    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
     password: String,
 }
 
@@ -28,28 +31,37 @@ struct Claims {
 pub async fn signup(
     State(db): State<Database>,
     Json(payload): Json<AuthPayload>,
-) -> Result<StatusCode, StatusCode> {
+) -> impl IntoResponse {
+    // 0. Validate Input
+    if let Err(e) = payload.validate() {
+        return (StatusCode::BAD_REQUEST, Json(serde_json::json!({"error": "Validation failed", "details": e}))).into_response();
+    }
+
     // 1. Hash Password
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
-    let password_hash = argon2
+    let password_hash = match argon2
         .hash_password(payload.password.as_bytes(), &salt)
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .to_string();
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR) {
+            Ok(hash) => hash.to_string(),
+            Err(e) => return e.into_response(),
+        };
 
     // 2. Create User in DB (Simplified for MVP)
     let sql = "CREATE user SET email = $email, password = $password, role = 'student'";
-    let _created: Option<serde_json::Value> = db
+    let created = db
         .client
         .query(sql)
         .bind(("email", payload.email))
         .bind(("password", password_hash))
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .take(0)
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map(|mut r| r.take::<Option<serde_json::Value>>(0));
 
-    Ok(StatusCode::CREATED)
+    if created.is_err() || created.as_ref().unwrap().is_err() {
+        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+    }
+
+    StatusCode::CREATED.into_response()
 }
 
 pub async fn signin(
