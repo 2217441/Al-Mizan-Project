@@ -152,6 +152,8 @@
         if (!toastContainer) {
             toastContainer = document.createElement('div');
             toastContainer.className = 'toast-container';
+            toastContainer.setAttribute('role', 'region');
+            toastContainer.setAttribute('aria-label', 'Notifications');
             document.body.appendChild(toastContainer);
         }
 
@@ -159,6 +161,11 @@
         const toastEl = document.createElement('div');
         toastEl.className = `toast toast--${type}`;
         toastEl.textContent = message;
+
+        // Accessibility attributes
+        const isError = type === 'error' || type === 'warning';
+        toastEl.setAttribute('role', isError ? 'alert' : 'status');
+        toastEl.setAttribute('aria-live', isError ? 'assertive' : 'polite');
 
         // Add to container
         toastContainer.appendChild(toastEl);
