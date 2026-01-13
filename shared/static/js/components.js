@@ -158,6 +158,16 @@
         // Create toast element
         const toastEl = document.createElement('div');
         toastEl.className = `toast toast--${type}`;
+
+        // Accessibility: Set role and aria-live based on type
+        if (type === 'error') {
+            toastEl.setAttribute('role', 'alert');
+            toastEl.setAttribute('aria-live', 'assertive');
+        } else {
+            toastEl.setAttribute('role', 'status');
+            toastEl.setAttribute('aria-live', 'polite');
+        }
+
         toastEl.textContent = message;
 
         // Add to container
