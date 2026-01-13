@@ -27,12 +27,6 @@ import re
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data", "hadith-api")
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
 
-def escape_surql(text: str) -> str:
-    """Escape single quotes and backslashes for SurQL"""
-    if not text:
-        return ""
-    return text.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n")
-
 def transform_collection(collection_name: str, json_path: str) -> list:
     """Transform a hadith collection JSON to SurQL statements"""
     with open(json_path, 'r', encoding='utf-8') as f:
@@ -45,7 +39,7 @@ def transform_collection(collection_name: str, json_path: str) -> list:
     
     for h in hadiths:
         hadith_num = h.get('hadithnumber', 0)
-        text = escape_surql(h.get('text', ''))
+        text = h.get('text', '')
         book = h.get('reference', {}).get('book', 0)
         grades = h.get('grades', [])
         
@@ -60,13 +54,14 @@ def transform_collection(collection_name: str, json_path: str) -> list:
         # Create unique ID: collection_booknumber_hadithnumber
         record_id = f"{collection_name}_{book}_{hadith_num_str}"
         
+        # Use json.dumps for safe string serialization
         stmt = f"CREATE hadith:{record_id} CONTENT {{"
         stmt += f"collection: '{collection_name}', "
         stmt += f"hadith_number: {hadith_num}, "
         stmt += f"book_number: {book}, "
-        stmt += f"matn_en: '{text}'"
+        stmt += f"matn_en: {json.dumps(text, ensure_ascii=False)}"
         if grade:
-            stmt += f", grade: '{escape_surql(grade)}'"
+            stmt += f", grade: {json.dumps(grade, ensure_ascii=False)}"
         stmt += "};"
         
         statements.append(stmt)
