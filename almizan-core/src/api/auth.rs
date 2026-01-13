@@ -7,10 +7,13 @@ use axum::{extract::State, http::StatusCode, Json};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct AuthPayload {
+    #[validate(email)]
     email: String,
+    #[validate(length(min = 8))]
     password: String,
 }
 
@@ -29,6 +32,11 @@ pub async fn signup(
     State(db): State<Database>,
     Json(payload): Json<AuthPayload>,
 ) -> Result<StatusCode, StatusCode> {
+    // 0. Validate Input
+    if payload.validate().is_err() {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
     // 1. Hash Password
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
