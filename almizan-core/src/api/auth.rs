@@ -3,7 +3,7 @@ use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
-use axum::{extract::State, http::StatusCode, Json, response::IntoResponse};
+use axum::{extract::State, http::StatusCode, Json};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
@@ -44,7 +44,7 @@ pub async fn signup(
         .hash_password(payload.password.as_bytes(), &salt)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR) {
             Ok(hash) => hash.to_string(),
-            Err(e) => return e.into_response(),
+            Err(e) => return Err(e),
         };
 
     // 2. Create User in DB (Simplified for MVP)
@@ -58,10 +58,10 @@ pub async fn signup(
         .map(|mut r| r.take::<Option<serde_json::Value>>(0));
 
     if created.is_err() || created.as_ref().unwrap().is_err() {
-        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
     }
 
-    StatusCode::CREATED.into_response()
+    Ok(StatusCode::CREATED)
 }
 
 pub async fn signin(

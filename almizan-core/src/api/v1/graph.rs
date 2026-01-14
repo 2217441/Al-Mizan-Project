@@ -237,7 +237,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
         nodes.push(CytoscapeNode {
             data: NodeData {
-                id: Cow::Owned(hadith_id.clone()),
+                id: Cow::Owned(hadith_id),
                 label: format!("{} {}", collection_label, hadith.ref_no),
                 node_type: Cow::Borrowed("hadith"),
             },
@@ -253,16 +253,15 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         // Collect ID for edge creation later
         narrator_ids.push(narrator_id.clone());
 
-        let label = narrator
-            .name_ar
-            .clone()
-            .unwrap_or_else(|| "راوي".to_string());
+        let label_str = narrator.name_ar.as_deref().unwrap_or("راوي");
+        // Optimization: Find byte index for 15th char to slice, avoiding intermediate String allocation
+        let end = label_str.char_indices().map(|(i, _)| i).nth(15).unwrap_or(label_str.len());
         let gen = narrator.generation.unwrap_or(0);
 
         nodes.push(CytoscapeNode {
             data: NodeData {
-                id: Cow::Owned(narrator_id.clone()),
-                label: format!("{} (ط{})", label.chars().take(15).collect::<String>(), gen),
+                id: Cow::Owned(narrator_id),
+                label: format!("{} (ط{})", &label_str[..end], gen),
                 node_type: Cow::Borrowed("narrator"),
             },
         });
