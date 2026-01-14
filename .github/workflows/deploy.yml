@@ -100,6 +100,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Lowercase Image Name
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}/almizan-core" >> $GITHUB_ENV
+        env:
+          GITHUB_REPOSITORY: '${{ github.repository }}'
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -157,6 +162,7 @@ jobs:
           script_stop: true
           script: |
             set -e
+            export repo_owner_lower=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
             cd /opt/al-mizan-project
             
             git fetch origin main
