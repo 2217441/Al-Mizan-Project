@@ -8,11 +8,6 @@ from pathlib import Path
 INPUT_FILE = "/home/a/code/al-mizan-project/almizan-etl/data/semantichadith/SemanticHadith-V2/SemanticHadithKGV2.ttl"
 OUTPUT_DIR = Path("/home/a/code/al-mizan-project/almizan-etl/output")
 
-def escape_sql(text: str) -> str:
-    if not text:
-        return ""
-    return text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ").strip()
-
 def parse_remaining():
     print(f"Reading {INPUT_FILE}...")
     
@@ -126,18 +121,19 @@ def write_output(chapters, hadith_types, mentions, hadith_chapters):
         f.write("-- SemanticHadith V2 - Chapters\n\n")
         for ch_id, ch in chapters.items():
             safe_id = ch_id.replace("-", "_")
-            name_ar = escape_sql(ch.get('name_ar', ''))
-            name_en = escape_sql(ch.get('name_en', ''))
+            name_ar = ch.get('name_ar', '')
+            name_en = ch.get('name_en', '')
             
             f.write(f'CREATE chapter:{safe_id} SET ')
             f.write(f'chapter_id = "{ch_id}", ')
             f.write(f'collection = "{ch["collection"]}", ')
             f.write(f'chapter_no = {ch.get("chapter_no", 0)}, ')
             if name_ar:
-                f.write(f'name_ar = "{name_ar}", ')
+                f.write(f'name_ar = {json.dumps(name_ar)}, ')
             if name_en:
-                f.write(f'name_en = "{name_en}", ')
-            f.write(f'display_name = "{name_ar or name_en}";\n')
+                f.write(f'name_en = {json.dumps(name_en)}, ')
+            display = name_ar or name_en
+            f.write(f'display_name = {json.dumps(display)};\n')
     
     # Hadith Types (as edge: hadith -> has_type -> type)
     print(f"Writing {len(hadith_types)} hadith type links...")
@@ -148,7 +144,7 @@ def write_output(chapters, hadith_types, mentions, hadith_chapters):
         for _, htype in hadith_types:
             type_entities.add(htype)
         for t in sorted(type_entities):
-            f.write(f'CREATE hadith_type:{t} SET name = "{t}";\n')
+            f.write(f'CREATE hadith_type:{t} SET name = {json.dumps(t)};\n')
         f.write("\n")
         # Create edges
         for hadith_id, htype in hadith_types:
@@ -174,7 +170,7 @@ def write_output(chapters, hadith_types, mentions, hadith_chapters):
             mentioned_entities.add(entity)
         for e in sorted(mentioned_entities):
             safe_e = re.sub(r'[^a-zA-Z0-9_]', '_', e)
-            f.write(f'CREATE mentioned_entity:{safe_e} SET name = "{escape_sql(e)}";\n')
+            f.write(f'CREATE mentioned_entity:{safe_e} SET name = {json.dumps(e)};\n')
         f.write("\n")
         # Create edges
         for hadith_id, entity in mentions:
