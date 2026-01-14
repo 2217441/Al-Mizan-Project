@@ -2,6 +2,9 @@
 
 This directory contains the Architectural Decision Records (ADRs) for the Al-Mizan project. We follow the [MADR](https://adr.github.io/madr/) template.
 
+> [!IMPORTANT]
+> For the comprehensive visual and theological blueprint, refer to the [**Al-Mizan Project Charter & Workflow**](../PROJECT_WORKFLOW.md).
+
 ## Index
 
 | ID | Title | Status | Date |

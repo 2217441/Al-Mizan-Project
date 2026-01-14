@@ -41,10 +41,9 @@ pub async fn signup(
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let password_hash = match argon2
-        .hash_password(payload.password.as_bytes(), &salt)
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR) {
+        .hash_password(payload.password.as_bytes(), &salt) {
             Ok(hash) => hash.to_string(),
-            Err(e) => return Err(e),
+            Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
         };
 
     // 2. Create User in DB (Simplified for MVP)
