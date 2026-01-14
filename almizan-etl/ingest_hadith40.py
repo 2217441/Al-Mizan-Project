@@ -4,15 +4,8 @@ This script reads the hadith40.json file and generates SurrealQL statements.
 """
 import json
 
-INPUT_FILE = "/home/a/code/al-mizan-project/almizan-etl/data/hadith40.json"
-OUTPUT_FILE = "/home/a/code/al-mizan-project/almizan-etl/output/hadith40.surql"
-
-def escape_sql(text):
-    """Escape characters for SurrealQL double-quoted strings."""
-    if not text:
-        return ""
-    # For double-quoted strings, only escape backslash and double-quote
-    return text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
+INPUT_FILE = "almizan-etl/data/hadith40.json"
+OUTPUT_FILE = "almizan-etl/output/hadith40.surql"
 
 def main():
     print(f"Reading {INPUT_FILE}...")
@@ -32,25 +25,25 @@ def main():
             hadith_id = h.get("idInBook", h.get("id", 0))
             
             # Arabic text is at top level
-            arabic_text = escape_sql(h.get("arabic", ""))
+            arabic_text = h.get("arabic", "")
             
             # English is a nested dict
             english_data = h.get("english", {})
-            narrator = escape_sql(english_data.get("narrator", ""))
-            text_en = escape_sql(english_data.get("text", ""))
+            narrator = english_data.get("narrator", "")
+            text_en = english_data.get("text", "")
             
             # Truncate for graph display (first 150 chars)
             display_text = text_en[:150]
             if len(text_en) > 150:
                 display_text += "..."
             
-            # Use double quotes for SurrealQL
+            # Use json.dumps for safe string serialization
             out.write(f"CREATE hadith_nawawi:{hadith_id} SET ")
             out.write(f"ref_no = {hadith_id}, ")
-            out.write(f'body_ar = "{arabic_text}", ')
-            out.write(f'narrator = "{narrator}", ')
-            out.write(f'body_en = "{text_en}", ')
-            out.write(f'display_text = "{display_text}", ')
+            out.write(f'body_ar = {json.dumps(arabic_text)}, ')
+            out.write(f'narrator = {json.dumps(narrator)}, ')
+            out.write(f'body_en = {json.dumps(text_en)}, ')
+            out.write(f'display_text = {json.dumps(display_text)}, ')
             out.write(f"collection = 'nawawi40', ")
             out.write(f"source = 'sunnah.com';\n")
         

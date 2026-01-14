@@ -32,11 +32,6 @@ def extract_ref_no(hadith_id: str) -> int:
     match = re.search(r'HD(\d+)', hadith_id)
     return int(match.group(1)) if match else 0
 
-def escape_sql(text: str) -> str:
-    if not text:
-        return ""
-    return text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ").strip()
-
 def extract_lang_text(content: str) -> dict:
     result = {}
     pattern = r'"([^"]+)@(\w+)"\^\^xsd:string'
@@ -262,38 +257,38 @@ def write_output(hadiths, narrators, chain_segments, topics, hadith_topics, hadi
         f.write("-- SemanticHadith V2 - Hadiths\n\n")
         for ref_id, h in hadiths.items():
             safe_id = ref_id.replace("-", "_")
-            body_ar = escape_sql(h.get('body_ar', ''))
-            body_ur = escape_sql(h.get('body_ur', ''))
-            display = escape_sql(body_ar[:100] + "..." if len(body_ar) > 100 else body_ar)
+            body_ar = h.get('body_ar', '')
+            body_ur = h.get('body_ur', '')
+            display = body_ar[:100] + "..." if len(body_ar) > 100 else body_ar
             
             f.write(f'CREATE semantic_hadith:{safe_id} SET ')
             f.write(f'ref_id = "{ref_id}", ')
             f.write(f'collection = "{h["collection"]}", ')
             f.write(f'ref_no = {h["ref_no"]}, ')
-            f.write(f'body_ar = "{body_ar}", ')
+            f.write(f'body_ar = {json.dumps(body_ar)}, ')
             if body_ur:
-                f.write(f'body_ur = "{body_ur}", ')
+                f.write(f'body_ur = {json.dumps(body_ur)}, ')
             if h.get('chain_id'):
                 f.write(f'chain_id = "{h["chain_id"]}", ')
             if h.get('topic'):
                 f.write(f'topic = "{h["topic"]}", ')
-            f.write(f'display_text = "{display}";\n')
+            f.write(f'display_text = {json.dumps(display)};\n')
     
     # Narrators
     print(f"Writing {len(narrators)} narrators...")
     with open(OUTPUT_DIR / "narrators.surql", 'w', encoding='utf-8') as f:
         f.write("-- SemanticHadith V2 - Narrators\n\n")
         for nid, n in narrators.items():
-            name_ar = escape_sql(n.get('name_ar', n.get('popular_name', '')))
-            popular = escape_sql(n.get('popular_name', ''))
+            name_ar = n.get('name_ar', n.get('popular_name', ''))
+            popular = n.get('popular_name', '')
             gen = n.get('generation', 0)
             death = n.get('death_year', 0)
             
             f.write(f'CREATE narrator:{nid} SET ')
             f.write(f'narrator_id = "{nid}", ')
-            f.write(f'name_ar = "{name_ar}", ')
+            f.write(f'name_ar = {json.dumps(name_ar)}, ')
             if popular:
-                f.write(f'popular_name = "{popular}", ')
+                f.write(f'popular_name = {json.dumps(popular)}, ')
             f.write(f'generation = {gen}, ')
             f.write(f'death_year = {death};\n')
     
