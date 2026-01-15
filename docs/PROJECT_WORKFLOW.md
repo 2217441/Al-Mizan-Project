@@ -49,7 +49,8 @@ The Al-Mizan blueprint is structured into five thematic volumes:
 - Phase 16: Agent Collaboration Topology
 - Phase 17: Ingestion Pipeline (The Truth Factory)
 - Phase 18: API Topology: Endpoint Tiers
-- **Phases 23-24 (Proposed): Bias Monitoring & Multilingual Bridge**
+- Phase 23: Bias Monitoring & "Adl" (Justice)
+- Phase 24: Multilingual Semantics Bridge
 
 ### [V3: Operations (Infrastructure & Defense)](file:///home/a/code/al-mizan-project/docs/charter/V3_Operations.md)
 *Zero-trust security, HA, and automated disaster recovery.*
@@ -65,12 +66,44 @@ The Al-Mizan blueprint is structured into five thematic volumes:
 *Byzantine Fault Tolerant (BFT) consensus and reputation staking.*
 - Phase 9: Scholarly Consensus (Ijma) Lifecycle
 - Phase 10: Stake & Slash Governance (BFT)
-- **Phase 22 (Proposed): Scholarly Onboarding & Identity**
+- Phase 22: Scholarly Onboarding & Identity
 
 ### [V5: Sovereignty (The Compact)](file:///home/a/code/al-mizan-project/docs/charter/V5_Sovereignty.md)
 *Final operational oaths and hardware-level isolation.*
 - Phase 21: Operational Commitments (The Compact)
-- **Phase 25 (Proposed): Sovereign Compute (TEEs)**
+- Phase 25: Sovereign Compute (TEEs)
+
+---
+
+---
+
+## 📅 Execution Roadmap
+
+> **Status:** 🔵 `ACTIVE` | **Timeline:** [`docs/PROJECT_SCHEDULE.md`](file:///home/a/code/al-mizan-project/docs/PROJECT_SCHEDULE.md)
+
+A 25-Phase Gantt Chart visualization of the project lifecycle.
+
+---
+
+## 📐 Formal Modeling Layer (The Academic Specification)
+
+Strict UML and Industry-Standard models located in [`docs/formal-models/`](file:///home/a/code/al-mizan-project/docs/formal-models/).
+
+### 1. The Grand Unified Model
+*   [**The Omni-Graph**](file:///home/a/code/al-mizan-project/docs/formal-models/GRAND_UNIFIED_MODEL.md): Connecting Theology, Tech, and Governance (Phases 1-25).
+
+### 2. Structural & Physical
+*   [**Physical Schema**](file:///home/a/code/al-mizan-project/docs/formal-models/SURREAL_PHYSICAL_MODEL.md): Strict SurrealQL (`record<T>`, `SCHEMAFULL`).
+*   [**Class Structure**](file:///home/a/code/al-mizan-project/docs/formal-models/CLASS_STRUCTURE.md): Domain Entities & OCL Constraints.
+*   [**Deployment**](file:///home/a/code/al-mizan-project/docs/formal-models/DEPLOYMENT_TOPOLOGY.md): TEE Nodes & Network Zones.
+
+### 3. Behavioral & Process
+*   [**Decision Logic**](file:///home/a/code/al-mizan-project/docs/formal-models/DECISION_LOGIC.md): DMN Tables for Zakat & Inheritance.
+*   [**System Dynamics**](file:///home/a/code/al-mizan-project/docs/formal-models/SYSTEM_DYNAMICS.md): Causal Loop Diagrams (Trust Feedback).
+*   [**Safety Analysis**](file:///home/a/code/al-mizan-project/docs/formal-models/RELIABILITY_SAFETY.md): Fault Tree Analysis (Consensus Liveness).
+
+### 4. Full Audit
+*   [**Formal Model Audit Report**](file:///home/a/code/al-mizan-project/docs/formal-models/FORMAL_MODEL_AUDIT.md): Inventory of all 20+ System Diagrams.
 
 ---
 

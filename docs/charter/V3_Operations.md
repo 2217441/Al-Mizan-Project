@@ -247,7 +247,46 @@ flowchart TD
 
 ---
 
-## Phase 20: Blue-Green Switch State Machine
+## Phase 20: Secure Software Supply Chain (CI/CD)
+
+> **Status:** 🟢 `PROD` | **Implemented in:** [`.github/workflows/`](file:///home/a/code/al-mizan-project/.github/workflows)
+
+The integrity pipeline from "Git Commit" to "Production Release".
+
+```mermaid
+flowchart LR
+    %% GLOBAL STANDARD: SLSA Level 3 (Supply-chain Levels for Software Artifacts)
+    %% MODEL: Signed Commits -> Signed Images -> Signed Deployments
+
+    Dev[Developer] -->|Signed Commit GPG| Git[GitHub Repo]
+    
+    subgraph CI_PIPELINE [Continuous Integration]
+        direction TB
+        Git --> Build[Rust Build: Cargo]
+        Build --> Test[Unit Tests: Cargo Test]
+        Build --> Lint[Static Analysis: Clippy]
+        Test & Lint --> Audit[Dependency Audit]
+    end
+    
+    subgraph ARTIFACT_SIGN [Supply Chain Security]
+        Audit --> Docker[Docker Build]
+        Docker --> Sign{Cosign: Sign Image}
+        Sign --> Registry[Container Registry]
+    end
+    
+    subgraph CD_PIPELINE [Continuous Deployment]
+        Registry --> Pull[Cluster Pull]
+        Pull --> Verify{Verify Signature?}
+        Verify -- OK --> Deploy[Update Blue/Green]
+        Verify -- FAIL --> Alert[Block & Page SRE]
+    end
+    
+    style ARTIFACT_SIGN fill:#fff5f5,stroke:#e53e3e
+```
+
+---
+
+## Phase 20b: Blue-Green Switch State Machine
 
 > **Status:** 🟡 `DEV` | **Implemented in:** [Infrastructure/Deployment]
 

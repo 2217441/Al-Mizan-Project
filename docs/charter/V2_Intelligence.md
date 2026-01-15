@@ -145,6 +145,20 @@ flowchart TD
 
 High-throughput processing of scholarly texts and revelation data.
 
+### Data Lineage: The Lifecycle of a Verse
+Tracing the path from Raw Text to Retrieval-Ready Vector.
+
+```mermaid
+flowchart LR
+    Scan[Crawler: Scan PDFs] --> OCR[OCR: Extract Text]
+    OCR --> Clean[Normalizer: Remove Diacritics]
+    Clean --> Meta[Enrichment: Add Metadata (Surah/Ayah)]
+    Meta --> Chunk[Chunking: Semantic Split]
+    Chunk --> Embed[Embedding: Vectorize (OpenAI/Cohere)]
+    Embed --> Upsert[SurrealDB: Upsert Vector Node]
+    Upsert --> Index[HNSW Index: Ready for Search]
+```
+
 ```mermaid
 flowchart TD
     %% GLOBAL STANDARD: Apache Kafka / Redpanda (605MB/s)

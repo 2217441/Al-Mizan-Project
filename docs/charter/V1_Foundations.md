@@ -259,4 +259,41 @@ stateDiagram-v2
     style Active fill:#dfd,stroke:#383
     style Superseded fill:#eee,stroke:#999
     style Conflict fill:#fba,stroke:#f00
+
+---
+
+<a name="GLOSSARY"></a>
+## 📖 Glossary of Theological Primitives
+
+| Term | Definition | Technical Analog |
+| :--- | :--- | :--- |
+| **Wahy** | Revelation (Quran/Sunnah). | Primary Data Source / Root of Trust. |
+| **Dalil** | Evidence or proof. | Cryptographic Pointer / Edge Attribute. |
+| **Hukm** | Legal ruling/norm. | Output State / Categorical Label. |
+| **Istinbat** | Inference/Derivation process. | Logical Inference Engine / Agent Workflow. |
+| **Naskh** | Abrogation (Superseding earlier law). | State Transition / Temporal Versioning. |
+| **Thabit** | Immutable/Constant principles. | Read-Only / Signed Ledger State. |
+| **Mutaghayyir** | Variable/Contextual applications. | Contextual Metadata / Dynamic Graph Nodes. |
+| **Adl** | Justice/Balance. | Bias Monitoring / Ethical Guardrails. |
+| **Fitna** | Discord/Misinformation. | Adversarial Input / AI Hallucinations. |
+
+---
+
+## 🎨 User Journey: Scholar Onboarding
+Visualizing the friction and delight points during the verification credentials flow.
+
+```mermaid
+journey
+    title Scholar's Path to Verification
+    section Discovery
+      Hear about Al-Mizan: 5: Scholar
+      Read Project Charter: 4: Scholar
+    section Verification
+      Submit Identity (DID): 3: Scholar, Mobile App
+      Wait for Peer Validation: 1: Scholar
+      Receive "Valid Scholar" VC: 5: Scholar, Mobile App
+    section Contribution
+      Issue First Fatwa: 4: Scholar
+      Achieve Consensus: 5: Scholar, Network
+```
 ```
