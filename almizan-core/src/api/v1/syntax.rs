@@ -44,7 +44,10 @@ pub async fn translate_query(Json(payload): Json<SyntaxRequest>) -> impl IntoRes
     // STRICTLY Syntax Translation ONLY.
     // Natural Language -> SurrealQL.
     // NO Generative Knowledge Extraction.
-    tracing::info!("Syntax translation request for: {}", payload.query);
+
+    // SECURITY: Sanitize input to prevent log injection (CWE-117)
+    let sanitized_query = payload.query.replace(|c: char| c.is_control(), " ");
+    tracing::info!("Syntax translation request for: {}", sanitized_query);
 
     // Placeholder: In a real implementation, this would parse NL and construct a SurrealQL query.
     // For now, we return empty to signify no "magic" generation is happening.
