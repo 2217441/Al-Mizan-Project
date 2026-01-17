@@ -659,7 +659,7 @@
                 // If single match, show details
                 if (matches.length === 1) {
                      const connectedEdges = edges.get().filter(e => e.from === matches[0].id || e.to === matches[0].id);
-                     showNodeDetails(matches[0], connectedEdges);
+                     showNodeDetails(matches[0], connectedEdges, false); // Don't steal focus during search
                 }
             } else {
                 // No matches, unselect
@@ -673,7 +673,7 @@
                 const nodeId = params.nodes[0];
                 const node = nodes.get(nodeId);
                 const connectedEdges = edges.get().filter(e => e.from === nodeId || e.to === nodeId);
-                showNodeDetails(node, connectedEdges);
+                showNodeDetails(node, connectedEdges, true); // Focus panel on direct selection
             }
         });
 
@@ -683,10 +683,15 @@
     });
 
     // Node details panel
-    function showNodeDetails(node, edges) {
+    function showNodeDetails(node, edges, shouldFocus = false) {
         const panel = document.getElementById('node-details');
         if (panel) {
             panel.classList.add('active');
+
+            if (shouldFocus) {
+                const closeBtn = panel.querySelector('.close-btn');
+                if (closeBtn) closeBtn.focus();
+            }
 
             document.getElementById('detail-id').textContent = node.id;
             document.getElementById('detail-label').textContent = node.label;
@@ -718,6 +723,9 @@
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+        // Prevent shortcuts from interfering with form inputs
+        if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
         if (e.key === '+' || e.key === '=') {
             e.preventDefault();
             window.graphZoom?.zoomIn();
