@@ -11,9 +11,9 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 pub struct AuthPayload {
-    #[validate(email)]
+    #[validate(email, length(max = 255))]
     email: String,
-    #[validate(length(min = 8))]
+    #[validate(length(min = 8, max = 128))]
     password: String,
 }
 
@@ -123,4 +123,36 @@ pub async fn signin(
     }
 
     Err(StatusCode::UNAUTHORIZED)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use validator::Validate;
+
+    #[test]
+    fn test_auth_payload_validation_length() {
+        // Valid case
+        let payload = AuthPayload {
+            email: "test@example.com".to_string(),
+            password: "password123".to_string(),
+        };
+        assert!(payload.validate().is_ok());
+
+        // Password too short
+        let short_payload = AuthPayload {
+            email: "test@example.com".to_string(),
+            password: "short".to_string(),
+        };
+        assert!(short_payload.validate().is_err());
+
+        // Password too long (DoS protection)
+        // This test is expected to fail initially, proving the vulnerability
+        let long_password = "a".repeat(129);
+        let long_payload = AuthPayload {
+            email: "test@example.com".to_string(),
+            password: long_password,
+        };
+        assert!(long_payload.validate().is_err(), "Password > 128 chars should fail validation");
+    }
 }
