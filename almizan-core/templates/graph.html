@@ -378,8 +378,10 @@
             <div class="search-bar" style="position: relative;">
                 <input type="text" placeholder="Search Node ID or Label..." id="search-input"
                     aria-label="Search graph nodes"
+                    aria-describedby="search-help"
                     oninput="searchGraph(this.value)"
                     style="padding-right: 2.5rem;">
+                <div id="search-help" class="sr-only">Type to search nodes. Use arrow keys to navigate.</div>
                 <button id="search-clear-btn" class="search-clear-btn" onclick="window.clearGraphSearch()" aria-label="Clear search">×</button>
             </div>
 
@@ -665,6 +667,11 @@
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+        // Ignore shortcuts if user is typing in an input field (except Escape)
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) && e.key !== 'Escape') {
+            return;
+        }
+
         if (e.key === '+' || e.key === '=') {
             e.preventDefault();
             window.graphZoom?.zoomIn();
