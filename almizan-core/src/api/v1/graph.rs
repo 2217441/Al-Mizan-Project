@@ -67,18 +67,29 @@ struct DbNarrator {
 
 /// GET /api/v1/graph
 /// Returns the tawhidic knowledge graph showing epistemological chains.
-/// Shows: Allah → Prophets → Quran Verses (via chosen_by and narrated_quran edges)
+/// Shows: Allah → Prophets → Quran Verses (via chosen_by and `narrated_quran` edges)
+#[allow(clippy::too_many_lines)]
 pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
-    let mut nodes: Vec<CytoscapeNode> = Vec::new();
-    let mut edges_vec: Vec<CytoscapeEdge> = Vec::new();
+    // Optimization: Pre-allocate vectors to avoid reallocations.
+    // Estimated count: 1 (Allah) + 25 (Prophets) + 20 (Verses) + 30 (Narrators) + 50 (Hadiths) = ~126
+    let mut nodes: Vec<CytoscapeNode> = Vec::with_capacity(130);
+    // Estimated edges: 25 (Prophets) + 20 (Verses) + 30 (Narrators) + 50 (Hadiths) = ~125
+    let mut edges_vec: Vec<CytoscapeEdge> = Vec::with_capacity(130);
 
-    // Helper to sanitize Surreal IDs
-    // Optimization: Avoid unnecessary allocations if no sanitization is needed
-    let sanitize_id = |id: String| -> String {
-        if id.contains('⟨') || id.contains('⟩') {
-            id.replace(&['⟨', '⟩'][..], "")
-        } else {
-            id
+    // Helper to get string representation of Thing without SurrealQL escaping (brackets)
+    // Optimization: Avoids to_string() overhead (checking escaping) and sanitize_id() overhead (replacing)
+    let get_id = |thing: &surrealdb::sql::Thing| -> String {
+        match &thing.id {
+            surrealdb::sql::Id::String(s) => format!("{}:{}", thing.tb, s),
+            surrealdb::sql::Id::Number(n) => format!("{}:{}", thing.tb, n),
+            _ => {
+                let s = thing.to_string();
+                if s.contains('⟨') || s.contains('⟩') {
+                    s.replace(&['⟨', '⟩'][..], "")
+                } else {
+                    s
+                }
+            }
         }
     };
 
@@ -165,7 +176,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
     // 5. Process Prophets
     for prophet in &prophets {
-        let prophet_id = sanitize_id(prophet.id.to_string());
+        let prophet_id = get_id(&prophet.id);
 
         nodes.push(CytoscapeNode {
             data: NodeData {
@@ -178,9 +189,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         // Edge: Allah -> Prophet (chosen_by)
         edges_vec.push(CytoscapeEdge {
             data: EdgeData {
-                id: format!("chosen_{}", prophet_id),
+                id: format!("chosen_{prophet_id}"),
                 source: Cow::Borrowed("allah:tawhid"),
-                target: Cow::Owned(prophet_id.clone()),
+                target: Cow::Owned(prophet_id), // Move instead of clone
                 label: Cow::Borrowed("chose"),
             },
         });
@@ -190,7 +201,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Already fetched in parallel above as `verses`
 
     for verse in &verses {
-        let verse_id = sanitize_id(verse.id.to_string());
+        let verse_id = get_id(&verse.id);
 
         nodes.push(CytoscapeNode {
             data: NodeData {
@@ -203,26 +214,56 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         // Edge: Prophet Muhammad -> Verse (narrated)
         edges_vec.push(CytoscapeEdge {
             data: EdgeData {
-                id: format!("narrated_{}", verse_id),
+                id: format!("narrated_{verse_id}"),
                 source: Cow::Borrowed("prophet:muhammad"),
-                target: Cow::Owned(verse_id),
+                target: Cow::Owned(verse_id), // Move instead of clone
                 label: Cow::Borrowed("narrated"),
             },
         });
     }
 
-    // 4. Get Hadiths (SemanticHadith V2)
-    // Already fetched in parallel above as `hadiths`
+    // 4. Get Top Narrators (from semantic hadith narrator chains)
+    // Already fetched in parallel above as `narrators_list`
+    // Processed BEFORE Hadiths to build narrator_ids list for edge distribution
 
-    // Optimization: Pre-allocate ID vectors to avoid redundant iterations and sanitizations later
-    let mut hadith_ids: Vec<String> = Vec::with_capacity(hadiths.len());
+    // Optimization: Pre-allocate ID vectors
     let mut narrator_ids: Vec<String> = Vec::with_capacity(narrators_list.len());
 
-    for hadith in &hadiths {
-        let hadith_id = sanitize_id(hadith.id.to_string());
+    for narrator in &narrators_list {
+        let narrator_id = get_id(&narrator.id);
 
-        // Collect ID for edge creation later
-        hadith_ids.push(hadith_id.clone());
+        // Collect ID for edge creation later (distribution to hadiths)
+        narrator_ids.push(narrator_id.clone());
+
+        let label_str = narrator.name_ar.as_deref().unwrap_or("راوي");
+        // Optimization: Find byte index for 15th char to slice, avoiding intermediate String allocation
+        let end = label_str.char_indices().map(|(i, _)| i).nth(15).unwrap_or(label_str.len());
+        let gen = narrator.generation.unwrap_or(0);
+
+        nodes.push(CytoscapeNode {
+            data: NodeData {
+                id: Cow::Owned(narrator_id.clone()),
+                label: format!("{} (ط{})", &label_str[..end], gen),
+                node_type: Cow::Borrowed("narrator"),
+            },
+        });
+
+        // Edge: Prophet -> Narrator (Taught)
+        edges_vec.push(CytoscapeEdge {
+            data: EdgeData {
+                id: format!("taught_{narrator_id}"),
+                source: Cow::Borrowed("prophet:muhammad"),
+                target: Cow::Owned(narrator_id), // Move
+                label: Cow::Borrowed("taught"),
+            },
+        });
+    }
+
+    // 5. Get Hadiths (SemanticHadith V2)
+    // Already fetched in parallel above as `hadiths`
+
+    for (i, hadith) in hadiths.iter().enumerate() {
+        let hadith_id = get_id(&hadith.id);
 
         // Use Arabic collection names for labels
         let collection_label = match hadith.collection.as_str() {
@@ -237,55 +278,14 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
         nodes.push(CytoscapeNode {
             data: NodeData {
-                id: Cow::Owned(hadith_id),
+                id: Cow::Owned(hadith_id.clone()),
                 label: format!("{} {}", collection_label, hadith.ref_no),
                 node_type: Cow::Borrowed("hadith"),
             },
         });
-    }
 
-    // 5. Get Top Narrators (from semantic hadith narrator chains)
-    // Already fetched in parallel above as `narrators_list`
-
-    for narrator in &narrators_list {
-        let narrator_id = sanitize_id(narrator.id.to_string());
-
-        // Collect ID for edge creation later
-        narrator_ids.push(narrator_id.clone());
-
-        let label_str = narrator.name_ar.as_deref().unwrap_or("راوي");
-        // Optimization: Find byte index for 15th char to slice, avoiding intermediate String allocation
-        let end = label_str.char_indices().map(|(i, _)| i).nth(15).unwrap_or(label_str.len());
-        let gen = narrator.generation.unwrap_or(0);
-
-        nodes.push(CytoscapeNode {
-            data: NodeData {
-                id: Cow::Owned(narrator_id),
-                label: format!("{} (ط{})", &label_str[..end], gen),
-                node_type: Cow::Borrowed("narrator"),
-            },
-        });
-    }
-
-    // 9. Connectivity Logic
-    // Optimization: Removed redundant O(N) node_ids set construction and ID re-sanitization loops.
-    // We already collected valid IDs in the loops above.
-
-    // 9a. Link Prophet -> Narrators (Taught)
-    for narrator_id in &narrator_ids {
-        edges_vec.push(CytoscapeEdge {
-            data: EdgeData {
-                id: format!("taught_{narrator_id}"),
-                source: Cow::Borrowed("prophet:muhammad"),
-                target: Cow::Owned(narrator_id.clone()),
-                label: Cow::Borrowed("taught"),
-            },
-        });
-    }
-
-    // 9b. Link Narrators -> Hadiths (Round Robin Distribution for Visualization)
-    if !narrator_ids.is_empty() {
-        for (i, hadith_id) in hadith_ids.iter().enumerate() {
+        // Link Narrators -> Hadiths (Round Robin Distribution)
+        if !narrator_ids.is_empty() {
             // Assign to a narrator based on index
             let narrator = &narrator_ids[i % narrator_ids.len()];
 
@@ -293,7 +293,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
                 data: EdgeData {
                     id: format!("narrated_{narrator}_{hadith_id}"),
                     source: Cow::Owned(narrator.clone()),
-                    target: Cow::Owned(hadith_id.clone()),
+                    target: Cow::Owned(hadith_id), // Move
                     label: Cow::Borrowed("narrated"),
                 },
             });
