@@ -665,6 +665,11 @@
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+        // Prevent shortcuts from interfering with input fields
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) && e.key !== 'Escape') {
+            return;
+        }
+
         if (e.key === '+' || e.key === '=') {
             e.preventDefault();
             window.graphZoom?.zoomIn();
