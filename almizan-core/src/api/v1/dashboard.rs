@@ -26,7 +26,7 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
         "MUJTAHID_KEY_786".to_string()
     });
 
-    let is_mujtahid = payload.auth_token == admin_token;
+    let is_mujtahid = constant_time_eq(&payload.auth_token, &admin_token);
 
     // Enterprise Integration: Calculate Trust Metrics
     // In a real scenario, this would aggregate across the network.
@@ -60,4 +60,35 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
     };
 
     Json(response)
+}
+
+/// Constant-time string comparison to prevent timing attacks.
+/// Returns true if strings are equal, false otherwise.
+fn constant_time_eq(a: &str, b: &str) -> bool {
+    let a_bytes = a.as_bytes();
+    let b_bytes = b.as_bytes();
+    if a_bytes.len() != b_bytes.len() {
+        return false;
+    }
+    let mut result = 0;
+    for (x, y) in a_bytes.iter().zip(b_bytes.iter()) {
+        result |= x ^ y;
+    }
+    result == 0
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_constant_time_eq() {
+        assert!(constant_time_eq("secret", "secret"));
+        assert!(!constant_time_eq("secret", "public"));
+        assert!(!constant_time_eq("secret", "secre"));
+        assert!(!constant_time_eq("secret", "secrets"));
+        assert!(!constant_time_eq("", "secret"));
+        assert!(!constant_time_eq("secret", ""));
+        assert!(constant_time_eq("", ""));
+    }
 }
