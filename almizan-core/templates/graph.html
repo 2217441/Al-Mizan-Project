@@ -354,7 +354,7 @@
         </div>
 
         <!-- The Graph -->
-        <div id="graph-container"></div>
+        <div id="graph-container" role="application" aria-label="Knowledge Graph Visualization" tabindex="0"></div>
 
         <!-- Controls Overlay -->
         <div class="controls-overlay glass-ultra">
@@ -402,9 +402,9 @@
         </div>
 
         <!-- Node Details Panel -->
-        <div id="node-details" class="node-details glass-ultra">
+        <div id="node-details" class="node-details glass-ultra" role="complementary" aria-labelledby="node-details-title" tabindex="-1">
             <div class="node-details__header">
-                <h3>Node Details</h3>
+                <h3 id="node-details-title">Node Details</h3>
                 <button class="close-btn" onclick="closeNodeDetails()" aria-label="Close details panel" title="Close">×</button>
             </div>
             <div class="node-details__content">
@@ -606,7 +606,7 @@
                 // If single match, show details
                 if (matches.length === 1) {
                      const connectedEdges = edges.get().filter(e => e.from === matches[0].id || e.to === matches[0].id);
-                     showNodeDetails(matches[0], connectedEdges);
+                     showNodeDetails(matches[0], connectedEdges, false);
                 }
             } else {
                 // No matches, unselect
@@ -620,7 +620,7 @@
                 const nodeId = params.nodes[0];
                 const node = nodes.get(nodeId);
                 const connectedEdges = edges.get().filter(e => e.from === nodeId || e.to === nodeId);
-                showNodeDetails(node, connectedEdges);
+                showNodeDetails(node, connectedEdges, true);
             }
         });
 
@@ -630,10 +630,18 @@
     });
 
     // Node details panel
-    function showNodeDetails(node, edges) {
+    function showNodeDetails(node, edges, shouldFocus = false) {
         const panel = document.getElementById('node-details');
         if (panel) {
             panel.classList.add('active');
+
+            if (shouldFocus) {
+                // Focus the close button for accessibility
+                setTimeout(() => {
+                    const closeBtn = panel.querySelector('.close-btn');
+                    if (closeBtn) closeBtn.focus();
+                }, 100);
+            }
 
             document.getElementById('detail-id').textContent = node.id;
             document.getElementById('detail-label').textContent = node.label;
@@ -660,11 +668,19 @@
 
     function closeNodeDetails() {
         const panel = document.getElementById('node-details');
-        if (panel) panel.classList.remove('active');
+        if (panel) {
+            panel.classList.remove('active');
+            // Return focus to graph container
+            const container = document.getElementById('graph-container');
+            if (container) container.focus();
+        }
     }
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+        // Ignore shortcuts if typing in input/textarea
+        if (e.target.matches('input, textarea')) return;
+
         if (e.key === '+' || e.key === '=') {
             e.preventDefault();
             window.graphZoom?.zoomIn();

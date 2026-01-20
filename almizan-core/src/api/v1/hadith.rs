@@ -34,8 +34,8 @@ pub async fn get_hadith(
     Path((collection, number)): Path<(String, f64)>,
 ) -> impl IntoResponse {
     // Use parameterized query to prevent SQL injection
-    // Optimization: Push conditional logic to DB to reduce payload size and allocation
-    let sql = "SELECT id, collection, book_number, hadith_number, IF matn_en != NONE AND matn_en != \"\" THEN matn_en ELSE matn_ar END AS text, grade FROM hadith WHERE collection = $collection AND hadith_number = $number LIMIT 1";
+    // Optimization: Select text logic moved to DB to reduce payload and processing
+    let sql = "SELECT id, collection, book_number, hadith_number, (IF matn_en != NONE AND matn_en != '' THEN matn_en ELSE matn_ar END) AS text, grade FROM hadith WHERE collection = $collection AND hadith_number = $number LIMIT 1";
 
     let result: Result<Vec<DbHadith>, _> = db
         .client
@@ -78,8 +78,8 @@ pub async fn list_collection(
     Path(collection): Path<String>,
 ) -> impl IntoResponse {
     // Use parameterized query to prevent SQL injection
-    // Optimization: Push conditional logic to DB to reduce payload size and allocation
-    let sql = "SELECT id, collection, book_number, hadith_number, IF matn_en != NONE AND matn_en != \"\" THEN matn_en ELSE matn_ar END AS text, grade FROM hadith WHERE collection = $collection ORDER BY hadith_number LIMIT 50";
+    // Optimization: Select text logic moved to DB to reduce payload and processing
+    let sql = "SELECT id, collection, book_number, hadith_number, (IF matn_en != NONE AND matn_en != '' THEN matn_en ELSE matn_ar END) AS text, grade FROM hadith WHERE collection = $collection ORDER BY hadith_number LIMIT 50";
 
     let result: Result<Vec<DbHadith>, _> = db
         .client
@@ -92,13 +92,15 @@ pub async fn list_collection(
         Ok(hadiths) => {
             let response: Vec<HadithResponse> = hadiths
                 .into_iter()
-                .map(|h| HadithResponse {
-                    id: h.id.to_string(),
-                    collection: h.collection,
-                    book_number: h.book_number,
-                    hadith_number: h.hadith_number,
-                    text: h.text.unwrap_or_default(),
-                    grade: h.grade,
+                .map(|h| {
+                    HadithResponse {
+                        id: h.id.to_string(),
+                        collection: h.collection,
+                        book_number: h.book_number,
+                        hadith_number: h.hadith_number,
+                        text: h.text.unwrap_or_default(),
+                        grade: h.grade,
+                    }
                 })
                 .collect();
 
