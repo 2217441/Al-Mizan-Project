@@ -12,6 +12,6 @@
 **Learning:** Discovered significant memory allocation overhead in `get_graph` due to repeated `.to_string()` calls for static string literals in struct fields and unnecessary `sanitize_id` string replacements.
 **Action:** Switched `GraphData` structs to use `Cow<'a, str>` to allow `Cow::Borrowed` for static literals, and optimized `sanitize_id` to check for brackets before allocating. Reduced unnecessary allocations by ~260 per request.
 
-## 2024-10-25 - [Conditional Column Selection in SurrealQL]
-**Learning:** Selecting all columns and filtering in Rust is inefficient for large text fields (English/Arabic).
-**Action:** Moved the conditional logic into the SurrealQL query using `IF matn_en != NONE AND matn_en != NULL AND matn_en != "" THEN matn_en ELSE matn_ar END`. This reduces network payload and Rust-side allocations.
+## 2024-10-26 - [Database-side Logic for Text Selection]
+**Learning:** Moving conditional text selection (English vs Arabic fallback) to SurrealQL using `IF` statements significantly reduces network payload and eliminates duplicate string allocations in Rust structs.
+**Action:** When handling multilingual fields, check if the fallback logic can be executed in the database query instead of the application layer.
