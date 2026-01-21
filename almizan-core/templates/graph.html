@@ -354,7 +354,7 @@
         </div>
 
         <!-- The Graph -->
-        <div id="graph-container"></div>
+        <div id="graph-container" role="application" aria-label="Knowledge Graph Visualization" tabindex="0"></div>
 
         <!-- Controls Overlay -->
         <div class="controls-overlay glass-ultra">
@@ -402,9 +402,9 @@
         </div>
 
         <!-- Node Details Panel -->
-        <div id="node-details" class="node-details glass-ultra">
+        <div id="node-details" class="node-details glass-ultra" role="complementary" aria-labelledby="node-details-title" tabindex="-1">
             <div class="node-details__header">
-                <h3>Node Details</h3>
+                <h3 id="node-details-title">Node Details</h3>
                 <button class="close-btn" onclick="closeNodeDetails()" aria-label="Close details panel" title="Close">×</button>
             </div>
             <div class="node-details__content">
@@ -636,8 +636,11 @@
             panel.classList.add('active');
 
             if (shouldFocus) {
-                const closeBtn = panel.querySelector('.close-btn');
-                if (closeBtn) closeBtn.focus();
+                // Focus the close button for accessibility
+                setTimeout(() => {
+                    const closeBtn = panel.querySelector('.close-btn');
+                    if (closeBtn) closeBtn.focus();
+                }, 100);
             }
 
             document.getElementById('detail-id').textContent = node.id;
@@ -665,13 +668,18 @@
 
     function closeNodeDetails() {
         const panel = document.getElementById('node-details');
-        if (panel) panel.classList.remove('active');
+        if (panel) {
+            panel.classList.remove('active');
+            // Return focus to graph container
+            const container = document.getElementById('graph-container');
+            if (container) container.focus();
+        }
     }
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
-        // Prevent shortcuts from interfering with form inputs
-        if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+        // Ignore shortcuts if typing in input/textarea
+        if (e.target.matches('input, textarea')) return;
 
         if (e.key === '+' || e.key === '=') {
             e.preventDefault();
