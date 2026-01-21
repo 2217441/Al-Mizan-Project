@@ -385,6 +385,9 @@
                 <button id="search-clear-btn" class="search-clear-btn" onclick="window.clearGraphSearch()" aria-label="Clear search">×</button>
             </div>
 
+            <!-- Screen Reader Status -->
+            <div id="a11y-search-status" class="sr-only" role="status" aria-live="polite"></div>
+
             <!-- Legend -->
             <div class="legend">
                 <h4>Tawhidic Tiers</h4>
@@ -572,6 +575,10 @@
                 input.focus();
                 // Reset zoom to fit all
                 network.fit({ animation: true });
+
+                // Announce clear
+                const status = document.getElementById('a11y-search-status');
+                if (status) status.textContent = "Search cleared. Showing all nodes.";
             }
         };
 
@@ -582,9 +589,12 @@
                 clearBtn.style.display = term ? 'flex' : 'none';
             }
 
+            const status = document.getElementById('a11y-search-status');
+
             if (!term) {
                 // If search is empty, just unselect everything
                 network.unselectAll();
+                if (status) status.textContent = "";
                 return;
             }
 
@@ -605,6 +615,11 @@
                     animation: true
                 });
 
+                // Update screen reader status
+                if (status) {
+                    status.textContent = `Found ${matches.length} matching node${matches.length === 1 ? '' : 's'} for "${term}".`;
+                }
+
                 // If single match, show details
                 if (matches.length === 1) {
                      const connectedEdges = edges.get().filter(e => e.from === matches[0].id || e.to === matches[0].id);
@@ -613,6 +628,7 @@
             } else {
                 // No matches, unselect
                 network.unselectAll();
+                if (status) status.textContent = `No nodes matching "${term}" found.`;
             }
         };
 
