@@ -5,6 +5,7 @@ use axum::{
     Json,
 };
 use serde::{Deserialize, Serialize};
+use surrealdb::sql::Id;
 
 #[derive(Serialize)]
 pub struct DivineNameResponse {
@@ -35,8 +36,13 @@ pub async fn get_all_names(State(db): State<Database>) -> impl IntoResponse {
             let response: Vec<DivineNameResponse> = names
                 .into_iter()
                 .map(|n| {
-                    // Extract numeric ID from Thing
-                    let num_id: i32 = n.id.id.to_string().parse().unwrap_or(0);
+                    // Extract numeric ID from Thing without string allocation
+                    // Optimization: Avoids .to_string() allocation and parsing for numeric IDs
+                    let num_id: i32 = match n.id.id {
+                        Id::Number(num) => num.try_into().unwrap_or(0),
+                        Id::String(s) => s.parse().unwrap_or(0),
+                        _ => 0,
+                    };
                     DivineNameResponse {
                         id: num_id,
                         arabic: n.arabic,
