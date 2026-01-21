@@ -27,6 +27,7 @@ struct DbVerse {
     text_uthmani: String,
     juz_number: Option<i32>,
     revelation_place: Option<String>,
+    roots: Option<Vec<String>>,
 }
 
 impl Default for DbVerse {
@@ -38,6 +39,7 @@ impl Default for DbVerse {
             text_uthmani: String::new(),
             juz_number: None,
             revelation_place: None,
+            roots: None,
         }
     }
 }
@@ -55,48 +57,33 @@ pub async fn get_verse(
     Path((surah, ayah)): Path<(i32, i32)>,
     Query(params): Query<VerseQuery>,
 ) -> impl IntoResponse {
-    // Use parameterized query to prevent SQL injection
-    let sql = "SELECT id, surah_number, ayah_number, text_uthmani, juz_number, revelation_place FROM quran_verse WHERE surah_number = $surah AND ayah_number = $ayah";
+    // Optimization: Combined verse and roots fetch into a single query using conditional projection
+    // This eliminates the N+1 query pattern when roots are requested
+    let sql = "
+        SELECT
+            id,
+            surah_number,
+            ayah_number,
+            text_uthmani,
+            juz_number,
+            revelation_place,
+            (IF $include_roots THEN ->has_root->root_word.root_ar ELSE NONE END) AS roots
+        FROM quran_verse
+        WHERE surah_number = $surah AND ayah_number = $ayah
+    ";
 
     let result: Result<Vec<DbVerse>, _> = db
         .client
         .query(sql)
         .bind(("surah", surah))
         .bind(("ayah", ayah))
+        .bind(("include_roots", params.include_roots))
         .await
         .and_then(|mut r| r.take(0));
 
     match result {
         Ok(verses) if !verses.is_empty() => {
             let v = &verses[0];
-
-            // Optionally get roots
-            let roots = if params.include_roots {
-                // Vulnerability Fix: Use parameterized queries for roots lookup as well
-                let roots_sql = "SELECT ->has_root->root_word.root_ar AS roots FROM type::thing($verse_id)";
-                let verse_id = format!("quran_verse:{}_{}", surah, ayah);
-
-                let roots_result: Vec<serde_json::Value> = db
-                    .client
-                    .query(roots_sql)
-                    .bind(("verse_id", verse_id))
-                    .await
-                    .and_then(|mut r| r.take(0))
-                    .unwrap_or_default();
-
-                // Extract roots array from result
-                roots_result
-                    .first()
-                    .and_then(|r| r.get("roots"))
-                    .and_then(|r| r.as_array())
-                    .map(|arr| {
-                        arr.iter()
-                            .filter_map(|v| v.as_str().map(String::from))
-                            .collect()
-                    })
-            } else {
-                None
-            };
 
             Json(VerseResponse {
                 id: v.id.to_string(),
@@ -105,7 +92,7 @@ pub async fn get_verse(
                 text_uthmani: v.text_uthmani.clone(),
                 juz: v.juz_number.unwrap_or(0),
                 place: v.revelation_place.clone().unwrap_or_default(),
-                roots,
+                roots: v.roots.clone(),
             })
             .into_response()
         }
