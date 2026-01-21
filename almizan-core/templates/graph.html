@@ -228,6 +228,13 @@
         transform: rotate(90deg);
     }
 
+    .close-btn:focus-visible,
+    .zoom-btn:focus-visible,
+    .search-clear-btn:focus-visible {
+        outline: 2px solid var(--color-gold);
+        outline-offset: 2px;
+    }
+
     .detail-row {
         margin: 1rem 0;
         padding: 1.25rem;
@@ -665,6 +672,11 @@
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+        // Prevent shortcuts from interfering with typing
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+            return;
+        }
+
         if (e.key === '+' || e.key === '=') {
             e.preventDefault();
             window.graphZoom?.zoomIn();
