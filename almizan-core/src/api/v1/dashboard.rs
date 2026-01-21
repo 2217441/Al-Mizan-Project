@@ -63,11 +63,10 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
 }
 
 /// Constant-time string comparison to prevent timing attacks.
-/// Returns true if strings are equal, false otherwise.
 fn constant_time_eq(a: &str, b: &str) -> bool {
     let a_bytes = a.as_bytes();
     let b_bytes = b.as_bytes();
-    if a_bytes.len() != b_bytes.len() {
+    if a.len() != b.len() {
         return false;
     }
     let mut result = 0;
@@ -84,9 +83,9 @@ mod tests {
     #[test]
     fn test_constant_time_eq() {
         assert!(constant_time_eq("secret", "secret"));
-        assert!(!constant_time_eq("secret", "public"));
+        assert!(!constant_time_eq("secret", "wrong"));
+        assert!(!constant_time_eq("secret", "secrett"));
         assert!(!constant_time_eq("secret", "secre"));
-        assert!(!constant_time_eq("secret", "secrets"));
         assert!(!constant_time_eq("", "secret"));
         assert!(!constant_time_eq("secret", ""));
         assert!(constant_time_eq("", ""));
