@@ -37,19 +37,26 @@ pub struct Logger;
 
 impl Logger {
     pub fn log_audit(topic: &str, strictness: &Strictness) {
+        // SECURITY: Sanitize input to prevent log injection (CWE-117)
+        let sanitized_topic = topic.replace(|c: char| c.is_control(), " ");
         if *strictness == Strictness::Lenient {
+            // Note: println! can be dangerous if logs are aggregated.
+            // In a production app, use tracing or log crate, but we keep println! for now to match style,
+            // with sanitized input.
             println!(
                 "AUDIT LOG: Client requested PERMISSIVE strictness for topic '{}'. Liability Waiver Active. Time: {}",
-                topic,
+                sanitized_topic,
                 chrono::Utc::now().to_rfc3339()
             );
         }
     }
 
     pub fn log_commercial_audit(topic: &str, level: &StrictnessLevel) {
+        // SECURITY: Sanitize input to prevent log injection (CWE-117)
+        let sanitized_topic = topic.replace(|c: char| c.is_control(), " ");
         println!(
             "COMMERCIAL AUDIT: Topic '{}' accessed with level '{:?}'. Time: {}",
-            topic,
+            sanitized_topic,
             level,
             chrono::Utc::now().to_rfc3339()
         );
