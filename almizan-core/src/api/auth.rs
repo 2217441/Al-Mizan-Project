@@ -11,9 +11,9 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 pub struct AuthPayload {
-    #[validate(email)]
+    #[validate(email, length(max = 255))]
     email: String,
-    #[validate(length(min = 8))]
+    #[validate(length(min = 8, max = 128))]
     password: String,
 }
 
@@ -123,4 +123,49 @@ pub async fn signin(
     }
 
     Err(StatusCode::UNAUTHORIZED)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_auth_payload_validation() {
+        // Valid case
+        let valid = AuthPayload {
+            email: "test@example.com".to_string(),
+            password: "password123".to_string(),
+        };
+        assert!(valid.validate().is_ok());
+
+        // Invalid email format
+        let invalid_email = AuthPayload {
+            email: "invalid-email".to_string(),
+            password: "password123".to_string(),
+        };
+        assert!(invalid_email.validate().is_err());
+
+        // Password too short
+        let short_password = AuthPayload {
+            email: "test@example.com".to_string(),
+            password: "short".to_string(),
+        };
+        assert!(short_password.validate().is_err());
+
+        // DoS Prevention Checks
+
+        // Email too long (> 255 chars)
+        let long_email = AuthPayload {
+            email: format!("{}@example.com", "a".repeat(250)), // Total > 255
+            password: "password123".to_string(),
+        };
+        assert!(long_email.validate().is_err());
+
+        // Password too long (> 128 chars) - Argon2 DoS vector
+        let long_password = AuthPayload {
+            email: "test@example.com".to_string(),
+            password: "a".repeat(129),
+        };
+        assert!(long_password.validate().is_err());
+    }
 }

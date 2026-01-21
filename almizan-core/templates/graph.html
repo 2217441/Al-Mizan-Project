@@ -378,10 +378,15 @@
             <div class="search-bar" style="position: relative;">
                 <input type="text" placeholder="Search Node ID or Label..." id="search-input"
                     aria-label="Search graph nodes"
+                    aria-describedby="search-help"
                     oninput="searchGraph(this.value)"
                     style="padding-right: 2.5rem;">
+                <div id="search-help" class="sr-only">Type to search nodes. Use arrow keys to navigate.</div>
                 <button id="search-clear-btn" class="search-clear-btn" onclick="window.clearGraphSearch()" aria-label="Clear search">×</button>
             </div>
+
+            <!-- Screen Reader Status -->
+            <div id="a11y-search-status" class="sr-only" role="status" aria-live="polite"></div>
 
             <!-- Legend -->
             <div class="legend">
@@ -570,6 +575,10 @@
                 input.focus();
                 // Reset zoom to fit all
                 network.fit({ animation: true });
+
+                // Announce clear
+                const status = document.getElementById('a11y-search-status');
+                if (status) status.textContent = "Search cleared. Showing all nodes.";
             }
         };
 
@@ -580,9 +589,12 @@
                 clearBtn.style.display = term ? 'flex' : 'none';
             }
 
+            const status = document.getElementById('a11y-search-status');
+
             if (!term) {
                 // If search is empty, just unselect everything
                 network.unselectAll();
+                if (status) status.textContent = "";
                 return;
             }
 
@@ -603,14 +615,20 @@
                     animation: true
                 });
 
+                // Update screen reader status
+                if (status) {
+                    status.textContent = `Found ${matches.length} matching node${matches.length === 1 ? '' : 's'} for "${term}".`;
+                }
+
                 // If single match, show details
                 if (matches.length === 1) {
                      const connectedEdges = edges.get().filter(e => e.from === matches[0].id || e.to === matches[0].id);
-                     showNodeDetails(matches[0], connectedEdges, false); // Don't steal focus during search
+                     showNodeDetails(matches[0], connectedEdges, false);
                 }
             } else {
                 // No matches, unselect
                 network.unselectAll();
+                if (status) status.textContent = `No nodes matching "${term}" found.`;
             }
         };
 
@@ -620,7 +638,7 @@
                 const nodeId = params.nodes[0];
                 const node = nodes.get(nodeId);
                 const connectedEdges = edges.get().filter(e => e.from === nodeId || e.to === nodeId);
-                showNodeDetails(node, connectedEdges, true); // Focus panel on direct selection
+                showNodeDetails(node, connectedEdges, true);
             }
         });
 
