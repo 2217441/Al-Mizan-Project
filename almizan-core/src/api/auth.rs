@@ -128,31 +128,44 @@ pub async fn signin(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use validator::Validate;
 
     #[test]
-    fn test_auth_payload_validation_length() {
+    fn test_auth_payload_validation() {
         // Valid case
-        let payload = AuthPayload {
+        let valid = AuthPayload {
             email: "test@example.com".to_string(),
             password: "password123".to_string(),
         };
-        assert!(payload.validate().is_ok());
+        assert!(valid.validate().is_ok());
+
+        // Invalid email format
+        let invalid_email = AuthPayload {
+            email: "invalid-email".to_string(),
+            password: "password123".to_string(),
+        };
+        assert!(invalid_email.validate().is_err());
 
         // Password too short
-        let short_payload = AuthPayload {
+        let short_password = AuthPayload {
             email: "test@example.com".to_string(),
             password: "short".to_string(),
         };
-        assert!(short_payload.validate().is_err());
+        assert!(short_password.validate().is_err());
 
-        // Password too long (DoS protection)
-        // This test is expected to fail initially, proving the vulnerability
-        let long_password = "a".repeat(129);
-        let long_payload = AuthPayload {
-            email: "test@example.com".to_string(),
-            password: long_password,
+        // DoS Prevention Checks
+
+        // Email too long (> 255 chars)
+        let long_email = AuthPayload {
+            email: format!("{}@example.com", "a".repeat(250)), // Total > 255
+            password: "password123".to_string(),
         };
-        assert!(long_payload.validate().is_err(), "Password > 128 chars should fail validation");
+        assert!(long_email.validate().is_err());
+
+        // Password too long (> 128 chars) - Argon2 DoS vector
+        let long_password = AuthPayload {
+            email: "test@example.com".to_string(),
+            password: "a".repeat(129),
+        };
+        assert!(long_password.validate().is_err());
     }
 }
