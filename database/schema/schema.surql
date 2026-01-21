@@ -464,7 +464,7 @@ DEFINE FIELD mutability ON fiqh_ruling TYPE string
 -- Lifecycle management
 DEFINE FIELD status ON fiqh_ruling TYPE string 
     DEFAULT 'draft' 
-    ASSERT $value INSIDE ['draft', 'probationary', 'canonical'];
+    ASSERT $value INSIDE ['draft', 'probationary', 'canonical', 'suspended'];
 DEFINE FIELD created_at ON fiqh_ruling TYPE datetime 
     DEFAULT time::now();
 
