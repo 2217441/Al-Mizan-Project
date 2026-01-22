@@ -139,6 +139,56 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.setProperty('--mouse-y', `${y}%`);
         });
     });
+
+    // Animate counters
+    const counters = document.querySelectorAll('.counter');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.getAttribute('data-target'));
+                    // Add comma formatting to target for final state
+                    const formattedTarget = target.toLocaleString();
+
+                    // A11y: Ensure screen readers announce the final number, not the rapid changes
+                    // We set aria-label to the final value on the parent
+                    if (el.parentElement) {
+                        el.parentElement.setAttribute('aria-label', `${el.parentElement.textContent.split(':')[0]}: ${formattedTarget}`);
+                    }
+                    el.setAttribute('aria-hidden', 'true');
+
+                    let start = 0;
+                    const duration = 2000;
+                    const startTime = performance.now();
+
+                    const update = (currentTime) => {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+
+                        // Ease out quart
+                        const ease = 1 - Math.pow(1 - progress, 4);
+
+                        const current = Math.floor(start + (target - start) * ease);
+                        el.textContent = current.toLocaleString();
+
+                        if (progress < 1) {
+                            requestAnimationFrame(update);
+                        } else {
+                            el.textContent = formattedTarget;
+                        }
+                    };
+
+                    requestAnimationFrame(update);
+                    observer.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach(counter => observer.observe(counter));
+    }
 });
 </script>
 {% endblock %}
