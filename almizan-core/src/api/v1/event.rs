@@ -1,6 +1,6 @@
 use crate::domain::event::Event;
 use askama::Template;
-use axum::{extract::Query, response::Html};
+use axum::{extract::Query, http::StatusCode, response::Html, response::IntoResponse};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -14,7 +14,7 @@ struct StrategyDashboardTemplate {
     events: Vec<Event>,
 }
 
-pub async fn get_events(Query(filter): Query<EventFilter>) -> impl axum::response::IntoResponse {
+pub async fn get_events(Query(filter): Query<EventFilter>) -> impl IntoResponse {
     // Mock Data
     let all_events = vec![
         Event::new(
@@ -54,5 +54,11 @@ pub async fn get_events(Query(filter): Query<EventFilter>) -> impl axum::respons
         events: filtered_events,
     };
 
-    Html(template.render().unwrap())
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            tracing::error!("Template render error: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
 }
