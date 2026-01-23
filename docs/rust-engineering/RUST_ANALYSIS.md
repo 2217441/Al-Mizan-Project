@@ -8,7 +8,7 @@
 
 ## Project Overview
 
-Al-Mizan is an Islamic Digital Citadel project featuring a Tawhidic Knowledge Graph system. The core backend (`almizan-core`) is built in **Rust 2021 Edition** using modern async patterns.
+Al-Mizan is an Islamic Digital Foundation project featuring a Tawhidic Knowledge Graph system. The core backend (`almizan-core`) is built in **Rust 2021 Edition** using modern async patterns.
 
 ### Technology Stack
 

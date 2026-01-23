@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/serif.min.css" id="theme">
 
@@ -34,32 +37,56 @@
 
     <style>
         /* Shared Styles */
-        body { 
+        body {
             background: linear-gradient(-45deg, #fdfbf7, #f1f5f9, #e2e8f0, #f8fafc);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            overflow: hidden; 
+            overflow: hidden;
         }
 
         @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* Presentation Specific Overrides */
-        .reveal { color: #333; }
-        .reveal h1, .reveal h2, .reveal h3 { font-family: 'Cinzel', serif; text-transform: none; color: #0f172a; }
-        .reveal p, .reveal li { font-family: 'Inter', sans-serif; }
-        .reveal .slide-number { color: #d4af37; }
-        
+        .reveal {
+            color: #333;
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3 {
+            font-family: 'Cinzel', serif;
+            text-transform: none;
+            color: #0f172a;
+        }
+
+        .reveal p,
+        .reveal li {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .reveal .slide-number {
+            color: #d4af37;
+        }
+
         /* The Graph Container within the slide */
         #cy-slide {
             width: 100%;
             height: 500px;
             border: 1px solid #d4af37;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            background: rgba(255,255,255,0.8);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(5px);
             border-radius: 8px;
         }
@@ -73,9 +100,13 @@
             opacity: 0.3;
             transition: opacity 0.3s;
         }
-        #mode-switch:hover { opacity: 1; }
+
+        #mode-switch:hover {
+            opacity: 1;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="reveal" id="presentation-layer">
@@ -83,20 +114,25 @@
 
             <section data-background-color="#0f172a">
                 <div class="flex flex-col items-center justify-center h-full">
-                    <h1 class="text-mizan-gold font-amiri text-6xl mb-4" style="text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);">بسم الله الرحمن الرحيم</h1>
-                    <p class="text-slate-400 text-sm font-inter tracking-[0.5em] uppercase opacity-60">In the Name of Allah, the Most Gracious, the Most Merciful</p>
+                    <h1 class="text-mizan-gold font-amiri text-6xl mb-4"
+                        style="text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);">بسم الله الرحمن الرحيم</h1>
+                    <p class="text-slate-400 text-sm font-inter tracking-[0.5em] uppercase opacity-60">In the Name of
+                        Allah, the Most Gracious, the Most Merciful</p>
                 </div>
             </section>
 
             <section>
                 <div class="flex flex-col items-center">
-                    <div class="w-20 h-20 bg-mizan-dark/10 rounded-full flex items-center justify-center text-mizan-gold text-4xl mb-6 shadow-2xl border border-mizan-gold/20">
+                    <div
+                        class="w-20 h-20 bg-mizan-dark/10 rounded-full flex items-center justify-center text-mizan-gold text-4xl mb-6 shadow-2xl border border-mizan-gold/20">
                         <i class="fas fa-balance-scale"></i>
                     </div>
                     <h1 class="text-5xl mb-2">Project Al-Mizan</h1>
                     <h3 class="text-mizan-green text-2xl">Architecting the "Unity of Knowledge"</h3>
-                    <p class="text-sm mt-8 text-slate-500 font-serif italic">From Epistemological Fragmentation to Digital Ontology</p>
-                    <div class="mt-12 border-t border-mizan-gold/30 pt-6 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">
+                    <p class="text-sm mt-8 text-slate-500 font-serif italic">From Epistemological Fragmentation to
+                        Digital Ontology</p>
+                    <div
+                        class="mt-12 border-t border-mizan-gold/30 pt-6 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">
                         Final Year Project Proposal
                     </div>
                 </div>
@@ -104,18 +140,22 @@
 
             <section>
                 <h2>The Challenge: Context Collapse</h2>
-                <div class="text-left bg-white/50 p-4 rounded-xl border border-slate-200 shadow-sm" style="font-size: 0.9em;">
+                <div class="text-left bg-white/50 p-4 rounded-xl border border-slate-200 shadow-sm"
+                    style="font-size: 0.9em;">
                     <p class="fragment fade-up mb-2">
-                        <strong class="text-red-700">1. Epistemic Fracture:</strong> 
-                        Digital systems treat rulings as isolated data points, severing the umbilical cord between <em>Hukm</em> (Ruling) and <em>Usul</em> (Methodology).
+                        <strong class="text-red-700">1. Epistemic Fracture:</strong>
+                        Digital systems treat rulings as isolated data points, severing the umbilical cord between
+                        <em>Hukm</em> (Ruling) and <em>Usul</em> (Methodology).
                     </p>
                     <p class="fragment fade-up mb-2">
-                        <strong class="text-red-700">2. Crisis of Authority:</strong> 
-                        Search algorithms prioritize popularity over *Isnad* (Chain of Transmission), flattening the knowledge hierarchy.
+                        <strong class="text-red-700">2. Crisis of Authority:</strong>
+                        Search algorithms prioritize popularity over *Isnad* (Chain of Transmission), flattening the
+                        knowledge hierarchy.
                     </p>
                     <p class="fragment fade-up">
-                        <strong class="text-red-700">3. The Result:</strong> 
-                        Interpretive Anarchy. Without structural lineage, Islamic knowledge is vulnerable to decontextualization.
+                        <strong class="text-red-700">3. The Result:</strong>
+                        Interpretive Anarchy. Without structural lineage, Islamic knowledge is vulnerable to
+                        decontextualization.
                     </p>
                 </div>
             </section>
@@ -125,15 +165,17 @@
                 <p class="text-xl italic text-slate-600 mb-8">
                     "To digitize knowledge without its connections is to corrupt it."
                 </p>
-                
+
                 <div class="grid grid-cols-2 gap-4">
                     <div class="p-4 border border-slate-300 rounded bg-slate-100 opacity-50">
                         <h4 class="text-sm uppercase font-bold">Relational Database</h4>
-                        <p class="text-xs">Rigid tables. Rows and Columns. Cannot model the organic complexity of scholarship.</p>
+                        <p class="text-xs">Rigid tables. Rows and Columns. Cannot model the organic complexity of
+                            scholarship.</p>
                     </div>
                     <div class="p-4 border-2 border-mizan-green rounded bg-white shadow-lg transform scale-105">
                         <h4 class="text-sm uppercase font-bold text-mizan-green">Knowledge Graph</h4>
-                        <p class="text-xs">Living nodes. Fluid edges. Maps the <strong>Genealogy of Ideas</strong> exactly as scholars transmitted them.</p>
+                        <p class="text-xs">Living nodes. Fluid edges. Maps the <strong>Genealogy of Ideas</strong>
+                            exactly as scholars transmitted them.</p>
                     </div>
                 </div>
             </section>
@@ -141,7 +183,8 @@
             <section data-state="load-graph">
                 <h3>The Prototype</h3>
                 <div id="cy-slide"></div>
-                <p class="text-xs mt-2 text-slate-500"><i class="fas fa-mouse-pointer"></i> Interactive Epistemology: Draggable Nodes & Dynamic Relationships</p>
+                <p class="text-xs mt-2 text-slate-500"><i class="fas fa-mouse-pointer"></i> Interactive Epistemology:
+                    Draggable Nodes & Dynamic Relationships</p>
             </section>
 
             <section>
@@ -150,12 +193,14 @@
                     <div class="text-right">
                         <div class="text-4xl text-mizan-gold mb-2"><i class="fas fa-microchip"></i></div>
                         <h4 class="text-lg font-bold">The Sandbox (Gemini)</h4>
-                        <p class="text-xs text-slate-500">Uses LLMs to help scholars <em>draft</em> and <em>visualize</em> complex ontologies rapidly during the research phase.</p>
+                        <p class="text-xs text-slate-500">Uses LLMs to help scholars <em>draft</em> and
+                            <em>visualize</em> complex ontologies rapidly during the research phase.</p>
                     </div>
                     <div class="text-left border-l border-slate-300 pl-8">
                         <div class="text-4xl text-mizan-green mb-2"><i class="fas fa-shield-alt"></i></div>
-                        <h4 class="text-lg font-bold">The Citadel (Production)</h4>
-                        <p class="text-xs text-slate-500">The final engine is <strong>100% Deterministic</strong> (Rust/SurrealDB). No AI "hallucinations". Pure, verified transmission.</p>
+                        <h4 class="text-lg font-bold">The Foundation (Production)</h4>
+                        <p class="text-xs text-slate-500">The final engine is <strong>100% Deterministic</strong>
+                            (Rust/SurrealDB). No AI "hallucinations". Pure, verified transmission.</p>
                     </div>
                 </div>
                 <div class="mt-8 bg-slate-100 p-2 rounded text-xs border border-slate-300 italic">
@@ -170,21 +215,24 @@
                         <i class="fab fa-rust text-4xl text-orange-600 w-16 text-center"></i>
                         <div>
                             <h4 class="text-lg font-bold m-0">Rust Backend</h4>
-                            <p class="text-xs text-slate-500 m-0">Memory safety ensures system stability. "Strict Types" mirror "Strict Rulings".</p>
+                            <p class="text-xs text-slate-500 m-0">Memory safety ensures system stability. "Strict Types"
+                                mirror "Strict Rulings".</p>
                         </div>
                     </div>
                     <div class="flex items-center">
                         <i class="fas fa-database text-4xl text-pink-600 w-16 text-center"></i>
                         <div>
                             <h4 class="text-lg font-bold m-0">SurrealDB</h4>
-                            <p class="text-xs text-slate-500 m-0">Native Graph store. Does not force tree-like hierarchies on web-like knowledge.</p>
+                            <p class="text-xs text-slate-500 m-0">Native Graph store. Does not force tree-like
+                                hierarchies on web-like knowledge.</p>
                         </div>
                     </div>
                     <div class="flex items-center">
                         <i class="fab fa-python text-4xl text-yellow-500 w-16 text-center"></i>
                         <div>
                             <h4 class="text-lg font-bold m-0">Python ETL</h4>
-                            <p class="text-xs text-slate-500 m-0">"The Scribe". Ingests Hadith/Quran raw text for the core engine.</p>
+                            <p class="text-xs text-slate-500 m-0">"The Scribe". Ingests Hadith/Quran raw text for the
+                                core engine.</p>
                         </div>
                     </div>
                 </div>
@@ -196,21 +244,25 @@
                     <div class="text-center p-6 bg-white rounded shadow-lg border-t-4 border-mizan-gold">
                         <div class="text-5xl font-bold text-slate-800 mb-2">$3.8T</div>
                         <div class="text-sm text-slate-500 uppercase tracking-widest">Global Islamic Economy</div>
-                        <p class="text-[10px] mt-4 text-slate-400">Source: State of the Global Islamic Economy Report</p>
+                        <p class="text-[10px] mt-4 text-slate-400">Source: State of the Global Islamic Economy Report
+                        </p>
                     </div>
                     <div>
                         <ul class="space-y-4 text-left">
                             <li class="fragment">
                                 <strong class="text-mizan-green">Fintech Compliance:</strong> <br>
-                                <span class="text-xs text-slate-600">Automated verification for Crypto, Sukuk, and BNPL products.</span>
+                                <span class="text-xs text-slate-600">Automated verification for Crypto, Sukuk, and BNPL
+                                    products.</span>
                             </li>
                             <li class="fragment">
                                 <strong class="text-mizan-gold">Standardization:</strong> <br>
-                                <span class="text-xs text-slate-600">Unified digital ontology for cross-border Fatwa interoperability.</span>
+                                <span class="text-xs text-slate-600">Unified digital ontology for cross-border Fatwa
+                                    interoperability.</span>
                             </li>
                             <li class="fragment">
                                 <strong class="text-slate-800">Education:</strong> <br>
-                                <span class="text-xs text-slate-600">Visual learning tools for the next generation of scholars.</span>
+                                <span class="text-xs text-slate-600">Visual learning tools for the next generation of
+                                    scholars.</span>
                             </li>
                         </ul>
                     </div>
@@ -228,16 +280,18 @@
                     <div class="bg-white p-4 rounded shadow border-t-4 border-mizan-gold">
                         <div class="text-2xl mb-2">Phase 2</div>
                         <div class="text-xs font-bold">Expansion</div>
-                        <div class="text-[10px] text-slate-500 mt-2">API Integration with Islamic Banks & Halal Certifiers</div>
+                        <div class="text-[10px] text-slate-500 mt-2">API Integration with Islamic Banks & Halal
+                            Certifiers</div>
                     </div>
                     <div class="bg-white p-4 rounded shadow border-t-4 border-mizan-green">
                         <div class="text-2xl mb-2">Phase 3</div>
                         <div class="text-xs font-bold">Decentralization</div>
-                        <div class="text-[10px] text-slate-500 mt-2">Federated "Waqf" Nodes for indestructible knowledge preservation.</div>
+                        <div class="text-[10px] text-slate-500 mt-2">Federated "Waqf" Nodes for indestructible knowledge
+                            preservation.</div>
                     </div>
                 </div>
             </section>
-            
+
             <section>
                 <h1>Thank You</h1>
                 <p class="text-mizan-gold italic mt-4">"Preserving the Past. Architecting the Future."</p>
@@ -249,7 +303,8 @@
         </div>
     </div>
 
-    <a id="mode-switch" href="index.html" class="bg-slate-800 text-white px-3 py-1 rounded text-xs no-underline hover:bg-slate-700 transition">
+    <a id="mode-switch" href="index.html"
+        class="bg-slate-800 text-white px-3 py-1 rounded text-xs no-underline hover:bg-slate-700 transition">
         Exit Presentation
     </a>
 
@@ -257,7 +312,7 @@
     <script>
         // --- Graph Logic for Slide 4 ---
         let network = null;
-        
+
         // --- Ar-Rahnu & Sukuk Data (Rich Ontology) ---
         const rawNodes = [
             // Roots
@@ -297,12 +352,12 @@
         const rawEdges = [
             // Wahi Grounds (Theological Roots)
             { from: 0, to: 1 }, { from: 0, to: 2 }, { from: 0, to: 34 }, { from: 0, to: 40 },
-            
+
             // Evidence connections
-            { from: 1, to: 10, label: 'source_of' }, 
-            { from: 2, to: 10, label: 'validates' }, 
-            { from: 0, to: 14, label: 'prohibits' }, 
-            { from: 34, to: 32, label: 'permits_trade' },  
+            { from: 1, to: 10, label: 'source_of' },
+            { from: 2, to: 10, label: 'validates' },
+            { from: 0, to: 14, label: 'prohibits' },
+            { from: 34, to: 32, label: 'permits_trade' },
             { from: 0, to: 42, label: 'prohibits_uncertainty' }, // Allah prohibits Gharar
 
             // Rules & Maxims
@@ -312,42 +367,42 @@
             { from: 42, to: 30, label: 'must_avoid' }, // Sukuk must avoid Gharar
 
             // Qiyas Logic
-            { from: 2, to: 4, label: 'basis_for' },  
-            { from: 4, to: 20, label: 'validates_analogy' }, 
+            { from: 2, to: 4, label: 'basis_for' },
+            { from: 4, to: 20, label: 'validates_analogy' },
 
             // Ar-Rahnu Logic
             { from: 10, to: 20, label: 'foundation' },
-            { from: 11, to: 20, label: 'contract_1' }, 
-            { from: 12, to: 20, label: 'contract_2' }, 
-            { from: 13, to: 20, label: 'revenue' },    
-            { from: 14, to: 11, label: 'prohibits_excess' }, 
+            { from: 11, to: 20, label: 'contract_1' },
+            { from: 12, to: 20, label: 'contract_2' },
+            { from: 13, to: 20, label: 'revenue' },
+            { from: 14, to: 11, label: 'prohibits_excess' },
             { from: 14, to: 20, label: 'avoided_by' },
-            { from: 3, to: 20, label: 'justifies_need' }, 
+            { from: 3, to: 20, label: 'justifies_need' },
 
             // Sukuk Logic
             { from: 3, to: 30, label: 'justifies_structure' },
-            { from: 20, to: 22, label: 'provides' }, 
-            { from: 21, to: 20, label: 'secured_by' }, 
+            { from: 20, to: 22, label: 'provides' },
+            { from: 21, to: 20, label: 'secured_by' },
             { from: 30, to: 31, label: 'issued_by' },
             { from: 35, to: 31, label: 'held_by' },
             { from: 32, to: 30, label: 'structure_1' },
             { from: 33, to: 30, label: 'structure_2' },
-            { from: 36, to: 30, label: 'validates_form' }, 
-            { from: 31, to: 22, label: 'raises_capital' }, 
+            { from: 36, to: 30, label: 'validates_form' },
+            { from: 31, to: 22, label: 'raises_capital' },
             { from: 14, to: 30, label: 'must_avoid' },
         ];
 
         function initGraph() {
             const container = document.getElementById('cy-slide');
-            
+
             // VisJS Data
             const nodes = new vis.DataSet(rawNodes.map(n => ({
-                id: n.id, label: n.label, 
+                id: n.id, label: n.label,
                 color: n.group === 'divine' ? '#0f172a' : (n.group === 'wahi' ? '#d97706' : '#64748b'),
                 font: { color: n.group === 'divine' ? 'white' : 'black' },
                 shape: n.group === 'scholar' ? 'star' : 'dot'
             })));
-            
+
             const edges = new vis.DataSet(rawEdges.map(e => ({ from: e.from, to: e.to })));
 
             const options = {
@@ -370,7 +425,7 @@
         // Load graph only when Slide 4 is active
         Reveal.on('slidechanged', event => {
             if (event.currentSlide.getAttribute('data-state') === 'load-graph') {
-                if(!network) setTimeout(initGraph, 100);
+                if (!network) setTimeout(initGraph, 100);
             }
         });
 
@@ -379,4 +434,5 @@
         }
     </script>
 </body>
+
 </html>
