@@ -62,13 +62,29 @@ async fn main() {
             db
         }
         Err(e) => {
-            tracing::error!("Failed to connect to SurrealDB: {}", e);
+            tracing::error!("Failed to connect to SurrealDB: {e}");
             std::process::exit(1);
         }
     };
 
-    // Build our application
-    let app = Router::new()
+    // Build and run the application
+    let app = create_router(db);
+    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
+    let addr = format!("0.0.0.0:{port}");
+
+    let listener = tokio::net::TcpListener::bind(&addr)
+        .await
+        .unwrap_or_else(|e| {
+            tracing::error!("Failed to bind to address {addr}: {e}");
+            std::process::exit(1);
+        });
+
+    tracing::info!("listening on {}", listener.local_addr().unwrap());
+    axum::serve(listener, app).await.unwrap();
+}
+
+fn create_router(db: Database) -> Router<()> {
+    Router::new()
         .route("/", get(landing_handler))
         .route("/certainty-engine", get(certainty_engine_handler))
         .route("/auth/signup", post(auth::signup))
@@ -108,14 +124,6 @@ async fn main() {
             "/api/v1/network/ingest",
             post(api::v1::network::ingest_snapshot),
         )
-        // .route(
-        //     "/api/v1/authority/propose",
-        //     post(api::v1::authority::propose_ruling),
-        // )
-        // .route(
-        //     "/api/v1/authority/sign",
-        //     post(api::v1::authority::sign_ruling),
-        // )
         .route(
             "/api/v1/enterprise/metrics",
             get(api::v1::enterprise::get_metrics),
@@ -140,7 +148,6 @@ async fn main() {
             "/api/v1/identity/verify",
             post(api::v1::identity::verify_vc),
         )
-        // .route("/strategy", get(api::v1::event::get_events))
         .route("/graph", get(graph_handler))
         .route("/landing", get(landing_handler))
         .route("/presentation", get(presentation_handler))
@@ -151,22 +158,7 @@ async fn main() {
             "/favicon.ico",
             get(|| async { axum::http::StatusCode::NO_CONTENT }),
         )
-        .with_state(db);
-
-    // Run it
-    // Run it
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
-    let addr = format!("0.0.0.0:{}", port);
-
-    let listener = tokio::net::TcpListener::bind(&addr)
-        .await
-        .unwrap_or_else(|e| {
-            tracing::error!("Failed to bind to address {}: {}", addr, e);
-            std::process::exit(1);
-        });
-
-    tracing::info!("listening on {}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
+        .with_state(db)
 }
 
 async fn certainty_engine_handler() -> impl IntoResponse {

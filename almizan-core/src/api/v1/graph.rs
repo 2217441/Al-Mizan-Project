@@ -67,7 +67,7 @@ struct DbNarrator {
 
 /// GET /api/v1/graph
 /// Returns the tawhidic knowledge graph showing epistemological chains.
-/// Shows: Allah → Prophets → Quran Verses (via chosen_by and `narrated_quran` edges)
+/// Shows: Allah → Prophets → Quran Verses (via `chosen_by` and `narrated_quran` edges)
 #[allow(clippy::too_many_lines)]
 pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Optimization: Pre-allocate vectors to avoid reallocations.

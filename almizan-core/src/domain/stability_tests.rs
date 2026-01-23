@@ -9,7 +9,7 @@ mod shariah_tests {
     #[test]
     fn test_riba_detection() {
         let contract = Contract {
-            contract_type: "Murabaha".to_string(),
+            kind: "Murabaha".to_string(),
             rate: "fixed".to_string(),
             late_fee: "compounding".to_string(),
         };
@@ -23,7 +23,7 @@ mod shariah_tests {
     #[test]
     fn test_gharar_detection() {
         let contract = Contract {
-            contract_type: "Murabaha".to_string(),
+            kind: "Murabaha".to_string(),
             rate: "variable".to_string(),
             late_fee: "fixed_admin_fee".to_string(),
         };
@@ -37,7 +37,7 @@ mod shariah_tests {
     #[test]
     fn test_halal_contract() {
         let contract = Contract {
-            contract_type: "Murabaha".to_string(),
+            kind: "Murabaha".to_string(),
             rate: "fixed".to_string(),
             late_fee: "fixed_admin_fee".to_string(),
         };
@@ -50,7 +50,7 @@ mod shariah_tests {
     #[test]
     fn test_tawarruq_non_standard() {
         let contract = Contract {
-            contract_type: "Tawarruq".to_string(),
+            kind: "Tawarruq".to_string(),
             rate: "fixed".to_string(),
             late_fee: "fixed_admin_fee".to_string(),
         };
@@ -63,7 +63,7 @@ mod shariah_tests {
     #[test]
     fn test_gold_standard_certification() {
         let contract = Contract {
-            contract_type: "Murabaha".to_string(),
+            kind: "Murabaha".to_string(),
             rate: "fixed".to_string(),
             late_fee: "fixed_admin_fee".to_string(),
         };
@@ -76,7 +76,7 @@ mod shariah_tests {
     #[test]
     fn test_silver_standard_certification() {
         let contract = Contract {
-            contract_type: "Musharakah".to_string(),
+            kind: "Musharakah".to_string(),
             rate: "profit_share".to_string(),
             late_fee: "none".to_string(),
         };

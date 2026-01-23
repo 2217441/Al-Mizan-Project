@@ -8,7 +8,7 @@
 
 ## 1. Role & Responsibilities
 
-**Role**: Chief Architect (The "Builder of the Citadel").
+**Role**: Chief Architect (The "Builder of the Foundation").
 **Goal**: To ensure the Al-Mizan system is resilient, scalable, and theologically compliant.
 
 ### Key Responsibilities

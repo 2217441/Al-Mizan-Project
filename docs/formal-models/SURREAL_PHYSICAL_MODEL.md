@@ -14,7 +14,7 @@ This document specifies the **physical byte-level schema** of the Al-Mizan vecto
 hide circle
 skinparam linetype ortho
 
-' REPOSITORY: https://github.com/FirdausHisyam/Islamic-Digital-Citadel
+' REPOSITORY: https://github.com/FirdausHisyam/Islamic-Digital-Knowledge-Infrastructure
 ' ENGINE: SurrealDB (v2.0)
 ' MODE: SCHEMAFULL (Strict Typing)
 

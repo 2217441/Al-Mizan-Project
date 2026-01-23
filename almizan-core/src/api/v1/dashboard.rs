@@ -19,9 +19,7 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
 
     // SECURITY: ADMIN_DASHBOARD_TOKEN must be set in production
     let admin_token = std::env::var("ADMIN_DASHBOARD_TOKEN").unwrap_or_else(|_| {
-        if std::env::var("RUST_ENV").unwrap_or_default() == "production" {
-            panic!("ADMIN_DASHBOARD_TOKEN must be set in production environment");
-        }
+        assert!(std::env::var("RUST_ENV").unwrap_or_default() != "production", "ADMIN_DASHBOARD_TOKEN must be set in production environment");
         tracing::warn!("Using insecure dev admin token - DO NOT USE IN PRODUCTION");
         "MUJTAHID_KEY_786".to_string()
     });

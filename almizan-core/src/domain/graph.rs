@@ -7,12 +7,13 @@ pub struct GraphEngine {
 }
 
 impl GraphEngine {
+    #[must_use] 
     pub fn new(db: Arc<Database>) -> Self {
         Self { db }
     }
 
     /// Finds the "Dalil" (Evidence) for a given Ruling ID.
-    /// Traverses the DERIVED_FROM edge to find the Source (Verse or Hadith).
+    /// Traverses the `DERIVED_FROM` edge to find the Source (Verse or Hadith).
     pub async fn find_evidence(
         &self,
         ruling_id: String,

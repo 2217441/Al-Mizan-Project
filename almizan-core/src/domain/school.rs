@@ -27,6 +27,6 @@ impl std::fmt::Display for School {
             School::Zahiri => "Zahiri",
             School::Unknown => "Unknown",
         };
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }
