@@ -1,3 +1,4 @@
+use crate::api::v1::utils::format_surreal_id;
 use crate::repository::db::Database;
 use axum::{extract::State, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
@@ -75,23 +76,6 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     let mut nodes: Vec<CytoscapeNode> = Vec::with_capacity(130);
     // Estimated edges: 25 (Prophets) + 20 (Verses) + 30 (Narrators) + 50 (Hadiths) = ~125
     let mut edges_vec: Vec<CytoscapeEdge> = Vec::with_capacity(130);
-
-    // Helper to get string representation of Thing without SurrealQL escaping (brackets)
-    // Optimization: Avoids to_string() overhead (checking escaping) and sanitize_id() overhead (replacing)
-    let get_id = |thing: &surrealdb::sql::Thing| -> String {
-        match &thing.id {
-            surrealdb::sql::Id::String(s) => format!("{}:{}", thing.tb, s),
-            surrealdb::sql::Id::Number(n) => format!("{}:{}", thing.tb, n),
-            _ => {
-                let s = thing.to_string();
-                if s.contains('⟨') || s.contains('⟩') {
-                    s.replace(&['⟨', '⟩'][..], "")
-                } else {
-                    s
-                }
-            }
-        }
-    };
 
     // 1. Add Allah (the root)
     nodes.push(CytoscapeNode {
@@ -176,7 +160,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
     // 5. Process Prophets
     for prophet in &prophets {
-        let prophet_id = get_id(&prophet.id);
+        let prophet_id = format_surreal_id(&prophet.id);
 
         nodes.push(CytoscapeNode {
             data: NodeData {
@@ -201,7 +185,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Already fetched in parallel above as `verses`
 
     for verse in &verses {
-        let verse_id = get_id(&verse.id);
+        let verse_id = format_surreal_id(&verse.id);
 
         nodes.push(CytoscapeNode {
             data: NodeData {
@@ -230,7 +214,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     let mut narrator_ids: Vec<String> = Vec::with_capacity(narrators_list.len());
 
     for narrator in &narrators_list {
-        let narrator_id = get_id(&narrator.id);
+        let narrator_id = format_surreal_id(&narrator.id);
 
         // Collect ID for edge creation later (distribution to hadiths)
         narrator_ids.push(narrator_id.clone());
@@ -263,7 +247,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Already fetched in parallel above as `hadiths`
 
     for (i, hadith) in hadiths.iter().enumerate() {
-        let hadith_id = get_id(&hadith.id);
+        let hadith_id = format_surreal_id(&hadith.id);
 
         // Use Arabic collection names for labels
         let collection_label = match hadith.collection.as_str() {

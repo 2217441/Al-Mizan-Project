@@ -1,3 +1,4 @@
+use crate::api::v1::utils::format_surreal_id;
 use crate::repository::db::Database;
 use axum::{
     extract::{Path, State},
@@ -49,7 +50,7 @@ pub async fn get_hadith(
         Ok(hadiths) if !hadiths.is_empty() => {
             let h = &hadiths[0];
             Json(HadithResponse {
-                id: h.id.to_string(),
+                id: format_surreal_id(&h.id),
                 collection: h.collection.clone(),
                 book_number: h.book_number,
                 hadith_number: h.hadith_number,
@@ -94,7 +95,7 @@ pub async fn list_collection(
                 .into_iter()
                 .map(|h| {
                     HadithResponse {
-                        id: h.id.to_string(),
+                        id: format_surreal_id(&h.id),
                         collection: h.collection,
                         book_number: h.book_number,
                         hadith_number: h.hadith_number,

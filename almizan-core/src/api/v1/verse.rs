@@ -1,3 +1,4 @@
+use crate::api::v1::utils::format_surreal_id;
 use crate::repository::db::Database;
 use axum::{
     extract::{Path, Query, State},
@@ -86,7 +87,7 @@ pub async fn get_verse(
             let v = &verses[0];
 
             Json(VerseResponse {
-                id: v.id.to_string(),
+                id: format_surreal_id(&v.id),
                 surah: v.surah_number,
                 ayah: v.ayah_number,
                 text_uthmani: v.text_uthmani.clone(),
@@ -142,7 +143,7 @@ pub async fn get_surah(State(db): State<Database>, Path(surah): Path<i32>) -> im
     let response: Vec<VerseResponse> = verses
         .into_iter()
         .map(|v| VerseResponse {
-            id: v.id.to_string(),
+            id: format_surreal_id(&v.id),
             surah: v.surah_number,
             ayah: v.ayah_number,
             text_uthmani: v.text_uthmani,
