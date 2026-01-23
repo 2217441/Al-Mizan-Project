@@ -18,23 +18,111 @@
         const el = typeof container === 'string' ? document.querySelector(container) : container;
         if (!el) return;
 
-        const tabs = el.querySelectorAll('.tab');
-        const panels = el.querySelectorAll('[data-tab-panel]');
+        // Ensure container has tablist role
+        const tabList = el.querySelector('.tabs') || el;
+        if (!tabList.hasAttribute('role')) {
+            tabList.setAttribute('role', 'tablist');
+        }
 
-        tabs.forEach(tab => {
+        const tabs = Array.from(el.querySelectorAll('.tab'));
+        const panels = Array.from(el.querySelectorAll('[data-tab-panel]'));
+
+        tabs.forEach((tab, index) => {
+            const panelId = tab.dataset.tab;
+            const panel = panels.find(p => p.dataset.tabPanel === panelId);
+
+            // Generate IDs for A11y
+            if (!tab.id) tab.id = `tab-${panelId}-${Math.random().toString(36).substr(2, 9)}`;
+            if (panel && !panel.id) panel.id = `panel-${panelId}-${Math.random().toString(36).substr(2, 9)}`;
+
+            // Set Tab Roles
+            tab.setAttribute('role', 'tab');
+            if (panel) tab.setAttribute('aria-controls', panel.id);
+
+            // Set Panel Roles
+            if (panel) {
+                panel.setAttribute('role', 'tabpanel');
+                panel.setAttribute('aria-labelledby', tab.id);
+            }
+
+            // Set Initial State
+            const isActive = tab.classList.contains('active');
+            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            tab.setAttribute('tabindex', isActive ? '0' : '-1');
+
+            if (panel) {
+                panel.hidden = !isActive;
+                panel.style.display = isActive ? 'block' : 'none';
+            }
+
+            // Click Handler
             tab.addEventListener('click', () => {
-                // Remove active from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
-                // Add active to clicked tab
-                tab.classList.add('active');
+                activateTab(tab, tabs, panels);
+            });
 
-                // Show corresponding panel
-                const panelId = tab.dataset.tab;
-                panels.forEach(panel => {
-                    panel.style.display = panel.dataset.tabPanel === panelId ? 'block' : 'none';
-                });
+            // Keyboard Navigation (Arrow Keys)
+            tab.addEventListener('keydown', (e) => {
+                let targetIndex = index;
+                let handled = false;
+
+                switch (e.key) {
+                    case 'ArrowRight':
+                        targetIndex = (index + 1) % tabs.length;
+                        handled = true;
+                        break;
+                    case 'ArrowLeft':
+                        targetIndex = (index - 1 + tabs.length) % tabs.length;
+                        handled = true;
+                        break;
+                    case 'Home':
+                        targetIndex = 0;
+                        handled = true;
+                        break;
+                    case 'End':
+                        targetIndex = tabs.length - 1;
+                        handled = true;
+                        break;
+                }
+
+                if (handled) {
+                    e.preventDefault();
+                    tabs[targetIndex].focus();
+                    activateTab(tabs[targetIndex], tabs, panels);
+                }
             });
         });
+    }
+
+    /**
+     * Activate a specific tab
+     * @param {Element} selectedTab - Tab to activate
+     * @param {Array} tabs - All tabs
+     * @param {Array} panels - All panels
+     */
+    function activateTab(selectedTab, tabs, panels) {
+        // Deactivate all
+        tabs.forEach(t => {
+            t.classList.remove('active');
+            t.setAttribute('aria-selected', 'false');
+            t.setAttribute('tabindex', '-1');
+        });
+
+        panels.forEach(p => {
+            p.hidden = true;
+            p.style.display = 'none';
+        });
+
+        // Activate selected
+        selectedTab.classList.add('active');
+        selectedTab.setAttribute('aria-selected', 'true');
+        selectedTab.setAttribute('tabindex', '0');
+
+        const panelId = selectedTab.dataset.tab;
+        const panel = panels.find(p => p.dataset.tabPanel === panelId);
+        if (panel) {
+            panel.hidden = false;
+            panel.style.display = 'block';
+        }
     }
 
     // =========================================
