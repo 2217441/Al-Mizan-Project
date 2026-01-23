@@ -62,15 +62,24 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
 
 /// Constant-time string comparison to prevent timing attacks.
 fn constant_time_eq(a: &str, b: &str) -> bool {
+    let mut result = 0;
+
+    // Check if lengths differ, but do NOT return early.
+    if a.len() != b.len() {
+        result = 1;
+    }
+
     let a_bytes = a.as_bytes();
     let b_bytes = b.as_bytes();
-    if a.len() != b.len() {
-        return false;
+
+    // Iterate over the secret (a) to ensure constant time relative to the secret
+    for (i, &a_byte) in a_bytes.iter().enumerate() {
+        // Safe indexing: if b is shorter, compare against a varied byte (a_byte ^ 1)
+        // This ensures the loop runs a.len() times regardless of b.len()
+        let b_byte = *b_bytes.get(i).unwrap_or(&(a_byte ^ 1));
+        result |= a_byte ^ b_byte;
     }
-    let mut result = 0;
-    for (x, y) in a_bytes.iter().zip(b_bytes.iter()) {
-        result |= x ^ y;
-    }
+
     result == 0
 }
 
@@ -80,12 +89,24 @@ mod tests {
 
     #[test]
     fn test_constant_time_eq() {
+        // Equal
         assert!(constant_time_eq("secret", "secret"));
-        assert!(!constant_time_eq("secret", "wrong"));
-        assert!(!constant_time_eq("secret", "secrett"));
-        assert!(!constant_time_eq("secret", "secre"));
+
+        // Content mismatch
+        assert!(!constant_time_eq("secret", "wrong1"));
+
+        // Length mismatch
+        assert!(!constant_time_eq("secret", "secrett")); // Longer
+        assert!(!constant_time_eq("secret", "secre"));   // Shorter
+        assert!(!constant_time_eq("secret", "longsecretstring")); // Much longer
+        assert!(!constant_time_eq("secret", "s")); // Very short
+
+        // Edge cases
         assert!(!constant_time_eq("", "secret"));
         assert!(!constant_time_eq("secret", ""));
         assert!(constant_time_eq("", ""));
+
+        // Partial matches that shouldn't pass
+        assert!(!constant_time_eq("secret", "secreX"));
     }
 }
