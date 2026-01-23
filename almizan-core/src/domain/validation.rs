@@ -22,6 +22,7 @@ pub struct ChainValidator<'a> {
 }
 
 impl<'a> ChainValidator<'a> {
+    #[must_use] 
     pub fn new(graph: &'a GraphEngine) -> Self {
         Self { graph }
     }

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug)]
 pub struct Contract {
-    pub contract_type: String, // e.g., "Murabaha"
+    pub kind: String, // e.g., "Murabaha"
     pub rate: String,          // e.g., "variable", "fixed"
     pub late_fee: String,      // e.g., "compounding", "fixed_admin_fee"
 }
@@ -26,7 +26,7 @@ pub fn analyze_contract(contract: &Contract) -> AnalysisResult {
 
     // Rule 2: Gharar (Uncertainty in Rate) - Simplified check
     if contract.rate.to_lowercase() == "variable"
-        && contract.contract_type.to_lowercase() == "murabaha"
+        && contract.kind.to_lowercase() == "murabaha"
     {
         return AnalysisResult {
             status: "WARNING".to_string(),
@@ -68,7 +68,7 @@ pub struct CertificationResult {
 
 pub fn check_standard(contract: &Contract) -> CertificationResult {
     // Rule 1: Tawarruq is discouraged (Non-Standard)
-    if contract.contract_type.to_lowercase() == "tawarruq" {
+    if contract.kind.to_lowercase() == "tawarruq" {
         return CertificationResult {
             certified: false,
             badge: None,
@@ -81,7 +81,7 @@ pub fn check_standard(contract: &Contract) -> CertificationResult {
     }
 
     // Rule 2: Murabaha with Fixed Rate is Gold Standard
-    if contract.contract_type.to_lowercase() == "murabaha"
+    if contract.kind.to_lowercase() == "murabaha"
         && contract.rate.to_lowercase() == "fixed"
     {
         // Note: VC generation happens in the handler/service layer, not here in the pure logic function

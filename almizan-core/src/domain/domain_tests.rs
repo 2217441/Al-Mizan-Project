@@ -7,7 +7,7 @@ mod tests {
     fn test_quran_verse_serialization() {
         let verse = QuranVerse {
             id: None,
-            text_uthmani: "بِسْمِ ٱللَّهِ".to_string(),
+            text_uthmani: "بِسْمِ ٱللَّهِ".to_string(),
             surah_number: 1,
             ayah_number: 1,
             juz_number: 1,

@@ -38,6 +38,7 @@ fn default_reputation() -> f32 {
 }
 
 impl Scholar {
+    #[must_use] 
     pub fn new(name: String, death_date: String, school: String) -> Self {
         Self {
             id: None,

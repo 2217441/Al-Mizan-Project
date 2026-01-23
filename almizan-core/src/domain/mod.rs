@@ -6,7 +6,7 @@ pub mod models;
 pub mod opinion;
 pub mod scholar;
 pub mod school;
-mod tests;
+mod domain_tests;
 mod stability_tests;
 pub mod traits;
 pub mod validation;

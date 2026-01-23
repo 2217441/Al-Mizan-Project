@@ -52,6 +52,7 @@ pub struct VerseMapping {
 
 #[allow(dead_code)]
 impl Verse {
+    #[must_use] 
     pub fn new(text: String, revelation_order: u32) -> Self {
         Self {
             id: None,

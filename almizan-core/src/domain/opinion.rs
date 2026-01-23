@@ -41,6 +41,7 @@ fn default_signature() -> String {
 }
 
 impl Opinion {
+    #[must_use] 
     pub fn new(
         scholar_id: String,
         text_evidence_id: String,

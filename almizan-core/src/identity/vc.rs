@@ -29,7 +29,7 @@ pub struct Proof {
     pub r#type: String,
     pub created: String,
     pub verification_method: String,
-    pub proof_purpose: String,
+    pub purpose: String,
     pub jws: String,
 }
 
@@ -54,10 +54,9 @@ pub fn issue_credential(subject_did: &str, claims: CertificationClaims) -> Verif
             r#type: "Ed25519Signature2020".to_string(),
             created: chrono::Utc::now().to_rfc3339(),
             verification_method: format!(
-                "{}#z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
-                issuer_did
+                "{issuer_did}#z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp"
             ),
-            proof_purpose: "assertionMethod".to_string(),
+            purpose: "assertionMethod".to_string(),
             jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mock_signature"
                 .to_string(),
         },

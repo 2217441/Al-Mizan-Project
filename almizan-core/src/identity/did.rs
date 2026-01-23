@@ -21,7 +21,7 @@ pub fn generate_did_key() -> DidDocument {
     DidDocument {
         id: did.to_string(),
         verification_method: vec![VerificationMethod {
-            id: format!("{}#z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK", did),
+            id: format!("{did}#z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"),
             r#type: "Ed25519VerificationKey2020".to_string(),
             controller: did.to_string(),
             public_key_multibase: "z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),

@@ -15,6 +15,7 @@ pub struct GlobalRuling {
 }
 
 impl GlobalRuling {
+    #[must_use] 
     pub fn new(authority_id: String, topic: String, verdict: String) -> Self {
         Self {
             authority_id,
@@ -83,7 +84,7 @@ mod tests {
 
         // 1. Low Reputation Signers (0.1) - Need 200 of them
         for i in 0..10 {
-            ruling.sign(format!("low_sig_{}", i), 0.1);
+            ruling.sign(format!("low_sig_{i}"), 0.1);
         }
         assert_eq!(ruling.status, "Pending");
         // Floating point comparison fix
@@ -93,12 +94,12 @@ mod tests {
         // 2. High Reputation Signer (Grand Mufti - 10.0)
         ruling.sign("grand_mufti".to_string(), 10.0);
         assert_eq!(ruling.status, "Pending");
-        assert_eq!(ruling.current_reputation, 11.0);
+        assert!((ruling.current_reputation - 11.0).abs() < f32::EPSILON);
 
         // 3. Another High Reputation Signer (10.0) -> Crosses 20.0 threshold
         ruling.sign("grand_ayatollah".to_string(), 10.0);
         assert_eq!(ruling.status, "Probationary");
-        assert_eq!(ruling.current_reputation, 21.0);
+        assert!((ruling.current_reputation - 21.0).abs() < f32::EPSILON);
     }
 
     #[test]
@@ -114,7 +115,7 @@ mod tests {
         ruling.slash_authority();
 
         assert_eq!(ruling.status, "Slashed");
-        assert_eq!(ruling.weight, -1.0);
+        assert!((ruling.weight - (-1.0)).abs() < f32::EPSILON);
         assert!(ruling.signatures.is_empty());
     }
 }

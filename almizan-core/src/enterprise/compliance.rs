@@ -40,6 +40,6 @@ pub fn generate_compliance_report(document_id: &str) -> ComplianceReport {
         document_id: document_id.to_string(),
         status: "Compliant".to_string(),
         flagged_citations: vec![],
-        audit_trail: format!("Audit completed for doc: {}", document_id),
+        audit_trail: format!("Audit completed for doc: {document_id}"),
     }
 }
