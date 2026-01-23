@@ -360,6 +360,12 @@
             <div class="mesh-blob mesh-blob--blue morph-blob" style="animation-delay: -7s;"></div>
         </div>
 
+        <!-- Loading Overlay -->
+        <div id="graph-loader" class="loader-overlay" role="alert" aria-live="assertive" aria-label="Loading knowledge graph">
+            <div class="spinner"></div>
+            <div class="loader-text">INITIALIZING CITADEL...</div>
+        </div>
+
         <!-- The Graph -->
         <div id="graph-container" role="application" aria-label="Knowledge Graph Visualization" tabindex="0"></div>
 
@@ -565,6 +571,26 @@
         };
 
         const network = new vis.Network(container, { nodes, edges }, options);
+
+        // Handle loading state
+        network.on("stabilizationIterationsDone", function () {
+            const loader = document.getElementById('graph-loader');
+            if (loader) {
+                loader.classList.add('hidden');
+                // Move focus to graph container for accessibility
+                setTimeout(() => {
+                   document.getElementById('graph-container').focus();
+                }, 500); // Wait for transition
+            }
+        });
+
+        // Safety timeout in case stabilization is skipped or hangs
+        setTimeout(() => {
+             const loader = document.getElementById('graph-loader');
+             if (loader && !loader.classList.contains('hidden')) {
+                 loader.classList.add('hidden');
+             }
+        }, 5000);
 
         // Expose zoom controls globally
         window.graphZoom = {

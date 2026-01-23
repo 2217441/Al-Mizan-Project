@@ -1,5 +1,5 @@
 use askama::Template;
-use axum::{response::Html, Json};
+use axum::{http::StatusCode, response::Html, response::IntoResponse, Json};
 use serde::Serialize;
 
 #[derive(Template)]
@@ -10,9 +10,15 @@ pub struct NetworkDashboardTemplate;
 #[template(path = "playground.html")]
 pub struct PlaygroundTemplate;
 
-pub async fn playground() -> impl axum::response::IntoResponse {
+pub async fn playground() -> impl IntoResponse {
     let template = PlaygroundTemplate;
-    Html(template.render().unwrap())
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            tracing::error!("Template render error: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
 }
 
 #[derive(Serialize)]
@@ -23,9 +29,15 @@ pub struct SnapshotMetadata {
     pub signature: String,
 }
 
-pub async fn dashboard() -> impl axum::response::IntoResponse {
+pub async fn dashboard() -> impl IntoResponse {
     let template = NetworkDashboardTemplate;
-    Html(template.render().unwrap())
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            tracing::error!("Template render error: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
 }
 
 pub async fn export_snapshot() -> Json<SnapshotMetadata> {

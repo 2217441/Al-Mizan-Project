@@ -15,3 +15,7 @@
 ## 2024-10-26 - [Database-side Logic for Text Selection]
 **Learning:** Moving conditional text selection (English vs Arabic fallback) to SurrealQL using `IF` statements significantly reduces network payload and eliminates duplicate string allocations in Rust structs.
 **Action:** When handling multilingual fields, check if the fallback logic can be executed in the database query instead of the application layer.
+
+## 2024-10-27 - [SurrealDB ID Parsing Overhead]
+**Learning:** Found an anti-pattern where `surrealdb::sql::Thing` IDs were being converted to Strings and then parsed back to integers (e.g., `id.to_string().parse()`). This causes unnecessary allocation for every row.
+**Action:** Access the `surrealdb::sql::Id` enum variants directly (e.g., `match id { Id::Number(n) => n, ... }`) to avoid intermediate string allocations.

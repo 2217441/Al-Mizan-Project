@@ -7,6 +7,7 @@ use axum::{extract::State, http::StatusCode, Json};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
+use std::sync::OnceLock;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
@@ -26,6 +27,18 @@ pub struct AuthResponse {
 struct Claims {
     sub: String,
     exp: usize,
+}
+
+static DUMMY_HASH: OnceLock<String> = OnceLock::new();
+
+fn get_dummy_hash() -> &'static str {
+    DUMMY_HASH.get_or_init(|| {
+        let salt = SaltString::generate(&mut OsRng);
+        Argon2::default()
+            .hash_password("dummy_password".as_bytes(), &salt)
+            .unwrap()
+            .to_string()
+    })
 }
 
 pub async fn signup(
@@ -80,45 +93,65 @@ pub async fn signin(
         .take(0)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    if let Some(user) = user {
-        // 2. Verify Password
+    // SECURITY: Prevent Timing Attacks (Username Enumeration)
+    // Always perform password verification, even if the user is not found.
+    // This ensures that the response time is roughly the same for valid and invalid emails.
+
+    let (password_valid, _user_found) = if let Some(user) = user {
         let stored_hash = user.get("password").and_then(|v| v.as_str()).unwrap_or("");
-        let parsed_hash = PasswordHash::new(stored_hash).map_err(|_| StatusCode::UNAUTHORIZED)?;
 
-        if Argon2::default()
-            .verify_password(payload.password.as_bytes(), &parsed_hash)
-            .is_ok()
-        {
-            // 3. Generate JWT
-            let expiration = Utc::now()
-                .checked_add_signed(Duration::hours(24))
-                .expect("valid timestamp")
-                .timestamp();
-
-            let claims = Claims {
-                sub: payload.email,
-                exp: usize::try_from(expiration).unwrap_or(0),
-            };
-
-            // SECURITY: JWT_SECRET must be set in production
-            let jwt_secret = std::env::var("JWT_SECRET").unwrap_or_else(|_| {
-                assert!(
-                    std::env::var("RUST_ENV").unwrap_or_default() != "production",
-                    "JWT_SECRET must be set in production environment"
-                );
-                tracing::warn!("Using insecure dev JWT secret - DO NOT USE IN PRODUCTION");
-                "INSECURE_DEV_SECRET_CHANGE_ME_32CH".to_string()
-            });
-
-            let token = encode(
-                &Header::default(),
-                &claims,
-                &EncodingKey::from_secret(jwt_secret.as_bytes()),
+        // If stored hash is invalid (e.g. empty or bad format), we treat it as auth failure
+        // but still try to verify against dummy to consume time.
+        if let Ok(parsed_hash) = PasswordHash::new(stored_hash) {
+            (
+                Argon2::default()
+                    .verify_password(payload.password.as_bytes(), &parsed_hash)
+                    .is_ok(),
+                true,
             )
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-            return Ok(Json(AuthResponse { token }));
+        } else {
+            // Invalid stored hash format - use dummy to consume time
+            let parsed_dummy = PasswordHash::new(get_dummy_hash()).unwrap();
+            let _ = Argon2::default().verify_password(payload.password.as_bytes(), &parsed_dummy);
+            (false, true)
         }
+    } else {
+        // User not found - verify against dummy hash to consume time
+        let parsed_dummy = PasswordHash::new(get_dummy_hash()).unwrap();
+        let _ = Argon2::default().verify_password(payload.password.as_bytes(), &parsed_dummy);
+        (false, false)
+    };
+
+    if password_valid {
+        // 3. Generate JWT
+        let expiration = Utc::now()
+            .checked_add_signed(Duration::hours(24))
+            .expect("valid timestamp")
+            .timestamp();
+
+        let claims = Claims {
+            sub: payload.email,
+            exp: usize::try_from(expiration).unwrap_or(0),
+        };
+
+        // SECURITY: JWT_SECRET must be set in production
+        let jwt_secret = std::env::var("JWT_SECRET").unwrap_or_else(|_| {
+            assert!(
+                std::env::var("RUST_ENV").unwrap_or_default() != "production",
+                "JWT_SECRET must be set in production environment"
+            );
+            tracing::warn!("Using insecure dev JWT secret - DO NOT USE IN PRODUCTION");
+            "INSECURE_DEV_SECRET_CHANGE_ME_32CH".to_string()
+        });
+
+        let token = encode(
+            &Header::default(),
+            &claims,
+            &EncodingKey::from_secret(jwt_secret.as_bytes()),
+        )
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        return Ok(Json(AuthResponse { token }));
     }
 
     Err(StatusCode::UNAUTHORIZED)
@@ -166,5 +199,13 @@ mod tests {
             password: "a".repeat(129),
         };
         assert!(long_password.validate().is_err());
+    }
+
+    #[test]
+    fn test_dummy_hash_generation() {
+        // Ensure the dummy hash is generated successfully
+        let hash = get_dummy_hash();
+        assert!(!hash.is_empty());
+        assert!(hash.starts_with("$argon2"));
     }
 }
