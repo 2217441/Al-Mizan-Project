@@ -32,6 +32,7 @@ function updateThemeIcon(theme) {
     if (btn) {
         btn.innerHTML = theme === 'dark' ? '☀️' : '🌙';
         btn.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`);
+        btn.title = btn.getAttribute('aria-label');
     }
 }
 
