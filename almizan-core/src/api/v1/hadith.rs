@@ -1,3 +1,4 @@
+use super::utils::serialize_thing_id;
 use crate::repository::db::Database;
 use axum::{
     extract::{Path, State},
@@ -8,7 +9,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
 pub struct HadithResponse {
-    id: String,
+    #[serde(serialize_with = "serialize_thing_id")]
+    id: surrealdb::sql::Thing,
     collection: String,
     book_number: Option<i32>,
     hadith_number: f64,
@@ -49,7 +51,7 @@ pub async fn get_hadith(
         Ok(hadiths) if !hadiths.is_empty() => {
             let h = &hadiths[0];
             Json(HadithResponse {
-                id: h.id.to_string(),
+                id: h.id.clone(),
                 collection: h.collection.clone(),
                 book_number: h.book_number,
                 hadith_number: h.hadith_number,
@@ -94,7 +96,7 @@ pub async fn list_collection(
                 .into_iter()
                 .map(|h| {
                     HadithResponse {
-                        id: h.id.to_string(),
+                        id: h.id,
                         collection: h.collection,
                         book_number: h.book_number,
                         hadith_number: h.hadith_number,
