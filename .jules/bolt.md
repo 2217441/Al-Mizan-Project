@@ -19,3 +19,7 @@
 ## 2024-10-27 - [SurrealDB ID Parsing Overhead]
 **Learning:** Found an anti-pattern where `surrealdb::sql::Thing` IDs were being converted to Strings and then parsed back to integers (e.g., `id.to_string().parse()`). This causes unnecessary allocation for every row.
 **Action:** Access the `surrealdb::sql::Id` enum variants directly (e.g., `match id { Id::Number(n) => n, ... }`) to avoid intermediate string allocations.
+
+## 2024-10-28 - [Unused Large Fields Fetching]
+**Learning:** `get_graph` was fetching `display_text` (potentially large) for 50 hadiths but never using it. Removing unused fields from structs and queries saves significant I/O and deserialization cost. Also, consuming iterators (`into_iter()`) allows moving strings instead of cloning them.
+**Action:** audit SQL queries to ensure only used columns are selected, and prefer `into_iter()` when transforming data to avoid `clone()`.
