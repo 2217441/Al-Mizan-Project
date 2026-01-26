@@ -19,3 +19,7 @@
 ## 2024-10-27 - [SurrealDB ID Parsing Overhead]
 **Learning:** Found an anti-pattern where `surrealdb::sql::Thing` IDs were being converted to Strings and then parsed back to integers (e.g., `id.to_string().parse()`). This causes unnecessary allocation for every row.
 **Action:** Access the `surrealdb::sql::Id` enum variants directly (e.g., `match id { Id::Number(n) => n, ... }`) to avoid intermediate string allocations.
+
+## 2024-10-28 - [SurrealDB Thing Serialization & Move Semantics]
+**Learning:** `surrealdb::sql::Thing` implements `Display` which can be used with `serializer.collect_str()` to avoid allocating an intermediate `String` during serialization. Also, using `swap_remove(0)` or `into_iter()` on database results avoids cloning fields when constructing responses.
+**Action:** Use `#[serde(serialize_with = "...")]` for `Thing` fields and prefer move semantics over `clone()` when extracting single items from vectors.

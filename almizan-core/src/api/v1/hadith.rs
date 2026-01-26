@@ -8,7 +8,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
 pub struct HadithResponse {
-    id: String,
+    #[serde(serialize_with = "crate::api::v1::utils::serialize_thing_id")]
+    id: surrealdb::sql::Thing,
     collection: String,
     book_number: Option<i32>,
     hadith_number: f64,
@@ -46,15 +47,15 @@ pub async fn get_hadith(
         .and_then(|mut r| r.take(0));
 
     match result {
-        Ok(hadiths) if !hadiths.is_empty() => {
-            let h = &hadiths[0];
+        Ok(mut hadiths) if !hadiths.is_empty() => {
+            let h = hadiths.swap_remove(0);
             Json(HadithResponse {
-                id: h.id.to_string(),
-                collection: h.collection.clone(),
+                id: h.id,
+                collection: h.collection,
                 book_number: h.book_number,
                 hadith_number: h.hadith_number,
-                text: h.text.clone().unwrap_or_default(),
-                grade: h.grade.clone(),
+                text: h.text.unwrap_or_default(),
+                grade: h.grade,
             })
             .into_response()
         }
@@ -94,7 +95,7 @@ pub async fn list_collection(
                 .into_iter()
                 .map(|h| {
                     HadithResponse {
-                        id: h.id.to_string(),
+                        id: h.id,
                         collection: h.collection,
                         book_number: h.book_number,
                         hadith_number: h.hadith_number,
