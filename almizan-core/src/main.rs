@@ -18,6 +18,7 @@ pub mod domain;
 mod enterprise;
 mod identity;
 mod repository;
+mod security;
 
 use api::auth;
 use repository::db::Database;
@@ -158,6 +159,7 @@ fn create_router(db: Database) -> Router<()> {
             "/favicon.ico",
             get(|| async { axum::http::StatusCode::NO_CONTENT }),
         )
+        .layer(axum::middleware::from_fn(security::add_security_headers))
         .with_state(db)
 }
 

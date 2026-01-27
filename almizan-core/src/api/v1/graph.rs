@@ -167,7 +167,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // 5. Process Prophets
     // Optimization: Consume vector to move strings instead of cloning
     for prophet in prophets {
-        let prophet_id = get_id(&prophet.id);
+        let prophet_id = format_surreal_id(&prophet.id);
 
         nodes.push(CytoscapeNode {
             data: NodeData {
@@ -192,7 +192,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Already fetched in parallel above as `verses`
 
     for verse in verses {
-        let verse_id = get_id(&verse.id);
+        let verse_id = format_surreal_id(&verse.id);
 
         nodes.push(CytoscapeNode {
             data: NodeData {
@@ -221,7 +221,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     let mut narrator_ids: Vec<String> = Vec::with_capacity(narrators_len);
 
     for narrator in narrators_list {
-        let narrator_id = get_id(&narrator.id);
+        let narrator_id = format_surreal_id(&narrator.id);
 
         // Collect ID for edge creation later (distribution to hadiths)
         narrator_ids.push(narrator_id.clone());
@@ -254,7 +254,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Already fetched in parallel above as `hadiths`
 
     for (i, hadith) in hadiths.into_iter().enumerate() {
-        let hadith_id = get_id(&hadith.id);
+        let hadith_id = format_surreal_id(&hadith.id);
 
         // Use Arabic collection names for labels
         let collection_label = match hadith.collection.as_str() {
