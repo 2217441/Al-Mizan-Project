@@ -48,15 +48,15 @@ pub async fn get_hadith(
         .and_then(|mut r| r.take(0));
 
     match result {
-        Ok(hadiths) if !hadiths.is_empty() => {
-            let h = &hadiths[0];
+        Ok(mut hadiths) if !hadiths.is_empty() => {
+            let h = hadiths.swap_remove(0);
             Json(HadithResponse {
                 id: h.id.clone(),
                 collection: h.collection.clone(),
                 book_number: h.book_number,
                 hadith_number: h.hadith_number,
-                text: h.text.clone().unwrap_or_default(),
-                grade: h.grade.clone(),
+                text: h.text.unwrap_or_default(),
+                grade: h.grade,
             })
             .into_response()
         }

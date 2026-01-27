@@ -84,17 +84,17 @@ pub async fn get_verse(
         .and_then(|mut r| r.take(0));
 
     match result {
-        Ok(verses) if !verses.is_empty() => {
-            let v = &verses[0];
+        Ok(mut verses) if !verses.is_empty() => {
+            let v = verses.swap_remove(0);
 
             Json(VerseResponse {
                 id: v.id.clone(),
                 surah: v.surah_number,
                 ayah: v.ayah_number,
-                text_uthmani: v.text_uthmani.clone(),
+                text_uthmani: v.text_uthmani,
                 juz: v.juz_number.unwrap_or(0),
-                place: v.revelation_place.clone().unwrap_or_default(),
-                roots: v.roots.clone(),
+                place: v.revelation_place.unwrap_or_default(),
+                roots: v.roots,
             })
             .into_response()
         }
