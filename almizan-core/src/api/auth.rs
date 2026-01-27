@@ -50,7 +50,25 @@ pub async fn signup(
         return Err(StatusCode::BAD_REQUEST);
     }
 
-    // 1. Hash Password
+    // 1. Check if user already exists
+    // SECURITY: Prevent duplicate users (DoS/Account Takeover risk)
+    let check_sql = "SELECT id FROM user WHERE email = $email LIMIT 1";
+    let mut check_response = db
+        .client
+        .query(check_sql)
+        .bind(("email", payload.email.clone()))
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let existing: Vec<serde_json::Value> = check_response
+        .take(0)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    if !existing.is_empty() {
+        return Err(StatusCode::CONFLICT);
+    }
+
+    // 2. Hash Password
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let password_hash = match argon2
@@ -59,7 +77,7 @@ pub async fn signup(
             Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
         };
 
-    // 2. Create User in DB (Simplified for MVP)
+    // 3. Create User in DB (Simplified for MVP)
     let sql = "CREATE user SET email = $email, password = $password, role = 'student'";
     let created = db
         .client
@@ -81,7 +99,7 @@ pub async fn signin(
     Json(payload): Json<AuthPayload>,
 ) -> Result<Json<AuthResponse>, StatusCode> {
     // 1. Fetch User
-    let sql = "SELECT * FROM user WHERE email = $email";
+    let sql = "SELECT * FROM user WHERE email = $email LIMIT 1";
     let mut response = db
         .client
         .query(sql)
@@ -89,9 +107,11 @@ pub async fn signin(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let user: Option<serde_json::Value> = response
+    let users: Vec<serde_json::Value> = response
         .take(0)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let user = users.into_iter().next();
 
     // SECURITY: Prevent Timing Attacks (Username Enumeration)
     // Always perform password verification, even if the user is not found.
