@@ -1,3 +1,4 @@
+use crate::api::v1::utils::format_surreal_id;
 use crate::repository::db::Database;
 use axum::{extract::State, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
@@ -74,23 +75,6 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     let mut nodes: Vec<CytoscapeNode> = Vec::with_capacity(130);
     // Estimated edges: 25 (Prophets) + 20 (Verses) + 30 (Narrators) + 50 (Hadiths) = ~125
     let mut edges_vec: Vec<CytoscapeEdge> = Vec::with_capacity(130);
-
-    // Helper to get string representation of Thing without SurrealQL escaping (brackets)
-    // Optimization: Avoids to_string() overhead (checking escaping) and sanitize_id() overhead (replacing)
-    let get_id = |thing: &surrealdb::sql::Thing| -> String {
-        match &thing.id {
-            surrealdb::sql::Id::String(s) => format!("{}:{}", thing.tb, s),
-            surrealdb::sql::Id::Number(n) => format!("{}:{}", thing.tb, n),
-            _ => {
-                let s = thing.to_string();
-                if s.contains('⟨') || s.contains('⟩') {
-                    s.replace(&['⟨', '⟩'][..], "")
-                } else {
-                    s
-                }
-            }
-        }
-    };
 
     // 1. Add Allah (the root)
     nodes.push(CytoscapeNode {

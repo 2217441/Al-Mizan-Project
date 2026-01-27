@@ -9,3 +9,4 @@ pub mod network;
 pub mod synthesis;
 pub mod utils;
 pub mod verse;
+pub mod utils;
