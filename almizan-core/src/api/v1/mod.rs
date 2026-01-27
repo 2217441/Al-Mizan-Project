@@ -7,4 +7,5 @@ pub mod identity;
 pub mod names;
 pub mod network;
 pub mod synthesis;
+pub mod utils;
 pub mod verse;
