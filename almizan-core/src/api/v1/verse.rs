@@ -1,3 +1,4 @@
+use super::utils::serialize_thing_id;
 use crate::repository::db::Database;
 use axum::{
     extract::{Path, Query, State},
@@ -8,7 +9,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
 pub struct VerseResponse {
-    id: String,
+    #[serde(serialize_with = "serialize_thing_id")]
+    id: surrealdb::sql::Thing,
     surah: i32,
     ayah: i32,
     text_uthmani: String,
@@ -86,7 +88,7 @@ pub async fn get_verse(
             let v = &verses[0];
 
             Json(VerseResponse {
-                id: v.id.to_string(),
+                id: v.id.clone(),
                 surah: v.surah_number,
                 ayah: v.ayah_number,
                 text_uthmani: v.text_uthmani.clone(),
@@ -142,7 +144,7 @@ pub async fn get_surah(State(db): State<Database>, Path(surah): Path<i32>) -> im
     let response: Vec<VerseResponse> = verses
         .into_iter()
         .map(|v| VerseResponse {
-            id: v.id.to_string(),
+            id: v.id,
             surah: v.surah_number,
             ayah: v.ayah_number,
             text_uthmani: v.text_uthmani,

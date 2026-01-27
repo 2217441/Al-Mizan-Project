@@ -19,3 +19,7 @@
 ## 2024-10-27 - [SurrealDB ID Parsing Overhead]
 **Learning:** Found an anti-pattern where `surrealdb::sql::Thing` IDs were being converted to Strings and then parsed back to integers (e.g., `id.to_string().parse()`). This causes unnecessary allocation for every row.
 **Action:** Access the `surrealdb::sql::Id` enum variants directly (e.g., `match id { Id::Number(n) => n, ... }`) to avoid intermediate string allocations.
+
+## 2024-10-28 - [SurrealDB ID Serialization Overhead]
+**Learning:** `Thing::to_string()` allocates a new `String` every time. When serializing thousands of items (e.g., verses), this allocation adds up.
+**Action:** Implemented `serialize_thing_id` to write `Thing` directly to the `serde` serializer without intermediate string allocation, and updated response structs to hold `Thing` instead of `String`.
