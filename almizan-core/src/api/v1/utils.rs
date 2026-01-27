@@ -1,19 +1,21 @@
-use surrealdb::sql::{Id, Thing};
+use serde::Serializer;
+use surrealdb::sql::Thing;
 
-/// Helper to get string representation of Thing without `SurrealQL` escaping (brackets)
-/// Optimization: Avoids `to_string()` overhead (checking escaping) and `sanitize_id()` overhead (replacing)
-/// for common cases (String and Number IDs).
-#[must_use]
-pub fn format_surreal_id(thing: &Thing) -> String {
+/// Serializes a SurrealDB Thing as a simple "table:id" string.
+/// This avoids intermediate String allocation by writing directly to the serializer.
+pub fn serialize_thing_id<S>(thing: &Thing, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
     match &thing.id {
-        Id::String(s) => format!("{}:{}", thing.tb, s),
-        Id::Number(n) => format!("{}:{}", thing.tb, n),
+        surrealdb::sql::Id::String(s) => serializer.collect_str(&format_args!("{}:{}", thing.tb, s)),
+        surrealdb::sql::Id::Number(n) => serializer.collect_str(&format_args!("{}:{}", thing.tb, n)),
         _ => {
             let s = thing.to_string();
             if s.contains('⟨') || s.contains('⟩') {
-                s.replace(&['⟨', '⟩'][..], "")
+                serializer.collect_str(&s.replace(['⟨', '⟩'], ""))
             } else {
-                s
+                serializer.collect_str(&s)
             }
         }
     }
