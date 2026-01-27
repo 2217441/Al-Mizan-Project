@@ -65,6 +65,7 @@
                 if (currentPath === linkPath ||
                     (linkPath !== '/' && currentPath.startsWith(linkPath))) {
                     link.classList.add('active');
+                    link.setAttribute('aria-current', 'page');
                 }
             });
         });

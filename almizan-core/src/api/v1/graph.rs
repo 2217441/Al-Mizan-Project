@@ -1,3 +1,4 @@
+use crate::api::v1::utils::format_surreal_id;
 use crate::repository::db::Database;
 use axum::{extract::State, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
@@ -54,8 +55,7 @@ struct DbSemanticHadith {
     id: surrealdb::sql::Thing,
     ref_no: i32,
     collection: String,
-    #[allow(dead_code)]
-    display_text: Option<String>,
+    // Optimization: display_text removed as it was unused and large
 }
 
 #[derive(Deserialize, Debug)]
@@ -76,23 +76,6 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Estimated edges: 25 (Prophets) + 20 (Verses) + 30 (Narrators) + 50 (Hadiths) = ~125
     let mut edges_vec: Vec<CytoscapeEdge> = Vec::with_capacity(130);
 
-    // Helper to get string representation of Thing without SurrealQL escaping (brackets)
-    // Optimization: Avoids to_string() overhead (checking escaping) and sanitize_id() overhead (replacing)
-    let get_id = |thing: &surrealdb::sql::Thing| -> String {
-        match &thing.id {
-            surrealdb::sql::Id::String(s) => format!("{}:{}", thing.tb, s),
-            surrealdb::sql::Id::Number(n) => format!("{}:{}", thing.tb, n),
-            _ => {
-                let s = thing.to_string();
-                if s.contains('⟨') || s.contains('⟩') {
-                    s.replace(&['⟨', '⟩'][..], "")
-                } else {
-                    s
-                }
-            }
-        }
-    };
-
     // 1. Add Allah (the root)
     nodes.push(CytoscapeNode {
         data: NodeData {
@@ -105,7 +88,8 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // 2. Prepare Queries
     let prophets_sql = "SELECT id, name_ar FROM prophet LIMIT 25";
     let verses_sql = "SELECT id, surah_number, ayah_number FROM quran_verse LIMIT 20";
-    let hadith_sql = "SELECT id, ref_no, collection, display_text FROM semantic_hadith LIMIT 50";
+    // Optimization: Removed display_text from query as it is unused
+    let hadith_sql = "SELECT id, ref_no, collection FROM semantic_hadith LIMIT 50";
     let narrator_sql = "SELECT id, name_ar, generation FROM narrator LIMIT 30";
 
     // 3. Execute concurrently
@@ -174,14 +158,21 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         }
     };
 
+    // Capture lengths for logging before consuming vectors
+    let prophets_len = prophets.len();
+    let verses_len = verses.len();
+    let hadiths_len = hadiths.len();
+    let narrators_len = narrators_list.len();
+
     // 5. Process Prophets
-    for prophet in &prophets {
+    // Optimization: Consume vector to move strings instead of cloning
+    for prophet in prophets {
         let prophet_id = get_id(&prophet.id);
 
         nodes.push(CytoscapeNode {
             data: NodeData {
                 id: Cow::Owned(prophet_id.clone()),
-                label: prophet.name_ar.clone(),
+                label: prophet.name_ar, // Move
                 node_type: Cow::Borrowed("prophet"),
             },
         });
@@ -200,7 +191,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // 3. Get sample verses narrated by Prophet Muhammad (using available Juz 30 data)
     // Already fetched in parallel above as `verses`
 
-    for verse in &verses {
+    for verse in verses {
         let verse_id = get_id(&verse.id);
 
         nodes.push(CytoscapeNode {
@@ -227,9 +218,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Processed BEFORE Hadiths to build narrator_ids list for edge distribution
 
     // Optimization: Pre-allocate ID vectors
-    let mut narrator_ids: Vec<String> = Vec::with_capacity(narrators_list.len());
+    let mut narrator_ids: Vec<String> = Vec::with_capacity(narrators_len);
 
-    for narrator in &narrators_list {
+    for narrator in narrators_list {
         let narrator_id = get_id(&narrator.id);
 
         // Collect ID for edge creation later (distribution to hadiths)
@@ -262,7 +253,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // 5. Get Hadiths (SemanticHadith V2)
     // Already fetched in parallel above as `hadiths`
 
-    for (i, hadith) in hadiths.iter().enumerate() {
+    for (i, hadith) in hadiths.into_iter().enumerate() {
         let hadith_id = get_id(&hadith.id);
 
         // Use Arabic collection names for labels
@@ -302,10 +293,10 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
     info!(
         "[TAWHIDIC GRAPH] Allah: 1, Prophets: {}, Verses: {}, Hadiths: {}, Narrators: {}, Edges: {}",
-        prophets.len(),
-        verses.len(),
-        hadiths.len(),
-        narrators_list.len(),
+        prophets_len,
+        verses_len,
+        hadiths_len,
+        narrators_len,
         edges_vec.len()
     );
 

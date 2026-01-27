@@ -1,3 +1,4 @@
+use super::utils::serialize_thing_id;
 use crate::repository::db::Database;
 use axum::{
     extract::{Path, Query, State},
@@ -8,7 +9,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
 pub struct VerseResponse {
-    id: String,
+    #[serde(serialize_with = "serialize_thing_id")]
+    id: surrealdb::sql::Thing,
     surah: i32,
     ayah: i32,
     text_uthmani: String,
@@ -82,17 +84,17 @@ pub async fn get_verse(
         .and_then(|mut r| r.take(0));
 
     match result {
-        Ok(verses) if !verses.is_empty() => {
-            let v = &verses[0];
+        Ok(mut verses) if !verses.is_empty() => {
+            let v = verses.swap_remove(0);
 
             Json(VerseResponse {
-                id: v.id.to_string(),
+                id: v.id.clone(),
                 surah: v.surah_number,
                 ayah: v.ayah_number,
-                text_uthmani: v.text_uthmani.clone(),
+                text_uthmani: v.text_uthmani,
                 juz: v.juz_number.unwrap_or(0),
-                place: v.revelation_place.clone().unwrap_or_default(),
-                roots: v.roots.clone(),
+                place: v.revelation_place.unwrap_or_default(),
+                roots: v.roots,
             })
             .into_response()
         }
@@ -142,7 +144,7 @@ pub async fn get_surah(State(db): State<Database>, Path(surah): Path<i32>) -> im
     let response: Vec<VerseResponse> = verses
         .into_iter()
         .map(|v| VerseResponse {
-            id: v.id.to_string(),
+            id: v.id,
             surah: v.surah_number,
             ayah: v.ayah_number,
             text_uthmani: v.text_uthmani,
