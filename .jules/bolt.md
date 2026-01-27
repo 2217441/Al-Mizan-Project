@@ -23,3 +23,7 @@
 ## 2024-10-28 - [SurrealDB ID Serialization Overhead]
 **Learning:** `Thing::to_string()` allocates a new `String` every time. When serializing thousands of items (e.g., verses), this allocation adds up.
 **Action:** Implemented `serialize_thing_id` to write `Thing` directly to the `serde` serializer without intermediate string allocation, and updated response structs to hold `Thing` instead of `String`.
+
+## 2024-10-29 - [Cow for Static Strings in Responses]
+**Learning:** API response structs with `String` fields cause unnecessary heap allocations when returning static string literals (e.g., status strings like "Green", "Pending").
+**Action:** Use `std::borrow::Cow<'a, str>` in response structs and return `Cow::Borrowed("static_string")` to eliminate these allocations.
