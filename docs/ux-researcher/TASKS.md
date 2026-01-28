@@ -1,9 +1,10 @@
 # UX Researcher Tasks
 
 ## 1. Initial Setup
-- [x] Initialize research repository <!-- id: 1 -->
-- [x] Query context manager for proejct scope <!-- id: 2 -->
-- [x] Review existing design analytics <!-- id: 3 -->
+- [ ] Create UX Research Plan (See `RESEARCH_PLAN.md`) <!-- id: sfia-1 -->
+- [ ] Initialize research repository <!-- id: 1 -->
+- [ ] Query context manager for proejct scope <!-- id: 2 -->
+- [ ] Review existing design analytics <!-- id: 3 -->
 
 ## 2. Research Planning
 ### Immediate Priority: Phase 1 Gap Analysis

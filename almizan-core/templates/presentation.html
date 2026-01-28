@@ -19,9 +19,23 @@
             --color-void: #050510;
             --text-primary: #E0E0E0;
             --text-muted: #8892B0;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --font-heading: 'Cinzel', serif;
             --font-body: 'Inter', sans-serif;
             --font-arabic: 'Amiri', serif;
+            --blob-opacity: 0.2;
+            --card-shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode {
+            --color-void: #f8fafc;
+            --text-primary: #1e293b;
+            --text-muted: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(212, 175, 55, 0.3);
+            --blob-opacity: 0.15;
+            --card-shadow: rgba(212, 175, 55, 0.1);
         }
 
         /* --- Global Styles --- */
@@ -96,12 +110,12 @@
 
         /* --- Content Styling --- */
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--glass-bg);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 2rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 40px var(--card-shadow);
         }
 
         .text-shimmer {
@@ -137,6 +151,33 @@
             margin-right: 0.5rem;
             box-shadow: 0 0 10px var(--color-gold);
         }
+
+        /* --- Theme Toggle --- */
+        #theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1001;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--color-gold);
+            padding: 0.6rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px var(--card-shadow);
+        }
+
+        #theme-toggle:hover {
+            transform: scale(1.1);
+            border-color: var(--color-gold);
+        }
     </style>
 </head>
 
@@ -144,9 +185,14 @@
 
     <!-- Premium Background Elements -->
     <div class="mesh-background">
-        <div class="mesh-blob mesh-blob--gold"></div>
-        <div class="mesh-blob mesh-blob--blue"></div>
+        <div class="mesh-blob mesh-blob--gold" style="opacity: var(--blob-opacity);"></div>
+        <div class="mesh-blob mesh-blob--blue" style="opacity: var(--blob-opacity);"></div>
     </div>
+
+    <!-- Theme Toggle Button -->
+    <button id="theme-toggle" title="Toggle Light/Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
 
     <div class="reveal">
         <div class="slides">
@@ -333,7 +379,7 @@
 
     <!-- PERSISTENT NAV -->
     <a id="mode-switch" href="/landing"
-        style="position: fixed; top: 2rem; left: 2rem; z-index: 1000; color: var(--text-muted); text-decoration: none; font-size: 0.7rem; letter-spacing: 1px; padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; backdrop-filter: blur(10px);">
+        style="position: fixed; top: 2rem; left: 2rem; z-index: 1000; color: var(--text-muted); text-decoration: none; font-size: 0.7rem; letter-spacing: 1px; padding: 0.5rem 1rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 5px; backdrop-filter: blur(10px); box-shadow: 0 4px 15px var(--card-shadow);">
         <i class="fas fa-arrow-left"></i> EXIT PRESENTATION
     </a>
 
@@ -364,15 +410,20 @@
 
         function initGraph() {
             const container = document.getElementById('cy-slide');
+            const isLight = body.classList.contains('light-mode');
+            const textColor = isLight ? '#1e293b' : '#E0E0E0';
+            const labelColor = isLight ? '#64748b' : '#8892B0';
+            const edgeStroke = isLight ? 'rgba(212, 175, 55, 0.6)' : 'rgba(212, 175, 55, 0.4)';
+
             const nodes = new vis.DataSet(rawNodes.map(n => ({
                 id: n.id,
                 label: n.label,
                 color: {
-                    background: n.group === 'divine' ? '#D4AF37' : (n.group === 'wahi' ? '#b8860b' : '#1e293b'),
+                    background: n.group === 'divine' ? '#D4AF37' : (n.group === 'wahi' ? '#b8860b' : (isLight ? '#e2e8f0' : '#1e293b')),
                     border: '#D4AF37',
                     highlight: { background: '#D4AF37', border: '#fff' }
                 },
-                font: { color: n.group === 'modern' ? '#E0E0E0' : '#050510', face: 'Inter' },
+                font: { color: textColor, face: 'Inter' },
                 shape: 'dot',
                 size: n.group === 'divine' ? 40 : 25
             })));
@@ -380,8 +431,8 @@
             const edges = new vis.DataSet(rawEdges.map(e => ({
                 from: e.from, to: e.to,
                 label: e.label,
-                color: { color: 'rgba(212, 175, 55, 0.4)' },
-                font: { size: 10, color: '#8892B0', align: 'middle' }
+                color: { color: edgeStroke },
+                font: { size: 10, color: labelColor, align: 'middle' }
             })));
 
             const options = {
@@ -410,6 +461,36 @@
         Reveal.on('slidechanged', event => {
             if (event.currentSlide.getAttribute('data-state') === 'load-graph') {
                 if (!network) setTimeout(initGraph, 100);
+            }
+        });
+
+        // --- Theme Switching Logic ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        const revealTheme = document.getElementById('theme');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+
+            // Update Icon
+            themeIcon.className = isLight ? 'fas fa-sun' : 'fas fa-moon';
+
+            // Update Reveal.js Theme
+            revealTheme.href = isLight
+                ? "https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/white.min.css"
+                : "https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/black.min.css";
+
+            // Update Graph if it exists
+            if (network) {
+                const textColor = isLight ? '#1e293b' : '#E0E0E0';
+                const edgeColor = isLight ? 'rgba(212, 175, 55, 0.6)' : 'rgba(212, 175, 55, 0.4)';
+
+                network.setOptions({
+                    nodes: { font: { color: textColor } },
+                    edges: { color: { color: edgeColor }, font: { color: isLight ? '#64748b' : '#8892B0' } }
+                });
             }
         });
     </script>

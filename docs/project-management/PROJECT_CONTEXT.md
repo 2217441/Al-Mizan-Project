@@ -1,14 +1,25 @@
 # Project Context: Al-Mizan
 
+> **Author**: Project Manager Agent
+> **Date**: 2026-01-28
+> **Status**: Active / Phase 1b
+> **Charter**: [V1 Foundations](../charter/V1_Foundations.md)
+
+---
+
 ## Executive Summary
-**Goal:** Build a graph-based platform for traversing and verifying semantic relationships in knowledge sources.
-**Core Value:** "Traceable Truth" – Ensuring the integrity of knowledge derivation through graph verification.
+**Goal**: Build a graph-based platform for traversing and verifying semantic relationships in knowledge sources.
+**Core Value**: "Traceable Truth" – Ensuring the integrity of knowledge derivation through graph verification.
 
 ## Current Status: "Stabilization & Optimization"
-The project is currently in the late stages of **Phase 1 (Foundation)** but requires significant optimization and alignment.
-- **Backend**: Core graph infrastructure (Rust/SurrealDB) is in place but needs validation.
-- **Frontend**: Basic data visualization exists. Needs to evolve into a robust verification interface to meet stakeholder expectations.
-- **Documentation**: Needs consolidation to reflect the current state accurately.
+The project is currently in the late stages of **Phase 1 (Foundation)**.
+- **Reference**: See [Project Schedule](../PROJECT_SCHEDULE.md) for Phase 1b timeline.
+- **Key Focus**: Integrating SFIA for Agent Capabilities while stabilizing the Core Graph.
+
+## Success Metrics (KPIs)
+1.  **Graph Integrity**: 100% of Quranic Nodes (`quran_verse`) linked to Morphology Roots.
+2.  **Agent Capability**: Agents can successfully retrieve and utilize "SFIA Skill Definitions" from `data/sfia/`.
+3.  **Governance**: 100% of Architectural Decisions logged in `docs/adr/`.
 
 ## Objectives (Immediate - Phase 1b)
 1.  **Optimize Phase 1**: Address stakeholder feedback on the current Foundation.

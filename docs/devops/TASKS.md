@@ -2,25 +2,25 @@
 
 ## Phase 1: Critical Fixes ✅
 
-- [x] Fix Dockerfile healthcheck (install curl)
-- [x] Add backup verification to backup.sh
-- [x] Create cron configuration for automated backups
-- [x] Fix Makefile path error (backend → almizan-core)
-- [x] Add make backup/restore commands
+- [ ] Fix Dockerfile healthcheck (install curl)
+- [ ] Add backup verification to backup.sh
+- [ ] Create cron configuration for automated backups
+- [ ] Fix Makefile path error (backend → almizan-core)
+- [ ] Add make backup/restore commands
 
 ## Phase 2: Deployment Hardening ✅
 
-- [x] Add HTTP health check to switch.sh
-- [x] Add rollback command to switch.sh (--rollback)
-- [x] Add status command to switch.sh (--status)
-- [x] Remove hardcoded container name (dynamic discovery)
-- [x] Create reusable healthcheck.sh script
+- [ ] Add HTTP health check to switch.sh
+- [ ] Add rollback command to switch.sh (--rollback)
+- [ ] Add status command to switch.sh (--status)
+- [ ] Remove hardcoded container name (dynamic discovery)
+- [ ] Create reusable healthcheck.sh script
 
 ## Phase 3: Documentation ✅
 
-- [x] Create DEVOPS_ANALYSIS.md
-- [x] Create RUNBOOKS.md
-- [x] Create TASKS.md (this file)
+- [ ] Create DEVOPS_ANALYSIS.md
+- [ ] Create RUNBOOKS.md
+- [ ] Create TASKS.md (this file)
 
 ## Phase 4: Observability (Future)
 

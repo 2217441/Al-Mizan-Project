@@ -1,8 +1,10 @@
 # System Architecture Tasks
-
 > **Author**: System Architect Agent
-> **Date**: 2026-01-15
+> **Date**: 2026-01-28
 > **Status**: Active
+> **Context**: [System Landscape](../system-architecture/ARCHITECTURE_CONTEXT.md)
+
+---
 
 ---
 
