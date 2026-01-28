@@ -1,12 +1,16 @@
 use crate::domain::compliance::{Logger, Strictness, StrictnessLevel};
-use axum::{extract::Json, response::IntoResponse};
+use axum::{extract::Json, http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
+use validator::Validate;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct SynthesisRequest {
+    #[validate(length(min = 1, max = 200))]
     pub topic: String,
+    #[validate(length(max = 20))]
     pub strictness: Option<String>,       // "Strict", "Permissive"
+    #[validate(length(max = 20))]
     pub strictness_level: Option<String>, // "Basic", "Standard", "High", "Extreme"
 }
 
@@ -25,6 +29,15 @@ pub struct SynthesisResponse<'a> {
 }
 
 pub async fn synthesize_topic(Json(payload): Json<SynthesisRequest>) -> impl IntoResponse {
+    // 0. Validate Input
+    if payload.validate().is_err() {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({"error": "Invalid input"})),
+        )
+            .into_response();
+    }
+
     // Domain Logic: Parse Strictness
     let strictness_mode = match payload.strictness.as_deref() {
         Some("loose") => Strictness::Lenient,
@@ -115,5 +128,45 @@ pub async fn synthesize_topic(Json(payload): Json<SynthesisRequest>) -> impl Int
             .unwrap(),
     );
 
-    (headers, Json(response))
+    (headers, Json(response)).into_response()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_synthesis_payload_validation() {
+        // Valid case
+        let valid = SynthesisRequest {
+            topic: "Bitcoin".to_string(),
+            strictness: Some("Strict".to_string()),
+            strictness_level: Some("Standard".to_string()),
+        };
+        assert!(valid.validate().is_ok());
+
+        // Invalid: Topic too long
+        let long_topic = SynthesisRequest {
+            topic: "a".repeat(201), // 201 > 200
+            strictness: None,
+            strictness_level: None,
+        };
+        assert!(long_topic.validate().is_err());
+
+        // Invalid: Topic empty
+        let empty_topic = SynthesisRequest {
+            topic: "".to_string(),
+            strictness: None,
+            strictness_level: None,
+        };
+        assert!(empty_topic.validate().is_err());
+
+        // Invalid: Strictness too long
+        let long_strictness = SynthesisRequest {
+            topic: "Bitcoin".to_string(),
+            strictness: Some("a".repeat(21)),
+            strictness_level: None,
+        };
+        assert!(long_strictness.validate().is_err());
+    }
 }
