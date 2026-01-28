@@ -1,6 +1,7 @@
 use crate::domain::compliance::{Logger, Strictness, StrictnessLevel};
 use axum::{extract::Json, response::IntoResponse};
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 #[derive(Deserialize)]
 pub struct SynthesisRequest {
@@ -10,17 +11,17 @@ pub struct SynthesisRequest {
 }
 
 #[derive(Serialize)]
-pub struct SynthesisResponse {
+pub struct SynthesisResponse<'a> {
     #[serde(rename = "@context")]
-    pub context: String,
+    pub context: Cow<'a, str>,
     #[serde(rename = "@type")]
-    pub type_: String,
-    pub status: String,        // "Red", "Yellow", "Green"
-    pub ruling_status: String, // "http://schema.org/Approved", "http://schema.org/Rejected"
+    pub type_: Cow<'a, str>,
+    pub status: Cow<'a, str>,
+    pub ruling_status: Cow<'a, str>,
     pub consensus_score: f32,
-    pub summary: String,
-    pub primary_scholar: String,
-    pub scholar_avatar: String,
+    pub summary: Cow<'a, str>,
+    pub primary_scholar: Cow<'a, str>,
+    pub scholar_avatar: Cow<'a, str>,
 }
 
 pub async fn synthesize_topic(Json(payload): Json<SynthesisRequest>) -> impl IntoResponse {
@@ -50,54 +51,53 @@ pub async fn synthesize_topic(Json(payload): Json<SynthesisRequest>) -> impl Int
         "bitcoin" => {
             if strictness_mode == Strictness::Lenient {
                 (
-                    "Green".to_string(),
+                    Cow::Borrowed("Green"),
                     0.6,
-                    "Permissible (Minority/Loose). Some scholars view it as a digital asset. CAUTION: This is a minority opinion.".to_string(),
-                    "Sheikh Joe Crypto (Modernist)".to_string(),
-                    "https://api.dicebear.com/7.x/shapes/svg?seed=Joe".to_string(),
-                    "http://schema.org/Approved".to_string(),
+                    Cow::Borrowed("Permissible (Minority/Loose). Some scholars view it as a digital asset. CAUTION: This is a minority opinion."),
+                    Cow::Borrowed("Sheikh Joe Crypto (Modernist)"),
+                    Cow::Borrowed("https://api.dicebear.com/7.x/shapes/svg?seed=Joe"),
+                    Cow::Borrowed("http://schema.org/Approved"),
                 )
             } else {
                 (
-                    "Yellow".to_string(),
+                    Cow::Borrowed("Yellow"),
                     0.4, // Below 0.5 for strict
-                    "Disputed (Strict Default). Significant scholarly disagreement regarding Gharar and lack of intrinsic value. Proceed with caution.".to_string(),
-                    "Imam Al-Ghazali (Derived)".to_string(),
-                    "https://api.dicebear.com/7.x/shapes/svg?seed=Ghazali".to_string(),
-                    "http://schema.org/Pending".to_string(),
+                    Cow::Borrowed("Disputed (Strict Default). Significant scholarly disagreement regarding Gharar and lack of intrinsic value. Proceed with caution."),
+                    Cow::Borrowed("Imam Al-Ghazali (Derived)"),
+                    Cow::Borrowed("https://api.dicebear.com/7.x/shapes/svg?seed=Ghazali"),
+                    Cow::Borrowed("http://schema.org/Pending"),
                 )
             }
         }
         "riba" => (
-            "Red".to_string(),
+            Cow::Borrowed("Red"),
             0.0,
-            "Major Prohibition (Consensus). Riba is universally prohibited in all its forms."
-                .to_string(),
-            "The Four Imams (Consensus)".to_string(),
-            "https://api.dicebear.com/7.x/shapes/svg?seed=Consensus".to_string(),
-            "http://schema.org/Rejected".to_string(),
+            Cow::Borrowed("Major Prohibition (Consensus). Riba is universally prohibited in all its forms."),
+            Cow::Borrowed("The Four Imams (Consensus)"),
+            Cow::Borrowed("https://api.dicebear.com/7.x/shapes/svg?seed=Consensus"),
+            Cow::Borrowed("http://schema.org/Rejected"),
         ),
         "gold" => (
-            "Green".to_string(),
+            Cow::Borrowed("Green"),
             1.0,
-            "Permissible (Majority). Gold is the standard of value in Islamic Finance.".to_string(),
-            "Imam Malik".to_string(),
-            "https://api.dicebear.com/7.x/shapes/svg?seed=Malik".to_string(),
-            "http://schema.org/Approved".to_string(),
+            Cow::Borrowed("Permissible (Majority). Gold is the standard of value in Islamic Finance."),
+            Cow::Borrowed("Imam Malik"),
+            Cow::Borrowed("https://api.dicebear.com/7.x/shapes/svg?seed=Malik"),
+            Cow::Borrowed("http://schema.org/Approved"),
         ),
         _ => (
-            "Yellow".to_string(),
+            Cow::Borrowed("Yellow"),
             0.5,
-            "Topic analysis in progress. Consensus not yet reached.".to_string(),
-            "Al-Mizan Synthesis Engine".to_string(),
-            "https://api.dicebear.com/7.x/shapes/svg?seed=Mizan".to_string(),
-            "http://schema.org/Pending".to_string(),
+            Cow::Borrowed("Topic analysis in progress. Consensus not yet reached."),
+            Cow::Borrowed("Al-Mizan Synthesis Engine"),
+            Cow::Borrowed("https://api.dicebear.com/7.x/shapes/svg?seed=Mizan"),
+            Cow::Borrowed("http://schema.org/Pending"),
         ),
     };
 
     let response = SynthesisResponse {
-        context: "http://schema.org".to_string(),
-        type_: "FinancialProduct".to_string(),
+        context: Cow::Borrowed("http://schema.org"),
+        type_: Cow::Borrowed("FinancialProduct"),
         status,
         ruling_status,
         consensus_score: score,

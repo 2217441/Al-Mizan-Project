@@ -1,4 +1,3 @@
-use crate::api::v1::utils::format_surreal_id;
 use crate::repository::db::Database;
 use axum::{extract::State, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
@@ -63,6 +62,14 @@ struct DbNarrator {
     id: surrealdb::sql::Thing,
     name_ar: Option<String>,
     generation: Option<i32>,
+}
+
+fn get_id(thing: &surrealdb::sql::Thing) -> String {
+    match &thing.id {
+        surrealdb::sql::Id::String(s) => format!("{}:{}", thing.tb, s),
+        surrealdb::sql::Id::Number(n) => format!("{}:{}", thing.tb, n),
+        _ => thing.to_string(),
+    }
 }
 
 /// GET /api/v1/graph
