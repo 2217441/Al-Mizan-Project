@@ -7,6 +7,7 @@
 ---
 
 ## Current Sprint
+- [ ] Create Design System Specs (See `DESIGN_SYSTEM_SPECS.md`) <!-- id: sfia-1 -->
 
 ### ✅ Completed This Session (2026-01-06)
 

@@ -5,16 +5,14 @@
 ---
 
 ## Active Sprint
-
-### Completed ✅
-
-- [x] Initial codebase assessment and workspace setup
-- [x] Complete module-by-module code review
-- [x] Create clippy configuration (`clippy.toml`)
-- [x] Add `#![warn(clippy::pedantic)]` to crate root
-- [x] Security hardening: JWT secret, SQL parameterization
-- [x] Replace template handler unwraps
-- [x] Add comprehensive domain tests (11 new tests)
+- [ ] Define unsafe code policy and error handling standards (See `CODING_STANDARDS.md`) <!-- id: sfia-1 -->
+- [ ] Initial codebase assessment and workspace setup
+- [ ] Complete module-by-module code review
+- [ ] Create clippy configuration (`clippy.toml`)
+- [ ] Add `#![warn(clippy::pedantic)]` to crate root
+- [ ] Security hardening: JWT secret, SQL parameterization
+- [ ] Replace template handler unwraps
+- [ ] Add comprehensive domain tests (11 new tests)
 
 ### In Progress
 

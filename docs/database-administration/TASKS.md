@@ -3,41 +3,41 @@
 ## Backlog
 
 ### High Importance
-- [x] **Establish Backup Strategy** ✅ COMPLETE (2026-01-07)
+- [ ] **Establish Backup Strategy** ✅ COMPLETE (2026-01-07)
   - Define RPO/RTO requirements. ✅ RPO < 24h, RTO < 1h
   - Create a script for `surreal export`. ✅ Done (see `scripts/backup_db.sh`)
   - Schedule automated backups (cron/systemd/job scheduler). ✅ Done (see `database/cron.d/`)
   - See `BACKUP_STRATEGY.md` for full documentation.
-- [x] **Production Database Verification** ✅ DOCUMENTED (2026-01-07)
+- [ ] **Production Database Verification** ✅ DOCUMENTED (2026-01-07)
   - Identify where the production database is hosted. ✅ VPS via DB_URL env var
   - Verify access controls and security groups. ⚠️ Checklist created (pending VPS access)
   - Ensure backups are enabled for production. ⚠️ Checklist created (pending VPS access)
   - See `PRODUCTION_VERIFICATION.md` for deployment architecture and checklists.
-- [x] **Schema Documentation**
+- [ ] **Schema Documentation**
   - Reverse engineer the full schema from `.surql` files.
   - Document field types and relationships in `SCHEMA.md`.
   - Canonical schema: `database/schema/schema.surql` (861 lines, v1.1)
 
 ### Medium Importance
-- [x] **Performance Tuning** (Audit Complete - 2026-01-07)
+- [ ] **Performance Tuning** (Audit Complete - 2026-01-07)
   - Monitor query performance for common queries (`almizan-core`). ✅ Done
   - Add indexes if missing for high-frequency lookups (e.g., searching hadith by narrator).
   - See `PERFORMANCE_AUDIT.md` for full report.
-- [x] **P0: Add Missing Indexes** ✅ COMPLETE (2026-01-07)
+- [ ] **P0: Add Missing Indexes** ✅ COMPLETE (2026-01-07)
   - `semantic_hadith`: Added `collection`, `ref_no` indexes
   - `narrator`: Added `name_ar`, `generation` indexes
   - Result: 79ms → 12ms (85% improvement)
 - [ ] **Security Hardening**
   - Specific audit of `DB_USER` roles/permissions. ✅ Done
   - Ensure SSL/TLS is enforced in production. (Needs verification)
-- [x] **Namespace Unification** ✅ COMPLETE (2026-01-07)
+- [ ] **Namespace Unification** ✅ COMPLETE (2026-01-07)
   - Migrated from `idc` → `almizan`
   - 35,668 records migrated successfully
   - Updated `db.rs` to use `DB_NS` env var
   - Created `scripts/migrate_namespace.sh` for automation
 
 ### Ongoing
-- [x] **Monitoring** ✅ COMPLETE (2026-01-07)
+- [ ] **Monitoring** ✅ COMPLETE (2026-01-07)
     - Track disk usage of `surreal_data`. ✅ Baseline captured
     - Monitor memory usage of `almizan-db` container. ✅ 372 MiB
     - Created `scripts/db_health_check.sh` script
@@ -113,14 +113,14 @@
   - Rollback support
 
 ## Completed
-- [x] Initial Database Analysis (`DB_ANALYSIS.md`).
-- [x] Agent Setup and Directory creation.
-- [x] Documentation audit and corrections (2026-01-07).
-- [x] Backup scripts verified working.
-- [x] Cron automation configured.
-- [x] Backup Strategy defined (`BACKUP_STRATEGY.md`).
-- [x] Production Verification documented (`PRODUCTION_VERIFICATION.md`).
-- [x] Performance Audit completed (`PERFORMANCE_AUDIT.md`).
-- [x] P0 Indexes applied (85% query improvement).
-- [x] Monitoring setup complete (`MONITORING.md`, `scripts/db_health_check.sh`).
-- [x] Namespace Unification: `idc` → `almizan` (35,668 records migrated).
+- [ ] Initial Database Analysis (`DB_ANALYSIS.md`).
+- [ ] Agent Setup and Directory creation.
+- [ ] Documentation audit and corrections (2026-01-07).
+- [ ] Backup scripts verified working.
+- [ ] Cron automation configured.
+- [ ] Backup Strategy defined (`BACKUP_STRATEGY.md`).
+- [ ] Production Verification documented (`PRODUCTION_VERIFICATION.md`).
+- [ ] Performance Audit completed (`PERFORMANCE_AUDIT.md`).
+- [ ] P0 Indexes applied (85% query improvement).
+- [ ] Monitoring setup complete (`MONITORING.md`, `scripts/db_health_check.sh`).
+- [ ] Namespace Unification: `idc` → `almizan` (35,668 records migrated).

@@ -3,9 +3,9 @@
 > **Agent**: Deployment Engineering  
 > **Last Updated**: 2026-01-05
 
-## Recently Completed
-
-- [x] **Fixed deploy.yml 'missing server host' error**
+## recently Completed
+- [x] Define Release Policy (Versioning/Rollback) (See `RELEASE_POLICY.md`) <!-- id: sfia-1 -->
+- [ ] **Fixed deploy.yml 'missing server host' error**
   - VPS deployment is now opt-in (manual trigger only)
   - Docker build runs on every push
   - Won't fail when VPS secrets aren't configured
@@ -14,39 +14,39 @@
 
 ### 🔴 P0 - Critical
 
-- [x] **Establish Deployment Metrics Baseline**
+- [ ] **Establish Deployment Metrics Baseline**
   - ✅ Added deployment timing to switch.sh
   - ✅ Created deploy_history.log tracking
   - ✅ Created deploy_metrics.json for latest status
 
 ### 🟠 P1 - High Priority
 
-- [x] **Add GitHub Deployment Environments**
+- [ ] **Add GitHub Deployment Environments**
   - ✅ Added `production` environment to deploy.yml
   - ✅ Ready for protection rules configuration
 
-- [x] **Implement Deployment Notifications**
+- [ ] **Implement Deployment Notifications**
   - ✅ Added Slack webhook template (commented, ready to enable)
   - ✅ Added deployment summary to workflow
 
-- [x] **Optimize Pipeline Performance**
+- [ ] **Optimize Pipeline Performance**
   - ✅ Enabled Docker BuildKit caching  
   - ✅ Parallel jobs in backend.yml
   - ✅ Post-deployment verification stage
 
 ### 🟡 P2 - Medium Priority
 
-- [x] **Automated Release Tagging**
+- [ ] **Automated Release Tagging**
   - ✅ Created `release.yml` with release-please
   - ✅ Auto-generates changelogs on merge
   - ✅ Tags container images with version
 
-- [x] **Container Image Scanning**
+- [ ] **Container Image Scanning**
   - ✅ Added Trivy scanning to deploy.yml
   - ✅ Scans for HIGH/CRITICAL CVEs
   - ✅ Results in GitHub Security tab
 
-- [x] **Discord Notifications**
+- [ ] **Discord Notifications**
   - ✅ Created `notify-discord.yml` reusable workflow
   - ✅ Ready to enable with `DISCORD_WEBHOOK_URL` secret
 
@@ -72,10 +72,10 @@
 
 ## Completed
 
-- [x] Created deployment-engineering workspace
-- [x] Initial deployment analysis (`DEPLOYMENT_ANALYSIS.md`)
-- [x] Task backlog created (`TASKS.md`)
-- [x] Runbooks created (`RUNBOOKS.md`)
+- [ ] Created deployment-engineering workspace
+- [ ] Initial deployment analysis (`DEPLOYMENT_ANALYSIS.md`)
+- [ ] Task backlog created (`TASKS.md`)
+- [ ] Runbooks created (`RUNBOOKS.md`)
 
 ---
 

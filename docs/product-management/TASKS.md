@@ -1,7 +1,7 @@
 # Product Manager Tasks
 
 ## Priority: Phase 1b "Optimization & Rescue" (URGENT)
-- [x] **Review consolidated `ROADMAP.md`** (Old management roadmap deprecated) <!-- id: P1b-0 -->
+- [ ] **Review consolidated `ROADMAP.md`** (Old management roadmap deprecated) <!-- id: P1b-0 -->
 - [ ] Audit Phase 1 Deliverables (Identify backend/frontend gaps) <!-- id: P1b-1 -->
 - [ ] Plan "Verification Interface" Rescue (Frontend Priority) <!-- id: P1b-2 -->
 

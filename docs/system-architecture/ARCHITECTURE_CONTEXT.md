@@ -1,34 +1,40 @@
-# System Architecture Context
+# System Landscape: Al-Mizan
 
 > **Author**: System Architect Agent
-> **Date**: 2026-01-15
-> **Status**: Published
+> **Date**: 2026-01-28
+> **Status**: Active
+> **SFIA Alignment**: ARCH Level 6 (Initiate, Influence)
 
 ---
 
-## 1. Role & Responsibilities
+## 1. Architectural Vision
+To construct a **Sovereign, Graph-Based Islamic Knowledge Engine** that guarantees:
+1.  **Traceability**: Every node (Fact) links to a Root Authority (Verse/Hadith).
+2.  **Immutability**: Tier 1 data (Quran) is read-only and cryptographically verified.
+3.  **Federation**: The graph can sync across disjoint nodes (Offline-First).
 
-**Role**: Chief Architect (The "Builder of the Foundation").
-**Goal**: To ensure the Al-Mizan system is resilient, scalable, and theologically compliant.
+## 2. Solution Components (The "Stack")
 
-### Key Responsibilities
-1.  **High-Level Design**: Defining the relationship between Federation, Database, and API.
-2.  **3-Tier Governance**: Enforcing the separation of Tier 1 (Divine), Tier 2 (Scholarly), and Tier 3 (Reality).
-3.  **Resilience Planning**: Designing the "Knowledge Vault" (Offline-First) architecture.
+### Core Engine (The "Brain")
+*   **Database**: SurrealDB (Multi-model: Graph + Document).
+*   **Language**: Rust (Zero-cost abstractions, Memory safety).
+*   **Query Layer**: GraphQL (Federated) + SurrealQL.
 
-## 2. Core Concepts
+### Integration (The "Nervous System")
+*   **ETL Pipeline**: Python-driven ingestion (Crawl4AI -> JSON -> Surreal).
+*   **Agent Interface**: `mcp-server` (Model Context Protocol) for AI interaction.
+*   **SFIA Integration**: Agents consume `data/sfia` directly (Markdown-First RAG).
 
-### The Tawhidic Stack
-We reject "Admin/User" duality.
-*   **Root**: Divine Sovereignty (Immutable).
-*   **Edge**: Human Agency (Mutable).
+## 3. Key Constraints & Standards
+*   **Zero-Hallucination**: The UI must flag any data points *derived* by AI but not *verified* by a Scholar Node.
+*   **Performance**: Graph traversals must complete < 50ms for depth-3 queries.
+*   **Offline Capability**: The full dataset (~2GB) must be packable into a single SQLite/SurrealDB binary file.
 
-### The Federated Ummah
-We reject Centralization.
-*   **Node**: A sovereign instance (Masjid/University).
-*   **Network**: ActivityPub mesh.
+## 4. Decision Log (ADR)
+All major technical shifts are recorded in `docs/adr/`.
+*   [0001-tech-stack](file:///home/a/code/al-mizan-project/docs/adr/0001-tech-stack.md)
+*   [0002-graph-db-selection](file:///home/a/code/al-mizan-project/docs/adr/0002-graph-db-selection.md)
 
-## 3. Relationships
-*   **DBA**: Implements the Schema defined by Architect.
-*   **Rust Engineer**: Implements the Logic defined by Architect.
-*   **DevOps**: Deploys the Topology defined by Architect.
+## 5. Strategic Gaps (Attention Needed)
+*   **Federation Protocol**: We lack a formal spec for ActivityPub extensions ("IslamicGraphPub").
+*   **Security Model**: RBAC for "Scholar" vs "Student" needs formal definition in `docs/security/`.

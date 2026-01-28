@@ -8,23 +8,23 @@
 
 ## Phase 1: Foundation ✅ COMPLETE
 
-- [x] Review all existing documentation assets
-- [x] Create DOCUMENTATION_ANALYSIS.md (initial assessment)
-- [x] Create RUNBOOKS.md (procedures)
-- [x] Create TASKS.md (this file)
-- [x] Create API_REFERENCE.md (20+ endpoints documented)
-- [x] Create QUICK_START.md (5-minute researcher tutorial)
-- [x] Create GLOSSARY.md (50+ terms with Arabic)
-- [x] Catalog ADR contents and status → **ADR_CATALOG.md**
-- [x] Create documentation style guide → **STYLE_GUIDE.md**
+- [ ] Review all existing documentation assets
+- [ ] Create DOCUMENTATION_ANALYSIS.md (initial assessment)
+- [ ] Create RUNBOOKS.md (procedures)
+- [ ] Create TASKS.md (this file)
+- [ ] Create API_REFERENCE.md (20+ endpoints documented)
+- [ ] Create QUICK_START.md (5-minute researcher tutorial)
+- [ ] Create GLOSSARY.md (50+ terms with Arabic)
+- [ ] Catalog ADR contents and status → **ADR_CATALOG.md**
+- [ ] Create documentation style guide → **STYLE_GUIDE.md**
 
 ## Phase 2: Core Documentation ✅ COMPLETE
 
-- [x] Schema Reference (all 18+ tables) → **SCHEMA_REFERENCE.md**
-- [x] Relationship type documentation (17 relations in schema ref)
-- [x] SurQL query tutorial with examples → **QUERY_TUTORIAL.md**
-- [x] ETL pipeline documentation → **ETL_PIPELINE.md**
-- [x] Governance model explanation → **GOVERNANCE_MODEL.md**
+- [ ] Schema Reference (all 18+ tables) → **SCHEMA_REFERENCE.md**
+- [ ] Relationship type documentation (17 relations in schema ref)
+- [ ] SurQL query tutorial with examples → **QUERY_TUTORIAL.md**
+- [ ] ETL pipeline documentation → **ETL_PIPELINE.md**
+- [ ] Governance model explanation → **GOVERNANCE_MODEL.md**
 
 ## Phase 3: User Guides
 

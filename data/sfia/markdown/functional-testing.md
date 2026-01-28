@@ -1,0 +1,150 @@
+#  Functional testing TEST
+Assessing specified or unspecified functional requirements and characteristics of products, systems and services through investigation and testing.
+## Levels of responsibility for this skill
+[1](https://sfia-online.org/en/sfia-9/skills/functional-testing#skill_level_section_1) |  [2](https://sfia-online.org/en/sfia-9/skills/functional-testing#skill_level_section_2) |  [3](https://sfia-online.org/en/sfia-9/skills/functional-testing#skill_level_section_3) |  [4](https://sfia-online.org/en/sfia-9/skills/functional-testing#skill_level_section_4) |  [5](https://sfia-online.org/en/sfia-9/skills/functional-testing#skill_level_section_5) |  [6](https://sfia-online.org/en/sfia-9/skills/functional-testing#skill_level_section_6) |   
+---|---|---|---|---|---|---  
+###  Revision notes
+**Updates for SFIA 9**
+  * Theme(s) influencing the updates for this skill: Support for specialised domains in the field of testing, Making SFIA easier to consume (enhance readability/guidance/descriptions), Making SFIA easier to consume (updates to skill name/skill description).
+  * Testing split into 3 specialised skills
+    * [Functional testing](https://sfia-online.org/en/skillcode/9/TEST)
+    * [Non-functional testing](https://sfia-online.org/en/skillcode/9/NFTS)
+    * [Process testing](https://sfia-online.org/en/skillcode/9/PRTS)
+  * Content and/or readability changes have been made to levels 1, 2, 3, 4, 5, and 6.
+  * You can move to SFIA 9 when you are ready - SFIA 8 skill descriptions will still be available to use.
+  * Previous SFIA assessments or skills mapping may be impacted by this change.
+
+
+### Guidance notes
+Functional testing verifies that systems, components and interfaces deliver specific functionality, operate as intended and meet user expectations. Risk-based test planning and execution is a key aspect, focusing on identifying and mitigating risks such as functionality errors, integration failures, edge case defects, data inconsistencies and non-compliance with requirements.
+Activities may include, but are not limited to:
+  * collaborating with stakeholders to align testing with business requirements and objectives
+  * designing and adapting test cases based on requirements, including various scenarios, boundary values and edge cases
+  * preparing data and configuring environments to simulate realistic use cases
+  * executing tests to verify actual results align with expected outcomes
+  * logging defects with detailed reproduction steps, prioritising issues and providing feedback for improvements
+  * analysing results to identify patterns, assess quality and suggest system/testing enhancements
+  * promoting a shift-left approach by integrating functional testing early in the lifecycle for early issue detection
+  * managing, executing and automating tests, including regression and smoke tests, to improve efficiency and coverage
+  * developing and maintaining scalable, reliable automated tests and frameworks to validate critical functionality and ensure continuous quality
+  * ensuring compliance with industry standards, regulations and recognised good practices.
+
+
+###  Understanding the responsibility levels of this skill
+##### Where lower levels are not defined...
+  * Specific tasks and responsibilities are not defined because the skill requires a higher level of autonomy, influence, and complexity in decision-making than is typically expected at these levels. You can use the essence statements to understand the generic responsibilities associated with these levels.
+
+
+##### Where higher levels are not defined...
+  * Responsibilities and accountabilities are not defined because these higher levels involve strategic leadership and broader organisational influence that goes beyond the scope of this specific skill. See the essence statements.
+
+
+#### Developing skills and demonstrating responsibilities related to this skill
+The defined levels show the incremental progression in skills and responsibilities.
+##### Where lower levels are not defined...
+You can develop your knowledge and support others who do have responsibility in this area by:
+  * Learning key concepts and principles related to this skill and its impact on your role
+  * Performing related skills (see the related SFIA skills)
+  * Supporting others who are performing higher level tasks and activities
+
+
+##### Where higher levels are not defined...
+  * You can progress by developing related skills which are better suited to higher levels of organisational leadership.
+
+
+[Click to learn why SFIA skills are not defined at all 7 levels.](https://sfia-online.org/en/about-sfia/why-sfia-skills-are-not-defined-at-all-7-levels)
+###  Show/hide extra descriptions and levels.
+###  Functional testing: Level 1
+**[Level 1 - Follow](https://sfia-online.org/en/sfia-9/responsibilities/level-1):** Essence of the level: Performs routine tasks under close supervision, follows instructions, and requires guidance to complete their work. Learns and applies basic skills and knowledge. 
+* * *
+Executes given manual functional test scripts under supervision to verify basic software capabilities. 
+Configures test environments, uses basic automated tools for functionality verification, records results and reports issues.
+###  Functional testing: Level 2
+**[Level 2 - Assist](https://sfia-online.org/en/sfia-9/responsibilities/level-2):** Essence of the level: Provides assistance to others, works under routine supervision, and uses their discretion to address routine problems. Actively learns through training and on-the-job experiences. 
+* * *
+Assists in designing functional test cases and creating test scripts. 
+Supports the preparation of test data for functional testing under supervision. 
+Configures test environments to reflect realistic use cases. 
+Executes and records manual and automated functional tests, analysing results and reporting on findings, issues and risks.
+###  Functional testing: Level 3
+**[Level 3 - Apply](https://sfia-online.org/en/sfia-9/responsibilities/level-3):** Essence of the level: Performs varied tasks, sometimes complex and non-routine, using standard methods and procedures. Works under general direction, exercises discretion, and manages own work within deadlines. Proactively enhances skills and impact in the workplace. 
+* * *
+Designs detailed functional test cases and scripts, covering various scenarios and boundary values. 
+Actively participates in requirement and design reviews, refining test plans based on insights gained. 
+Undertakes structured exploratory testing to investigate and verify functionality. 
+Prepares test data, configures environments and automates repeatable tests. Executes tests, logs defects with detailed information and analyses results to assess system functionality.
+###  Functional testing: Level 4
+**[Level 4 - Enable](https://sfia-online.org/en/sfia-9/responsibilities/level-4):** Essence of the level: Performs diverse complex activities, supports and guides others, delegates tasks when appropriate, works autonomously under general direction, and contributes expertise to deliver team objectives. 
+* * *
+Selects appropriate functional testing approaches, considering risk, criticality and complexity. 
+Develops, automates and executes comprehensive test plans and cases. 
+Configures environments to mirror real-world usage, collaborates with stakeholders to refine requirements and manages scalable automated testing frameworks. 
+Identifies and mitigates risks during testing, provides detailed analysis and reports on functional test activities and results, including work done by others.
+###  Functional testing: Level 5
+**[Level 5 - Ensure, advise](https://sfia-online.org/en/sfia-9/responsibilities/level-5):** Essence of the level: Provides authoritative guidance in their field and works under broad direction. Accountable for delivering significant work outcomes, from analysis through execution to evaluation. 
+* * *
+Leads functional testing efforts across all development stages, ensuring alignment with functional requirements and focusing on risk-based prioritisation. 
+Provides authoritative advice on testing methods, tools and frameworks. 
+Monitors and improves test coverage, collaborates with teams to address challenges and ensures compliance with standards. 
+Leads efforts to improve the efficiency and reliability of functional testing. Identifies improvements and contributes to organisational policies, standards and guidelines for functional testing.
+###  Functional testing: Level 6
+**[Level 6 - Initiate, influence](https://sfia-online.org/en/sfia-9/responsibilities/level-6):** Essence of the level: Has significant organisational influence, makes high-level decisions, shapes policies, demonstrates leadership, promotes organisational collaboration, and accepts accountability in key areas. 
+* * *
+Develops organisational policies, standards and guidelines for functional testing, ensuring they align with business strategy and incorporate a risk-based approach. 
+Plans and leads complex testing initiatives, ensuring alignment with strategic objectives and incorporating a risk-based approach. 
+Manages risks and opportunities, coordinates with other testing activities and drives improvements in functional testing capabilities. 
+Promotes a culture of quality in functional testing, driving adherence to organisational standards and proactive risk mitigation.
+###  Level 7
+**[Level 7 - Set strategy, inspire, mobilise](https://sfia-online.org/en/sfia-9/responsibilities/level-7):** Essence of the level: Operates at the highest organisational level, determines overall organisational vision and strategy, and assumes accountability for overall success. 
+Keywords [ Structural change ](https://sfia-online.org/en/@@search?Subject%3Alist=Structural%20change) [ Large change ](https://sfia-online.org/en/@@search?Subject%3Alist=Large%20change) [ Re-named ](https://sfia-online.org/en/@@search?Subject%3Alist=Re-named)
+[ SFIA version 9  ](https://sfia-online.org/en/sfia-9)
+Framework status: Current standard
+### Links
+[Find out about the next version of SFIA](https://sfia-online.org/en/sfia-10)
+[Skills directory A-Z](https://sfia-online.org/en/sfia-9/skills/all-skills-a-z)
+[Levels of responsibility](https://sfia-online.org/en/sfia-9/responsibilities)
+[SFIA skills profiles](https://sfia-online.org/en/tools-and-resources/standard-industry-skills-profiles/sfia-8-skills-for-role-families-job-titles)
+[Bodies of knowledge](https://sfia-online.org/en/tools-and-resources/bodies-of-knowledge/list-of-bodies-of-knowledge)
+### Related SFIA skills
+[Non-functional testing](https://sfia-online.org/en/sfia-9/skills/non-functional-testing)
+[Systems integration and build](https://sfia-online.org/en/sfia-9/skills/systems-integration-and-build)
+[Quality management](https://sfia-online.org/en/sfia-9/skills/quality-management)
+[Quality assurance](https://sfia-online.org/en/sfia-9/skills/quality-assurance)
+[Penetration testing](https://sfia-online.org/en/sfia-9/skills/penetration-testing)
+[Process testing](https://sfia-online.org/en/sfia-9/skills/process-testing)
+[User experience evaluation](https://sfia-online.org/en/sfia-9/skills/user-experience-evaluation)
+[User acceptance testing](https://sfia-online.org/en/sfia-9/skills/user-acceptance-testing)
+[Programming/software development](https://sfia-online.org/en/sfia-9/skills/programming-software-development)
+[Real-time/embedded systems development](https://sfia-online.org/en/sfia-9/skills/real-time-embedded-systems-development)
+[Systems and software lifecycle engineering](https://sfia-online.org/en/sfia-9/skills/systems-software-lifecycle-engineering)
+[Safety engineering](https://sfia-online.org/en/sfia-9/skills/safety-engineering)
+[Safety assessment](https://sfia-online.org/en/sfia-9/skills/safety-assessment)
+### Short links to this skill
+  * [ Explanation ](https://sfia-online.org/@@multilingual-universal-link/759c57de0a924269b5c1338a5ea04964)
+  * [ SFIA 10 (Accepting change requests) ](https://sfia-online.org/en/skillcode/10/TEST)
+  * [ SFIA 8 ](https://sfia-online.org/en/skillcode/8/TEST)
+  * [ SFIA 7 ](https://sfia-online.org/en/skillcode/7/TEST)
+  * [ SFIA 6 ](https://sfia-online.org/en/skillcode/6/TEST)
+
+
+##### The SFIA Foundation
+The SFIA Foundation is a global not-for-profit organisation which oversees the production and use of the Skills Framework for the Information Age
+##### Support
+  * [About us](https://sfia-online.org/en/about-us)
+  * [Contact us](https://sfia-online.org/en/contact-info)
+  * [Site map](https://sfia-online.org/en/sitemap)
+  * [Privacy](https://sfia-online.org/en/about-us/privacy)
+  * [Terms and conditions](https://sfia-online.org/en/assets/documents/accreditation-and-licensing/sfia_general_terms_2020.pdf)
+  * [Accessibility](https://sfia-online.org/accessibility-info)
+
+
+##### Follow us
+  * [LinkedIn](https://www.linkedin.com/company/sfia-foundation)
+  * [SFIA User Forum](https://www.linkedin.com/groups/1934300/)
+  * [Twitter](https://twitter.com/SFIA_Foundation)
+  * [YouTube](https://www.youtube.com/channel/UCkv9E8z3JUcB1xaAWKknCpQ/featured)
+  * [SlideShare](https://www.slideshare.net/sfiauser/)
+
+
+© Copyright SFIA Foundation 2003-2025. The trade mark SFIA is protected in more than 35 countries throughout the world.
+The SFIA Foundation. A private company limited by guarantee. Registered in England number 04770377. Registered office: The Scalpel, 18th Floor, 52 Lime Street, London EC3M 7AF, UK (not for correspondence)
