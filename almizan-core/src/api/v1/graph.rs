@@ -1,4 +1,5 @@
 use crate::repository::db::Database;
+use crate::api::v1::utils::format_surreal_id;
 use axum::{extract::State, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
