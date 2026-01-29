@@ -1,8 +1,28 @@
+use crate::api::v1::utils::{serialize_thing_id, DisplayThing};
 use crate::repository::db::Database;
 use axum::{extract::State, response::IntoResponse, Json};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
 use std::borrow::Cow;
+use std::sync::Arc;
+use surrealdb::sql::Thing;
 use tracing::info;
+
+pub enum GraphId<'a> {
+    Thing(Arc<Thing>),
+    Str(Cow<'a, str>),
+}
+
+impl<'a> Serialize for GraphId<'a> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            GraphId::Thing(thing) => serialize_thing_id(thing, serializer),
+            GraphId::Str(s) => serializer.serialize_str(s),
+        }
+    }
+}
 
 #[derive(Serialize)]
 pub struct GraphData<'a> {
@@ -17,7 +37,7 @@ struct CytoscapeNode<'a> {
 
 #[derive(Serialize)]
 struct NodeData<'a> {
-    id: Cow<'a, str>,
+    id: GraphId<'a>,
     label: String,
     #[serde(rename = "type")]
     node_type: Cow<'a, str>,
@@ -31,8 +51,8 @@ struct CytoscapeEdge<'a> {
 #[derive(Serialize)]
 struct EdgeData<'a> {
     id: String,
-    source: Cow<'a, str>,
-    target: Cow<'a, str>,
+    source: GraphId<'a>,
+    target: GraphId<'a>,
     label: Cow<'a, str>,
 }
 
@@ -86,7 +106,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // 1. Add Allah (the root)
     nodes.push(CytoscapeNode {
         data: NodeData {
-            id: Cow::Borrowed("allah:tawhid"),
+            id: GraphId::Str(Cow::Borrowed("allah:tawhid")),
             label: "الله".to_string(),
             node_type: Cow::Borrowed("allah"),
         },
@@ -174,11 +194,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // 5. Process Prophets
     // Optimization: Consume vector to move strings instead of cloning
     for prophet in prophets {
-        let prophet_id = format_surreal_id(&prophet.id);
-
         nodes.push(CytoscapeNode {
             data: NodeData {
-                id: Cow::Owned(prophet_id.clone()),
+                id: GraphId::Thing(&prophet.id),
                 label: prophet.name_ar, // Move
                 node_type: Cow::Borrowed("prophet"),
             },
@@ -187,9 +205,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         // Edge: Allah -> Prophet (chosen_by)
         edges_vec.push(CytoscapeEdge {
             data: EdgeData {
-                id: format!("chosen_{prophet_id}"),
-                source: Cow::Borrowed("allah:tawhid"),
-                target: Cow::Owned(prophet_id), // Move instead of clone
+                id: format!("chosen_{}", DisplayThing(&prophet.id)),
+                source: GraphId::Str(Cow::Borrowed("allah:tawhid")),
+                target: GraphId::Thing(&prophet.id),
                 label: Cow::Borrowed("chose"),
             },
         });
@@ -199,11 +217,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Already fetched in parallel above as `verses`
 
     for verse in verses {
-        let verse_id = format_surreal_id(&verse.id);
-
         nodes.push(CytoscapeNode {
             data: NodeData {
-                id: Cow::Owned(verse_id.clone()),
+                id: GraphId::Thing(&verse.id),
                 label: format!("{}:{}", verse.surah_number, verse.ayah_number),
                 node_type: Cow::Borrowed("verse"),
             },
@@ -212,9 +228,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         // Edge: Prophet Muhammad -> Verse (narrated)
         edges_vec.push(CytoscapeEdge {
             data: EdgeData {
-                id: format!("narrated_{verse_id}"),
-                source: Cow::Borrowed("prophet:muhammad"),
-                target: Cow::Owned(verse_id), // Move instead of clone
+                id: format!("narrated_{}", DisplayThing(&verse.id)),
+                source: GraphId::Str(Cow::Borrowed("prophet:muhammad")),
+                target: GraphId::Thing(&verse.id),
                 label: Cow::Borrowed("narrated"),
             },
         });
@@ -225,13 +241,11 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Processed BEFORE Hadiths to build narrator_ids list for edge distribution
 
     // Optimization: Pre-allocate ID vectors
-    let mut narrator_ids: Vec<String> = Vec::with_capacity(narrators_len);
+    let mut narrator_ids: Vec<surrealdb::sql::Thing> = Vec::with_capacity(narrators_len);
 
     for narrator in narrators_list {
-        let narrator_id = format_surreal_id(&narrator.id);
-
         // Collect ID for edge creation later (distribution to hadiths)
-        narrator_ids.push(narrator_id.clone());
+        narrator_ids.push(narrator.id.clone());
 
         let label_str = narrator.name_ar.as_deref().unwrap_or("راوي");
         // Optimization: Find byte index for 15th char to slice, avoiding intermediate String allocation
@@ -240,7 +254,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
         nodes.push(CytoscapeNode {
             data: NodeData {
-                id: Cow::Owned(narrator_id.clone()),
+                id: GraphId::Thing(&narrator.id),
                 label: format!("{} (ط{})", &label_str[..end], gen),
                 node_type: Cow::Borrowed("narrator"),
             },
@@ -249,9 +263,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         // Edge: Prophet -> Narrator (Taught)
         edges_vec.push(CytoscapeEdge {
             data: EdgeData {
-                id: format!("taught_{narrator_id}"),
-                source: Cow::Borrowed("prophet:muhammad"),
-                target: Cow::Owned(narrator_id), // Move
+                id: format!("taught_{}", DisplayThing(&narrator.id)),
+                source: GraphId::Str(Cow::Borrowed("prophet:muhammad")),
+                target: GraphId::Thing(&narrator.id),
                 label: Cow::Borrowed("taught"),
             },
         });
@@ -261,8 +275,6 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Already fetched in parallel above as `hadiths`
 
     for (i, hadith) in hadiths.into_iter().enumerate() {
-        let hadith_id = format_surreal_id(&hadith.id);
-
         // Use Arabic collection names for labels
         let collection_label = match hadith.collection.as_str() {
             "bukhari" => "بخاري",
@@ -276,7 +288,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
         nodes.push(CytoscapeNode {
             data: NodeData {
-                id: Cow::Owned(hadith_id.clone()),
+                id: GraphId::Thing(&hadith.id),
                 label: format!("{} {}", collection_label, hadith.ref_no),
                 node_type: Cow::Borrowed("hadith"),
             },
@@ -289,9 +301,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
 
             edges_vec.push(CytoscapeEdge {
                 data: EdgeData {
-                    id: format!("narrated_{narrator}_{hadith_id}"),
-                    source: Cow::Owned(narrator.clone()),
-                    target: Cow::Owned(hadith_id), // Move
+                    id: format!("narrated_{}_{}", DisplayThing(narrator), DisplayThing(&hadith.id)),
+                    source: GraphId::Thing(narrator),
+                    target: GraphId::Thing(&hadith.id),
                     label: Cow::Borrowed("narrated"),
                 },
             });
