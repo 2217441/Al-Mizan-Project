@@ -18,13 +18,10 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
     // Else, show Corporate/Secular Labels.
 
     // SECURITY: ADMIN_DASHBOARD_TOKEN must be set in production
-    let admin_token = std::env::var("ADMIN_DASHBOARD_TOKEN").unwrap_or_else(|_| {
-        assert!(std::env::var("RUST_ENV").unwrap_or_default() != "production", "ADMIN_DASHBOARD_TOKEN must be set in production environment");
-        tracing::warn!("Using insecure dev admin token - DO NOT USE IN PRODUCTION");
-        "MUJTAHID_KEY_786".to_string()
-    });
+    let admin_token = std::env::var("ADMIN_DASHBOARD_TOKEN")
+        .expect("ADMIN_DASHBOARD_TOKEN environment variable must be set");
 
-    let is_mujtahid = constant_time_eq(&payload.auth_token, &admin_token);
+    let is_mujtahid = constant_time_eq(&admin_token, &payload.auth_token);
 
     // Enterprise Integration: Calculate Trust Metrics
     // In a real scenario, this would aggregate across the network.
@@ -61,6 +58,8 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
 }
 
 /// Constant-time string comparison to prevent timing attacks.
+///
+/// `a` must be the secret (constant length), and `b` the user input.
 fn constant_time_eq(a: &str, b: &str) -> bool {
     let mut result = 0;
 

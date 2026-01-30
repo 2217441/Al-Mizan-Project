@@ -1,3 +1,4 @@
+use crate::api::v1::utils::format_surreal_id;
 use crate::repository::db::Database;
 use axum::{extract::State, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
