@@ -253,6 +253,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     for narrator in narrators_list {
         narrator_ids.push(narrator.id.clone());
 
+    for narrator in &narrators_list {
         let label_str = narrator.name_ar.as_deref().unwrap_or("راوي");
         let end = label_str.char_indices().map(|(i, _)| i).nth(15).unwrap_or(label_str.len());
         let gen = narrator.generation.unwrap_or(0);
@@ -325,8 +326,19 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
         edges_vec.len()
     );
 
-    Json(GraphData {
+    // Manually serialize to string to handle lifetimes and references
+    match serde_json::to_string(&GraphData {
         nodes,
         edges: edges_vec,
-    })
+    }) {
+        Ok(json) => ([(header::CONTENT_TYPE, "application/json")], json).into_response(),
+        Err(e) => {
+            tracing::error!("Failed to serialize graph data: {}", e);
+            (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": "Failed to serialize graph data"})),
+            )
+                .into_response()
+        }
+    }
 }
