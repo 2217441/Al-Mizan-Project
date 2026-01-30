@@ -456,7 +456,7 @@
             <button class="zoom-btn" onclick="window.graphZoom.zoomIn()" aria-label="Zoom In" aria-keyshortcuts="+" title="Zoom In (+)">+</button>
             <button class="zoom-btn" onclick="window.graphZoom.zoomOut()" aria-label="Zoom Out" aria-keyshortcuts="-" title="Zoom Out (-)">−</button>
             <button class="zoom-btn" onclick="window.graphZoom.reset()" aria-label="Reset View" aria-keyshortcuts="Space" title="Reset View (Space)">⌖</button>
-            <button class="zoom-btn" onclick="toggleFullscreen()" aria-label="Toggle Fullscreen" aria-keyshortcuts="f" title="Fullscreen (F)">⛶</button>
+            <button id="fullscreen-btn" class="zoom-btn" onclick="toggleFullscreen()" aria-label="Toggle Fullscreen" aria-keyshortcuts="f" title="Fullscreen (F)">⛶</button>
         </div>
     </div>
 </div>
@@ -782,5 +782,27 @@
             document.exitFullscreen();
         }
     }
+
+    // Synchronize fullscreen button state
+    document.addEventListener('fullscreenchange', () => {
+        const btn = document.getElementById('fullscreen-btn');
+        if (!btn) return;
+
+        const isFullscreen = !!document.fullscreenElement;
+        const label = isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen';
+        const title = isFullscreen ? 'Exit Fullscreen (F)' : 'Fullscreen (F)';
+
+        btn.setAttribute('aria-label', label);
+        btn.title = title;
+
+        // Visual indicator state
+        if (isFullscreen) {
+            btn.style.background = 'var(--color-gold)';
+            btn.style.color = '#000';
+        } else {
+            btn.style.background = ''; // Revert to default
+            btn.style.color = '';
+        }
+    });
 </script>
 {% endblock %}
