@@ -13,3 +13,7 @@ This journal records critical UX and accessibility learnings for the Almizan pro
 ## 2025-10-25 - Synchronized Accessible Tooltips
 **Learning:** Icon-only buttons often have `aria-label` for screen readers but lack tooltips for mouse users, leaving them guessing. Dynamically synchronizing the `title` attribute with `aria-label` ensures consistent terminology for all users without duplicate maintenance.
 **Action:** When updating accessible labels in JS, also update the `title` attribute for icon-only controls.
+
+## 2025-05-23 - Keyboard Trap in Inputs
+**Learning:** Global keyboard shortcuts often exclude inputs to avoid conflict with typing, but this inadvertently disables standard keys like `Escape` for clearing/blurring.
+**Action:** When filtering global keydown events, explicitly allow `Escape` (and potentially `Enter`) to pass through the `input` filter.
