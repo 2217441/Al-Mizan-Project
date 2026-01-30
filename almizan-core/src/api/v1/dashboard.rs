@@ -24,11 +24,8 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> Result<impl
     // Else, show Corporate/Secular Labels.
 
     // SECURITY: ADMIN_DASHBOARD_TOKEN must be set in production
-    let admin_token = std::env::var("ADMIN_DASHBOARD_TOKEN").unwrap_or_else(|_| {
-        assert!(std::env::var("RUST_ENV").unwrap_or_default() != "production", "ADMIN_DASHBOARD_TOKEN must be set in production environment");
-        tracing::warn!("Using insecure dev admin token - DO NOT USE IN PRODUCTION");
-        "MUJTAHID_KEY_786".to_string()
-    });
+    let admin_token = std::env::var("ADMIN_DASHBOARD_TOKEN")
+        .expect("ADMIN_DASHBOARD_TOKEN environment variable must be set");
 
     // SECURITY: Iterate over the secret (admin_token) to prevent timing attacks based on input length
     let is_mujtahid = constant_time_eq(&admin_token, &payload.auth_token);
