@@ -2,10 +2,27 @@ use super::utils::{format_surreal_id, serialize_thing_id};
 use crate::repository::db::Database;
 use crate::api::v1::utils::format_surreal_id;
 use axum::{extract::State, response::IntoResponse, Json};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
 use std::borrow::Cow;
 use surrealdb::sql::Thing;
 use tracing::info;
+
+pub enum GraphId<'a> {
+    Thing(Arc<Thing>),
+    Str(Cow<'a, str>),
+}
+
+impl<'a> Serialize for GraphId<'a> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            GraphId::Thing(thing) => serialize_thing_id(thing, serializer),
+            GraphId::Str(s) => serializer.serialize_str(s),
+        }
+    }
+}
 
 #[derive(Serialize)]
 pub struct GraphData<'a> {

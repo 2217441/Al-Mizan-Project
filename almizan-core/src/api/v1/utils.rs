@@ -1,20 +1,30 @@
 use serde::Serializer;
+use std::fmt;
 use surrealdb::sql::Thing;
 
-/// Formats a SurrealDB Thing as a simple "table:id" string.
-pub fn format_surreal_id(thing: &Thing) -> String {
-    match &thing.id {
-        surrealdb::sql::Id::String(s) => format!("{}:{}", thing.tb, s),
-        surrealdb::sql::Id::Number(n) => format!("{}:{}", thing.tb, n),
-        _ => {
-            let s = thing.to_string();
-            if s.contains('⟨') || s.contains('⟩') {
-                s.replace(['⟨', '⟩'], "")
-            } else {
-                s
+pub struct DisplayThing<'a>(pub &'a Thing);
+
+impl<'a> fmt::Display for DisplayThing<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let thing = self.0;
+        match &thing.id {
+            surrealdb::sql::Id::String(s) => write!(f, "{}:{}", thing.tb, s),
+            surrealdb::sql::Id::Number(n) => write!(f, "{}:{}", thing.tb, n),
+            _ => {
+                let s = thing.to_string();
+                if s.contains('⟨') || s.contains('⟩') {
+                    write!(f, "{}", s.replace(['⟨', '⟩'], ""))
+                } else {
+                    write!(f, "{}", s)
+                }
             }
         }
     }
+}
+
+/// Formats a SurrealDB Thing as a simple "table:id" string.
+pub fn format_surreal_id(thing: &Thing) -> String {
+    format!("{}", DisplayThing(thing))
 }
 
 /// Serializes a SurrealDB Thing as a simple "table:id" string.
@@ -23,16 +33,5 @@ pub fn serialize_thing_id<S>(thing: &Thing, serializer: S) -> Result<S::Ok, S::E
 where
     S: Serializer,
 {
-    match &thing.id {
-        surrealdb::sql::Id::String(s) => serializer.collect_str(&format_args!("{}:{}", thing.tb, s)),
-        surrealdb::sql::Id::Number(n) => serializer.collect_str(&format_args!("{}:{}", thing.tb, n)),
-        _ => {
-            let s = thing.to_string();
-            if s.contains('⟨') || s.contains('⟩') {
-                serializer.collect_str(&s.replace(['⟨', '⟩'], ""))
-            } else {
-                serializer.collect_str(&s)
-            }
-        }
-    }
+    serializer.collect_str(&DisplayThing(thing))
 }
