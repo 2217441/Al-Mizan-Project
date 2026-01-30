@@ -27,7 +27,8 @@
 }
 
 /* Card Focus matching Hover */
-.portal-card:focus-visible {
+.portal-card:focus-visible,
+.card--portal:focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px var(--color-gold), 0 0 20px rgba(212, 175, 55, 0.3);
     border-color: var(--color-gold);
