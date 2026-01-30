@@ -27,3 +27,7 @@
 ## 2024-10-29 - [Cow for Static Strings in Responses]
 **Learning:** API response structs with `String` fields cause unnecessary heap allocations when returning static string literals (e.g., status strings like "Green", "Pending").
 **Action:** Use `std::borrow::Cow<'a, str>` in response structs and return `Cow::Borrowed("static_string")` to eliminate these allocations.
+
+## 2024-10-30 - [Axum Zero-Copy Responses]
+**Learning:** Axum's `Json` wrapper requires owned types or `'static` lifetimes, forcing clones when returning data derived from local variables (like database results).
+**Action:** Use manual serialization (e.g., `serde_json::to_string`) inside the handler to serialize borrowed data (using `Cow` or references) and return the resulting string as `impl IntoResponse`. This allows zero-copy projection of DB results into API responses.
