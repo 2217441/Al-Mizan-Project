@@ -1,8 +1,10 @@
-use axum::{extract::Json, response::IntoResponse};
+use axum::{extract::Json, http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct DashboardRequest {
+    #[validate(length(max = 1024))]
     pub auth_token: String, // Mock Auth Token (Role)
 }
 
@@ -12,7 +14,11 @@ pub struct DashboardResponse {
     pub modules: Vec<String>,
 }
 
-pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoResponse {
+pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> Result<impl IntoResponse, StatusCode> {
+    if payload.validate().is_err() {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
     // Role-Based Semantic Camouflage
     // If Role == MUJTAHID (via token), show Theological Labels.
     // Else, show Corporate/Secular Labels.
@@ -24,7 +30,8 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
         "MUJTAHID_KEY_786".to_string()
     });
 
-    let is_mujtahid = constant_time_eq(&payload.auth_token, &admin_token);
+    // SECURITY: Iterate over the secret (admin_token) to prevent timing attacks based on input length
+    let is_mujtahid = constant_time_eq(&admin_token, &payload.auth_token);
 
     // Enterprise Integration: Calculate Trust Metrics
     // In a real scenario, this would aggregate across the network.
@@ -57,27 +64,29 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> impl IntoRe
         modules,
     };
 
-    Json(response)
+    Ok(Json(response))
 }
 
 /// Constant-time string comparison to prevent timing attacks.
-fn constant_time_eq(a: &str, b: &str) -> bool {
+///
+/// `secret` must be the first argument to ensure the loop runs for a constant time (relative to secret length).
+fn constant_time_eq(secret: &str, input: &str) -> bool {
     let mut result = 0;
 
     // Check if lengths differ, but do NOT return early.
-    if a.len() != b.len() {
+    if secret.len() != input.len() {
         result = 1;
     }
 
-    let a_bytes = a.as_bytes();
-    let b_bytes = b.as_bytes();
+    let secret_bytes = secret.as_bytes();
+    let input_bytes = input.as_bytes();
 
-    // Iterate over the secret (a) to ensure constant time relative to the secret
-    for (i, &a_byte) in a_bytes.iter().enumerate() {
-        // Safe indexing: if b is shorter, compare against a varied byte (a_byte ^ 1)
-        // This ensures the loop runs a.len() times regardless of b.len()
-        let b_byte = *b_bytes.get(i).unwrap_or(&(a_byte ^ 1));
-        result |= a_byte ^ b_byte;
+    // Iterate over the secret to ensure constant time relative to the secret
+    for (i, &s_byte) in secret_bytes.iter().enumerate() {
+        // Safe indexing: if input is shorter, compare against a varied byte (s_byte ^ 1)
+        // This ensures the loop runs secret.len() times regardless of input.len()
+        let i_byte = *input_bytes.get(i).unwrap_or(&(s_byte ^ 1));
+        result |= s_byte ^ i_byte;
     }
 
     result == 0
