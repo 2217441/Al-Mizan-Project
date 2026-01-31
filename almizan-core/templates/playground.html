@@ -222,6 +222,18 @@
         background: rgba(212, 175, 55, 0.3);
         border-radius: 3px;
     }
+
+    .btn-spinner {
+        width: 1em;
+        height: 1em;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: currentColor;
+        border-radius: 50%;
+        animation: spinner-spin 1s linear infinite;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 0.5rem;
+    }
 </style>
 
 <div class="playground-page noise-overlay">
@@ -245,7 +257,7 @@
                     <div style="display: flex; gap: 1rem; align-items: center;">
                         <span style="color: var(--color-gold); font-size: 0.8rem;">● Root (Thabit)</span>
                         <span style="color: var(--color-emerald); font-size: 0.8rem;">● Verse (Wahyu)</span>
-                        <button onclick="loadGraph()" class="action-btn">Initialise Graph</button>
+                        <button onclick="loadGraph(this)" class="action-btn">Initialise Graph</button>
                     </div>
                 </div>
                 <div id="cy"
@@ -266,9 +278,9 @@
                         style="flex: 1;" aria-label="Surah Number" min="1" max="114">
                     <input type="number" id="ayahInput" class="glass-input" placeholder="Ayah" value="1"
                         style="flex: 1;" aria-label="Ayah Number" min="1">
-                    <button onclick="fetchVerse()" class="action-btn">Seek</button>
+                    <button onclick="fetchVerse(this)" class="action-btn">Seek</button>
                 </div>
-                <div id="verseResult" class="result-box">
+                <div id="verseResult" class="result-box" aria-live="polite">
                     <p style="color: #666; font-style: italic; text-align: center;">Query the immutable record...</p>
                 </div>
             </div>
@@ -286,9 +298,9 @@
                     </select>
                     <input type="number" id="hadithInput" class="glass-input" placeholder="#" value="1"
                         style="flex: 1;" aria-label="Hadith Number" min="1">
-                    <button onclick="fetchHadith()" class="action-btn">Trace</button>
+                    <button onclick="fetchHadith(this)" class="action-btn">Trace</button>
                 </div>
-                <div id="hadithResult" class="result-box">
+                <div id="hadithResult" class="result-box" aria-live="polite">
                     <p style="color: #666; font-style: italic; text-align: center;">Verify the transmission chain...</p>
                 </div>
             </div>
@@ -297,9 +309,9 @@
             <div class="glass-panel hover-lift" style="grid-column: 1 / -1; padding: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <h3 style="color: var(--text-primary); margin: 0;">✨ Divine Attributes (Ontology Root)</h3>
-                    <button onclick="loadNames()" class="action-btn">Manifest Names</button>
+                    <button onclick="loadNames(this)" class="action-btn">Manifest Names</button>
                 </div>
-                <div id="namesGrid" class="names-grid">
+                <div id="namesGrid" class="names-grid" aria-live="polite">
                     <p style="color: #666; font-style: italic; grid-column: 1/-1; text-align: center; padding: 2rem;">
                         Awaiting invocation...</p>
                 </div>
@@ -324,8 +336,23 @@
              .replace(/'/g, "&#039;");
     }
 
+    function setLoading(btn, isLoading) {
+        if (!btn) return;
+        if (isLoading) {
+            if (!btn.dataset.originalText) {
+                btn.dataset.originalText = btn.innerHTML;
+            }
+            btn.disabled = true;
+            btn.innerHTML = '<span class="btn-spinner"></span> Loading...';
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = btn.dataset.originalText || 'Action';
+        }
+    }
+
     // 1. Load Graph with Premium Styling
-    async function loadGraph() {
+    async function loadGraph(btn) {
+        if (btn) setLoading(btn, true);
         const container = document.getElementById('cy');
         container.innerHTML = '<p style="color:#666; text-align:center; padding-top:200px;">Booting Neuro-Symbolic Engine...</p>';
 
@@ -462,11 +489,14 @@
         } catch (e) {
             console.error(e);
             container.innerHTML = `<p style="color:#ff6b6b; text-align:center; padding-top:200px;">✖ Connection Lost: Is SurrealDB running?</p>`;
+        } finally {
+            if (btn) setLoading(btn, false);
         }
     }
 
     // 2. Fetch Verse (Amiri Typography)
-    async function fetchVerse() {
+    async function fetchVerse(btn) {
+        if (btn) setLoading(btn, true);
         const s = document.getElementById('surahInput').value;
         const a = document.getElementById('ayahInput').value;
         const div = document.getElementById('verseResult');
@@ -487,11 +517,14 @@
             `;
         } catch (e) {
             div.innerHTML = `<span style="color: #ff6b6b;">✖ Verse not found in Foundation.</span>`;
+        } finally {
+            if (btn) setLoading(btn, false);
         }
     }
 
     // 3. Fetch Hadith (Clean Layout)
-    async function fetchHadith() {
+    async function fetchHadith(btn) {
+        if (btn) setLoading(btn, true);
         const c = document.getElementById('collectionSelect').value;
         const n = document.getElementById('hadithInput').value;
         const div = document.getElementById('hadithResult');
@@ -512,11 +545,14 @@
             `;
         } catch (e) {
             div.innerHTML = `<span style="color: #ff6b6b;">✖ Hadith chain broken or missing.</span>`;
+        } finally {
+            if (btn) setLoading(btn, false);
         }
     }
 
     // 4. Load Names (Grid Animation)
-    async function loadNames() {
+    async function loadNames(btn) {
+        if (btn) setLoading(btn, true);
         const grid = document.getElementById('namesGrid');
         grid.innerHTML = '<span style="color:#D4AF37; padding:1rem;">Invoking...</span>';
 
@@ -549,6 +585,8 @@
 
         } catch (e) {
             grid.innerHTML = `<span style="color: #ff6b6b; padding:1rem;">✖ Failed to retrieve names.</span>`;
+        } finally {
+            if (btn) setLoading(btn, false);
         }
     }
 </script>
