@@ -1,14 +1,14 @@
 use super::utils::{format_surreal_id, serialize_thing_id};
 use crate::repository::db::Database;
-use crate::api::v1::utils::format_surreal_id;
-use axum::{extract::State, response::IntoResponse, Json};
+use axum::{extract::State, response::IntoResponse, Json, http::header};
 use serde::{Deserialize, Serialize, Serializer};
 use std::borrow::Cow;
 use surrealdb::sql::Thing;
 use tracing::info;
 
 pub enum GraphId<'a> {
-    Thing(Arc<Thing>),
+    Thing(Thing),
+    Ref(&'a Thing),
     Str(Cow<'a, str>),
 }
 
@@ -19,8 +19,27 @@ impl<'a> Serialize for GraphId<'a> {
     {
         match self {
             GraphId::Thing(thing) => serialize_thing_id(thing, serializer),
+            GraphId::Ref(thing) => serialize_thing_id(thing, serializer),
             GraphId::Str(s) => serializer.serialize_str(s),
         }
+    }
+}
+
+impl From<Thing> for GraphId<'_> {
+    fn from(t: Thing) -> Self {
+        GraphId::Thing(t)
+    }
+}
+
+impl<'a> From<&'a Thing> for GraphId<'a> {
+    fn from(t: &'a Thing) -> Self {
+        GraphId::Ref(t)
+    }
+}
+
+impl<'a> From<&'a str> for GraphId<'a> {
+    fn from(s: &'a str) -> Self {
+        GraphId::Str(Cow::Borrowed(s))
     }
 }
 
@@ -54,25 +73,6 @@ struct EdgeData<'a> {
     source: GraphId<'a>,
     target: GraphId<'a>,
     label: Cow<'a, str>,
-}
-
-#[derive(Serialize)]
-#[serde(untagged)]
-enum GraphId<'a> {
-    Thing(#[serde(serialize_with = "serialize_thing_id")] Thing),
-    Str(Cow<'a, str>),
-}
-
-impl From<Thing> for GraphId<'_> {
-    fn from(t: Thing) -> Self {
-        GraphId::Thing(t)
-    }
-}
-
-impl<'a> From<&'a str> for GraphId<'a> {
-    fn from(s: &'a str) -> Self {
-        GraphId::Str(Cow::Borrowed(s))
-    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -251,9 +251,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     let mut narrator_ids: Vec<Thing> = Vec::with_capacity(narrators_len);
 
     for narrator in narrators_list {
+        // We need the ID for later (Hadith linkage)
         narrator_ids.push(narrator.id.clone());
 
-    for narrator in &narrators_list {
         let label_str = narrator.name_ar.as_deref().unwrap_or("راوي");
         let end = label_str.char_indices().map(|(i, _)| i).nth(15).unwrap_or(label_str.len());
         let gen = narrator.generation.unwrap_or(0);
@@ -309,7 +309,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
             edges_vec.push(CytoscapeEdge {
                 data: EdgeData {
                     id: format!("narrated_{narrator_id_str}_{hadith_id_str}"),
-                    source: GraphId::from(narrator.clone()), // Clone Thing
+                    source: GraphId::from(narrator), // Uses From<&Thing> -> Ref -> No clone!
                     target: GraphId::from(hadith.id), // Move Thing
                     label: Cow::Borrowed("narrated"),
                 },
