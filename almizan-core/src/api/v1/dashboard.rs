@@ -1,6 +1,7 @@
 use axum::{extract::Json, http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+use tracing::error;
 
 #[derive(Deserialize, Validate)]
 pub struct DashboardRequest {
@@ -25,7 +26,10 @@ pub async fn get_dashboard(Json(payload): Json<DashboardRequest>) -> Result<impl
 
     // SECURITY: ADMIN_DASHBOARD_TOKEN must be set in production
     let admin_token = std::env::var("ADMIN_DASHBOARD_TOKEN")
-        .expect("ADMIN_DASHBOARD_TOKEN environment variable must be set");
+        .map_err(|e| {
+            error!("ADMIN_DASHBOARD_TOKEN environment variable must be set: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
 
     // SECURITY: Iterate over the secret (admin_token) to prevent timing attacks based on input length
     let is_mujtahid = constant_time_eq(&admin_token, &payload.auth_token);
