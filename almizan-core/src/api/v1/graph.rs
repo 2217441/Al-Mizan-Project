@@ -1,28 +1,10 @@
 use super::utils::{format_surreal_id, serialize_thing_id};
 use crate::repository::db::Database;
-use crate::api::v1::utils::format_surreal_id;
-use axum::{extract::State, response::IntoResponse, Json};
-use serde::{Deserialize, Serialize, Serializer};
+use axum::{extract::State, http::header, response::IntoResponse, Json};
+use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use surrealdb::sql::Thing;
 use tracing::info;
-
-pub enum GraphId<'a> {
-    Thing(Arc<Thing>),
-    Str(Cow<'a, str>),
-}
-
-impl<'a> Serialize for GraphId<'a> {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        match self {
-            GraphId::Thing(thing) => serialize_thing_id(thing, serializer),
-            GraphId::Str(s) => serializer.serialize_str(s),
-        }
-    }
-}
 
 #[derive(Serialize)]
 pub struct GraphData<'a> {
@@ -250,8 +232,9 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
     // Optimization: Store Things instead of formatted Strings
     let mut narrator_ids: Vec<Thing> = Vec::with_capacity(narrators_len);
 
-    for narrator in narrators_list {
+    for narrator in &narrators_list {
         narrator_ids.push(narrator.id.clone());
+    }
 
     for narrator in &narrators_list {
         let label_str = narrator.name_ar.as_deref().unwrap_or("راوي");
@@ -273,7 +256,7 @@ pub async fn get_graph(State(db): State<Database>) -> impl IntoResponse {
             data: EdgeData {
                 id: format!("taught_{narrator_id_str}"),
                 source: GraphId::from("prophet:muhammad"),
-                target: GraphId::from(narrator.id), // Move Thing
+                target: GraphId::from(narrator.id.clone()), // Move Thing
                 label: Cow::Borrowed("taught"),
             },
         });
